@@ -63,10 +63,7 @@ if id_calc_01:
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
     with col1:
         st.subheader('Well Name:')
-        #st.write("<strong>)
-        _well_name2 = st.write(_well_name)
-        st.markdown("<strong>_well_name2</strong>", unsafe_allow_html=True)
-        #st.write('\n')
+        st.markdown(_well_name)
         st.subheader('Field Name:')
         st.markdown(_field_name)
         #st.write('\n')
