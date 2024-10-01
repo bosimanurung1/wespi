@@ -255,72 +255,17 @@ if id_calc_01:
         st.write('WFL          : ', _wfl, _measurement, 'TVD')
         st.write('Qmax         : ', _qmax, 'BPD')
         st.write('WHP          : ', _whp_hitung, _measurement, 'TVD')
-        st st.write('SG Fluid     : ', _sgfluid)
+        st.write('SG Fluid     : ', _sgfluid)
         st.write('PIP          : ', _pip, 'psi')
 
     with col2:
         st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
         st.write('Friction Loss: ', _friction_loss, _measurement, 'TVD')
-        st.write('% Free Gas     : ', _persen_free_gas, '%')
-        st.write('\n')
         st.write('TDH            : ', _tdh, _measurement, 'TVD')
-        st.write('Di file xls: 5376.58')
-        st.write('\n')
         st.write('SBHP           : ', _sbhp, 'psig')
         st.write('Fluid Over Pump: ', _fluid_over_pump, _measurement, 'TVD')
-        st.write('Di file xls: 1205.1334')
-        st.write('\n')
         st.write('FBHP           : ', _fbhp, 'psig')
         st.write('Fluid Gradient : ', _fluid_gradient, 'psi/', _measurement, 'TVD')
-        st.write('Di file xls: 0.43463')
-
-    #->comment: Plotting
-    #->comment: Create a selection that chooses the nearest point & selects based on x-value
-    #chat_nearest = alt.selection(type='single', nearest=True, on='mouseover',
-                                    #fields=['WEEK_START'], empty='none')
-            
-    #->comment: The basic line
-    #chat_line = alt.Chart(df_weekly_chat_app).mark_line(interpolate='linear').encode(
-                        #x=alt.X("WEEK_START:T", axis=alt.Axis(title="Week Start", titlePadding=15,  titleFontSize=20, titleFontWeight=900, labelAngle=-90), scale=alt.Scale(padding=32)),
-                        #y=alt.Y("WEEKLY_APP_PCT:Q", axis=alt.Axis(title=y_title, titlePadding=15, titleFontSize=20, titleFontWeight=900, format=y_format)),
-                                        #color=alt.Color('APP_TYPE:N',
-                                        #scale=alt.Scale(domain=['single text input', 'chat']),
-                                        #legend=alt.Legend(title=" ") ))
-            
-    #->comment: Transparent selectors across the ch-art. This is what tells us the x-value of the cursor
-    #chat_selectors = alt.Chart(df_weekly_chat_app).mark_point().encode(x='WEEK_START:T', opacity=alt.value(0),).add_selection(chat_nearest)
-            
-    #->comment: Draw points on the line, and highlight based on selection
-    #chat_points = chat_line.mark_point().encode(opacity=alt.condition(chat_nearest, alt.value(1), alt.value(0)))
-            
-    #->comment: Draw text labels near the points, and highlight based on selection
-    #chat_text = chat_line.mark_text(align='left', dx=0, dy=-15, fontSize=16).encode(text=alt.condition(chat_nearest, alt_text, alt.value(' ')))
-            
-    #->comment: Draw a rule at the location of the selection
-    #chat_rules = alt.Chart(df_weekly_chat_app).mark_rule(color='gray').encode(x='WEEK_START:T',).transform_filter(chat_nearest)
-            
-    #->comment: Put the five layers into a chart and bind the data
-    #chat_count = alt.layer(chat_line, chat_selectors, chat_points, chat_rules, chat_text
-            #).properties(width=800, height=500
-            #).configure(padding=20, background="#111111"
-            #).configure_legend(orient='bottom', titleFontSize=16, labelFontSize=14, titlePadding=0
-            #).configure_axis(labelFontSize=14)        
-    #st.altair_chart(chat_count, use_container_width=True)
-
-
-    #plt.plot(ipr_data['Flow_rate'], ipr_data['Pressure'])
-    #->comment: set title & label
-    #plt.title('GMV Value in 2019',color='darkblue', fontsize=17)
-    #plt.xlabel('Flow Rate, Q (BFPD)',fontsize=13,color='darkred')
-    #plt.ylabel('Pressure, P (psi)',fontsize=13,color='darkred')
-    #->comment: custom line
-    #plot_line = plt.plot(ipr_data['Flow_rate'], ipr_data['Pressure'])
-    #plt.setp(plot_line, color='blue', linestyle='-',  linewidth=2, marker='o')
-    #->comment: set start 0 y axis
-    #plt.ylim(ymin=0)
-    #->comment: set grid
-    #plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
-    #plt.show()
 
     st.write('\n')
     st.title("Inflow Performance Relationships")    
@@ -341,29 +286,3 @@ if id_calc_01:
     #with col2:
         #st.markdown('The Data:') 
         st.dataframe(ipr_data, hide_index=True)
-
-    last_id_calc = mycalc['id_calc'].values[-1:]
-    st.write(last_id_calc)
-    _username_newRec = 'user_id4'; _well_name_newRec = 'xxx'; _field_name_newRec = 'yyy'
-
-    #def insert_row(mycalc, my_row):
-    #    mycalc.loc[len(mycalc)] = my_row
-
-    #insert_row(mycalc, [last_id_calc+1, _username_newRec, _well_name_newRec, _field_name_newRec])
-    
-    
-    #_id_instrument = mycalc['id_instrument'].values[-1:]; _id_calc_method = mycalc['id_calc_method'].values[-1:]
-    #_id_welltype = mycalc['id_welltype'].values[-1:]; _id_measurement = mycalc['id_measurement'].values[-1:]
-    #_id_casing_size = mycalc['id_casing_size'].values[-1:]; _id_casing_id = mycalc['id_casing_id'].values[-1:]
-    #_id_tubing_size = mycalc['id_tubing_size'].values[-1:]; _id_tubing_id = mycalc['id_tubing_id'].values[-1:]
-    #_id_tubing_coeff = mycalc['id_tubing_coeff'].values[-1:]
-    #mycalc.loc[len(mycalc)] = [last_id_calc+1, _username_newRec, _well_name_newRec, _field_name_newRec, \
-    #                          _company, _engineer, _date_calc, _id_instrument, _id_calc_method, \
-    #                          _id_welltype, _id_measurement, _comment_or_info, \
-    #                          _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, \
-    #                          _qtest, _sbhp, _fbhp, _producing_gor, _wc, _bht, \
-    #                          _sgw, _sgg, _qdes, _psd, _whp, _psd_md, \
-    #                          _p_casing, _pb, _api, _sgo, \
-    #                          _id_casing_size, _id_casing_id, _id_tubing_size, _id_tubing_id, _id_tubing_coeff, \
-    #                          _liner_id, _top_liner_at, _bottom_liner_at]
-    #st.dataframe(mycalc)
