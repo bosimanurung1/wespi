@@ -1,0 +1,6 @@
+"user_id","username","password","departemen","aktif_or_not","personal_name","Keterangan Kolom:","Keterangan"
+"user_id1","userbaru","password1234","wespilift","aktif","User Test Baru","aktif_or_not","not -> tdk bisa login"
+"user_id2","user2","password1222","cust_dep1","aktif","User Test Baru2","departemen","Bila user dari kantor diisi wespilift, bila user dari customer diisi departemen & nama customer tsb"
+"user_id3","user3","password1223","cust_dep2","aktif","User Test Baru3","password","Akan terenkripsi isinya bila ingin dibuat tdk bisa dilihat yg lainnya"
+"user_id4","user4","password1224","cust_dep3","aktif","User Test Baru4",,
+"user_id5","user5","password1225","cust_dep4","aktif","User Test Baru5",,
