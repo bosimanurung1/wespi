@@ -253,9 +253,8 @@ if id_calc_01:
         st.write('Qmax         : ', _qmax, 'BPD')
         st.write('WHP          : ', _whp_hitung, _measurement, 'TVD')
         st.write('SG Fluid     : ', _sgfluid)
-        st.write('PIP          : ', _pip, 'psi')
-
     with col2:
+        st.write('PIP          : ', _pip, 'psi')
         st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
         st.write('Friction Loss: ', _friction_loss, _measurement, 'TVD')
         st.write('TDH            : ', _tdh, _measurement, 'TVD')
