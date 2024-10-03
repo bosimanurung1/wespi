@@ -245,6 +245,13 @@ if id_calc_01:
     st.title("Calculation")
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
     with col1:
+        _Pwf_at_Qdes = round(_Pwf_at_Qdes, 6) # jadi 786.7571 yg sblmnya 786.757076405096
+        _composite_sg = round(_composite_sg, 6) # sblmnya 0.490559258022
+        _wfl = round(_wfl, 6) # sblmnya 4743.3883109093
+         _qmax = round(_qmax, 6)
+        _whp_hitung = round(_whp_hitung, 6)
+        _sgfluid = round(_sgfluid, 6)
+        _pip = round(_pip, 6)
         st.write("Pwf@Qdes: ", _Pwf_at_Qdes, 'psi')
         st.write('Qdes         : ', _qdes, 'BPD')
         st.write('Composite SG : ', _composite_sg)        
@@ -254,7 +261,13 @@ if id_calc_01:
         st.write('WHP          : ', _whp_hitung, _measurement, 'TVD')
         st.write('SG Fluid     : ', _sgfluid)
         st.write('PIP          : ', _pip, 'psi')
+            
     with col2:       
+        _friction_loss = round(_friction_loss, 6)
+        _persen_free_gas = round(_persen_free_gas, 2)
+        _tdh = round(_tdh, 6)
+        _fluid_over_pump = round(_fluid_over_pump, 6)
+        _fluid_gradient = round(_fluid_gradient, 6)
         st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
         st.write('Friction Loss: ', _friction_loss, _measurement, 'TVD')
         st.write('% Free Gas     : ', _persen_free_gas, '%')
