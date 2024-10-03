@@ -229,7 +229,7 @@ if id_calc_01:
     _friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
 
     # % Free Gas = Vg / Vt
-    _persen_free_gas = _Vg / _Vt
+    _persen_free_gas = (_Vg / _Vt) * 100
 
     # TDH = sum(WFL, WHP, CP, FrictionLoss)  --> CP (Optional, bila tdk dinput, defaultnya nol) 
     _cp = 0
@@ -253,10 +253,11 @@ if id_calc_01:
         st.write('Qmax         : ', _qmax, 'BPD')
         st.write('WHP          : ', _whp_hitung, _measurement, 'TVD')
         st.write('SG Fluid     : ', _sgfluid)
-    with col2:
         st.write('PIP          : ', _pip, 'psi')
+    with col2:       
         st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
         st.write('Friction Loss: ', _friction_loss, _measurement, 'TVD')
+        st.write('% Free Gas     : ', _persen_free_gas, '%')
         st.write('TDH            : ', _tdh, _measurement, 'TVD')
         st.write('SBHP           : ', _sbhp, 'psig')
         st.write('Fluid Over Pump: ', _fluid_over_pump, _measurement, 'TVD')
