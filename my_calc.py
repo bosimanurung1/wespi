@@ -250,7 +250,7 @@ if id_calc_01:
     _pip = round(_pip, 6)
 
     _friction_loss = round(_friction_loss, 6)
-    _perrsen_free_gas = round(_persen_free_gas, 2)
+    _persen_free_gas = round(_persen_free_gas, 2)
     _tdh = round(_tdh, 6)
     _fluid_over_pump = round(_fluid_over_pump, 6)
     _fluid_gradient = round(_fluid_gradient, 6)
