@@ -305,8 +305,6 @@ if id_calc_01:
 
         # set grid
         plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
-
-        st.pyplot(fig)
-            
+        st.pyplot(fig)            
     with row5_2:
         st.dataframe(ipr_data, hide_index=True)
