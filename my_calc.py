@@ -282,18 +282,30 @@ if id_calc_01:
     st.title("Inflow Performance Relationships")    
     row5_1, row5_spacer2, row5_2= st.columns((11.1, .02, 3.8))
     with row5_1:
-    #col1, col2 = st.columns(2, gap="large", vertical_alignment="center")
-    #with col1:
-        #ipr_data = pd.read_csv('data/ipr_data.csv')
-        #->comment: make the chart
-        _ipr_curve = alt.Chart(ipr_data).mark_line().encode(
-            x='Flow rate, Q (BFPD)',
-            y='Pressure (psi)',
-        ).mark_circle()  #.interactive()
-        st.write('\n')
-        st.write('\n')  
-        st.altair_chart(_ipr_curve, use_container_width=True)               
+        # perbesar figsize
+        #plt.figure(figsize=(20,10))
+        plt.figure(figsize=(10,5))
+
+        fig, ax  = plt.subplots()
+
+        # membuat line plot
+        plt.plot(ipr_data['Flow rate, Q (BFPD)'], ipr_data['Pressure (psi)'])
+
+        # set title & label
+        plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
+        plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
+
+        # custom line
+        plot_line = plt.plot(ipr_data['Flow rate, Q (BFPD)'], ipr_data['Pressure (psi)'])
+        plt.setp(plot_line, color='blue', linestyle='-',  linewidth=0.5, marker='o')
+
+        # set start 0 y axis
+        plt.ylim(ymin=0)
+
+        # set grid
+        plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
+
+        st.pyplot(fig)
+            
     with row5_2:
-    #with col2:
-        #st.markdown('The Data:') 
         st.dataframe(ipr_data, hide_index=True)
