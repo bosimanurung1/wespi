@@ -241,19 +241,19 @@ if id_calc_01:
     # Fluid Gradient = SGFluid/2.31
     _fluid_gradient = _sgfluid/2.31
 
-    _Pwf_at_Qdes = round(_Pwf_at_Qdes, 6) # jadi 786.7571 yg sblmnya 786.757076405096
-    _composite_sg = round(_composite_sg, 6) # sblmnya 0.490559258022
-    _wfl = round(_wfl, 6) # sblmnya 4743.3883109093
-    _qmax = round(_qmax, 6)
-    _whp_hitung = round(_whp_hitung, 6)
-    _sgfluid = round(_sgfluid, 6)
-    _pip = round(_pip, 6)
+    _Pwf_at_Qdes = round(_Pwf_at_Qdes, 2) # jadi 786.7571 yg sblmnya 786.757076405096
+    _composite_sg = round(_composite_sg, 2) # sblmnya 0.490559258022
+    _wfl = round(_wfl, 2) # sblmnya 4743.3883109093
+    _qmax = round(_qmax, 2)
+    _whp_hitung = round(_whp_hitung, 2)
+    _sgfluid = round(_sgfluid, 2)
+    _pip = round(_pip, 2)
 
-    _friction_loss = round(_friction_loss, 6)
+    _friction_loss = round(_friction_loss, 2)
     _persen_free_gas = round(_persen_free_gas, 2)
-    _tdh = round(_tdh, 6)
-    _fluid_over_pump = round(_fluid_over_pump, 6)
-    _fluid_gradient = round(_fluid_gradient, 6)
+    _tdh = round(_tdh, 2)
+    _fluid_over_pump = round(_fluid_over_pump, 2)
+    _fluid_gradient = round(_fluid_gradient, 2)
 
     st.write('\n')
     st.title("Calculation")
