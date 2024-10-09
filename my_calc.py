@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import pandasql as ps
-import altair as alt
 import matplotlib.pyplot as plt
 
 st.title("My Calculations")
@@ -18,7 +17,8 @@ mcasingid = pd.read_csv('MCasingID.csv')
 mtubingsize = pd.read_csv('MTubingSize.csv')
 mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
-ipr_data = pd.read_csv('ipr_data.csv')
+#ipr_data = pd.read_csv('ipr_data.csv')
+#df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
 
 mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
         m.date_calc, m.id_instrument, i.instrument, m.id_calc_method, c.calc_method, m.id_welltype, \
@@ -256,6 +256,52 @@ if id_calc_01:
     _fluid_over_pump = round(_fluid_over_pump, 2)
     _fluid_gradient = round(_fluid_gradient, 2)
 
+# ---------- Counting data for ipr_curve (2Fields, 8Records) ----------------------- 
+    #_flowrate1 = (1-0.2*(Pressure1 / SBHP) - 0.8 * (Pressure1 / SBHP)^2) * Qmax
+    _pressure1 = 0
+    _flowrate1 = (1-0.2*(_pressure1 / 1914) - 0.8 * (_pressure1 / 1914)**2) * 3002.746
+
+    #_flowrate2 = (1-0.2*(Pressure2 / SBHP) - 0.8 * (Pressure2 / SBHP)^2) * Qmax
+    #_pressure2 = (MidPerfo - PSD) * SGFluid / 2.31 + CP
+    _pressure2 = (_MidPerf - _psd) * _sgfluid / 2.31 + _cp
+    _flowrate2 = (1-0.2*(_pressure2 / 1914) - 0.8 * (_pressure2 / 1914)**2) * 3002.746
+
+    #_flowrate3 = (1-0.2*(Pressure3 / SBHP) - 0.8 * (Pressure3 / SBHP)^2) * Qmax
+    #_pressure3 = 0.2 * SBHP
+    _pressure3 = 0.2 * _sbhp
+    _flowrate3 = (1-0.2*(_pressure3 / 1914) - 0.8 * (_pressure3 / 1914)**2) * 3002.746
+
+    #_flowrate4 = (1-0.2*(Pressure4 / SBHP) - 0.8 * (Pressure4 / SBHP)^2) * Qmax
+    #_pressure4 = 0.4 * SBHP
+    _pressure4 = 0.4 * _sbhp
+    _flowrate4 = (1-0.2*(_pressure4 / 1914) - 0.8 * (_pressure4 / 1914)**2) * 3002.746
+
+    #_flowrate5 = (1-0.2*(Pressure5 / SBHP) - 0.8 * (Pressure5 / SBHP)^2) * Qmax
+    #_pressure5 = Pwf@Qdes
+    _pressure5 = _Pwf_at_Qdes
+    _flowrate5 = (1-0.2*(_pressure5 / 1914) - 0.8 * (_pressure5 / 1914)**2) * 3002.746
+
+    #_flowrate6 = (1-0.2*(Pressure6 / SBHP) - 0.8 * (Pressure6 / SBHP)^2) * Qmax
+    #_pressure6 = 0.6 * SBHP
+    _pressure6 = 0.6 * _sbhp
+    _flowrate6 = (1-0.2*(_pressure6 / 1914) - 0.8 * (_pressure6 / 1914)**2) * 3002.746
+
+    #_flowrate7 = (1-0.2*(Pressure7 / SBHP) - 0.8 * (Pressure7 / SBHP)^2) * Qmax
+    #_pressure7 = 0.8 * SBHP
+    _pressure7 = 0.8 * _sbhp
+    _flowrate7 = (1-0.2*(_pressure7 / 1914) - 0.8 * (_pressure7 / 1914)**2) * 3002.746
+
+    #_flowrate8 = (1-0.2*(Pressure8 / SBHP) - 0.8 * (Pressure8 / SBHP)^2) * Qmax
+    #_pressure8 = SBHP
+    _pressure8 = _sbhp
+    _flowrate8 = (1-0.2*(_pressure8 / 1914) - 0.8 * (_pressure8 / 1914)**2) * 3002.746
+
+    df_ipr_data = pd.DataFrame({'Flow rate': [_flowrate1, _flowrate2, _flowrate3, _flowrate4, _flowrate5 \
+                                , _flowrate6, _flowrate7, _flowrate8],
+                                'Pressure': [_pressure1, _pressure2, _pressure3, _pressure4, _pressure5 \
+                                , _pressure6, _pressure7, _pressure8]})
+    # ---------------------------- until here -----------------------------------------        
+        
     st.write('\n')
     st.title("Calculation")
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
@@ -290,14 +336,14 @@ if id_calc_01:
         fig, ax  = plt.subplots()
 
         # membuat line plot
-        plt.plot(ipr_data['Flow rate, Q (BFPD)'], ipr_data['Pressure (psi)'])
+        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
 
         # set title & label
         plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
         plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
 
         # custom line
-        plot_line = plt.plot(ipr_data['Flow rate, Q (BFPD)'], ipr_data['Pressure (psi)'])
+        plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
         plt.setp(plot_line, color='blue', linestyle='-',  linewidth=0.5, marker='o')
 
         # set start 0 y axis
@@ -307,4 +353,4 @@ if id_calc_01:
         plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
         st.pyplot(fig)            
     with row5_2:
-        st.dataframe(ipr_data, hide_index=True)
+        st.dataframe(df_ipr_data, hide_index=True)
