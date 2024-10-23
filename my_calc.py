@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 st.title("My Calculations")
 
 #open datas
-mycalc = pd.read_csv('mycalc.csv')
+tmycalc = pd.read_csv('tmycalc.csv')
 muserlogin = pd.read_csv('MUserLogin.csv')
 minstrument = pd.read_csv('MInstrument.csv')
 mcalcmethod = pd.read_csv('MCalcMethod.csv')
@@ -18,7 +18,7 @@ mtubingsize = pd.read_csv('MTubingSize.csv')
 mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
 #ipr_data = pd.read_csv('ipr_data.csv')
-#df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
+df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
 
 mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
         m.date_calc, m.id_instrument, i.instrument, m.id_calc_method, c.calc_method, m.id_welltype, \
@@ -28,7 +28,7 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
         s.casing_size, casid.casing_id, tubsize.tubing_size, tubid.tubing_id, \
         tubcoef.type, tubcoef.coefficient, \
         m.liner_id, m.top_liner_at, m.bottom_liner_at \
-        from mycalc m \
+        from tmycalc m \
             left join muserlogin u on m.user_id = u.user_id \
             left join minstrument i on m.id_instrument = i.id_instrument \
             left join mcalcmethod c on m.id_calc_method = c.id_calc_method \
