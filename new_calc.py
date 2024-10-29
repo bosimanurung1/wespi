@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from csv import writer
 
 #open datas
-mnomor1 = pd.read_csv('mnomor1.csv')
+mnomor1 = pd.read_csv('MNomor1.csv')
 tmycalc = pd.read_csv('tmycalc.csv')
 muserlogin = pd.read_csv('MUserLogin.csv')
 minstrument = pd.read_csv('MInstrument.csv')
