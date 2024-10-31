@@ -113,14 +113,12 @@ with row3_2:
     
     st.header("API/Sgo", divider="gray")
     def api_to_sgo():
-        st.session_state.sgo = 141.5/(131.5 + st.session_state.api)
-        st.session_state.sgo = round(st.session_state.sgo, 4)
-        #_sgo = 141.5/(131.5 + _api)
+        st.session_state.sgo = 141.5/(131.5 + st.session_state.api) #disimpan apa adanya aja digit di belakang koma
+        #st.session_state.sgo = round(st.session_state.sgo, 4)
 
     def sgo_to_api():
         st.session_state.api = 141.5/st.session_state.sgo - 131.5
-        st.session_state.api = round(st.session_state.api, 4) 
-        #_api = 141.5/_sgo - 131.5    
+        #st.session_state.api = round(st.session_state.api, 4) #disimpan apa adanya aja digit di belakang koma
         
     # ------------- now how callback work ---------------
     col1, buff, col2 = st.columns([2,1,2])
