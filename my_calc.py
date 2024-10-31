@@ -601,7 +601,7 @@ if id_calc_01:
             #st.write('\n')
             
             st.write('PI (Well Prod-tvt Index)   : ', round(_pi,3), 'BPD')
-            st.write('THP          : ', _whp_hitung, round(_measurement,3), 'TVD')
+            st.write('THP          : ', round(_whp_hitung,3), _measurement, 'TVD')
             #st.write('Di file xls: 345.0997')
             #st.write('Hitung2an WHP:')
             #st.write('WHP = THP * 2.31 / SGFluid')
