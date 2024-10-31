@@ -270,188 +270,200 @@ if id_calc_01:
         # ---------- Counting data for ipr_curve (2Fields, 8Records) ----------------------- 
         #_flowrate1 = (1-0.2*(Pressure1 / SBHP) - 0.8 * (Pressure1 / SBHP)^2) * Qmax
         _pressure1 = 0
-        _flowrate1 = (1-0.2*(_pressure1 / 1914) - 0.8 * (_pressure1 / 1914)**2) * 3002.746
+        _flowrate1 = (1-0.2*(_pressure1 / _sbhp) - 0.8 * (_pressure1 / _sbhp)**2) * _qmax
     
         #_flowrate2 = (1-0.2*(Pressure2 / SBHP) - 0.8 * (Pressure2 / SBHP)^2) * Qmax
         #_pressure2 = (MidPerfo - PSD) * SGFluid / 2.31 + CP
         #_pressure2 = (_MidPerf - _psd) * _sgfluid / 2.31 + _cp 
         _pressure2 = (_MidPerf - _psd) * _sgfluid / 2.31 + _p_casing_hitung # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
-        _flowrate2 = (1-0.2*(_pressure2 / 1914) - 0.8 * (_pressure2 / 1914)**2) * 3002.746
+        _flowrate2 = (1-0.2*(_pressure2 / _sbhp) - 0.8 * (_pressure2 / _sbhp)**2) * _qmax
     
         #_flowrate3 = (1-0.2*(Pressure3 / SBHP) - 0.8 * (Pressure3 / SBHP)^2) * Qmax
         #_pressure3 = 0.2 * SBHP
         _pressure3 = 0.2 * _sbhp
-        _flowrate3 = (1-0.2*(_pressure3 / 1914) - 0.8 * (_pressure3 / 1914)**2) * 3002.746
+        _flowrate3 = (1-0.2*(_pressure3 / _sbhp) - 0.8 * (_pressure3 / _sbhp)**2) * _qmax
     
         #_flowrate4 = (1-0.2*(Pressure4 / SBHP) - 0.8 * (Pressure4 / SBHP)^2) * Qmax
         #_pressure4 = 0.4 * SBHP
         _pressure4 = 0.4 * _sbhp
-        _flowrate4 = (1-0.2*(_pressure4 / 1914) - 0.8 * (_pressure4 / 1914)**2) * 3002.746
+        _flowrate4 = (1-0.2*(_pressure4 / _sbhp) - 0.8 * (_pressure4 / _sbhp)**2) * _qmax
     
         #_flowrate5 = (1-0.2*(Pressure5 / SBHP) - 0.8 * (Pressure5 / SBHP)^2) * Qmax
         #_pressure5 = Pwf@Qdes
         _pressure5 = _Pwf_at_Qdes
-        _flowrate5 = (1-0.2*(_pressure5 / 1914) - 0.8 * (_pressure5 / 1914)**2) * 3002.746
+        _flowrate5 = (1-0.2*(_pressure5 / _sbhp) - 0.8 * (_pressure5 / _sbhp)**2) * _qmax
     
         #_flowrate6 = (1-0.2*(Pressure6 / SBHP) - 0.8 * (Pressure6 / SBHP)^2) * Qmax
         #_pressure6 = 0.6 * SBHP
         _pressure6 = 0.6 * _sbhp
-        _flowrate6 = (1-0.2*(_pressure6 / 1914) - 0.8 * (_pressure6 / 1914)**2) * 3002.746
+        _flowrate6 = (1-0.2*(_pressure6 / _sbhp) - 0.8 * (_pressure6 / _sbhp)**2) * _qmax
     
         #_flowrate7 = (1-0.2*(Pressure7 / SBHP) - 0.8 * (Pressure7 / SBHP)^2) * Qmax
         #_pressure7 = 0.8 * SBHP
         _pressure7 = 0.8 * _sbhp
-        _flowrate7 = (1-0.2*(_pressure7 / 1914) - 0.8 * (_pressure7 / 1914)**2) * 3002.746
+        _flowrate7 = (1-0.2*(_pressure7 / _sbhp) - 0.8 * (_pressure7 / _sbhp)**2) * _qmax
     
         #_flowrate8 = (1-0.2*(Pressure8 / SBHP) - 0.8 * (Pressure8 / SBHP)^2) * Qmax
         #_pressure8 = SBHP
         _pressure8 = _sbhp
-        _flowrate8 = (1-0.2*(_pressure8 / 1914) - 0.8 * (_pressure8 / 1914)**2) * 3002.746
+        _flowrate8 = (1-0.2*(_pressure8 / _sbhp) - 0.8 * (_pressure8 / _sbhp)**2) * _qmax
     
         df_ipr_data = pd.DataFrame({'Flow rate': [_flowrate1, _flowrate2, _flowrate3, _flowrate4, _flowrate5 \
                                     , _flowrate6, _flowrate7, _flowrate8],
                                     'Pressure': [_pressure1, _pressure2, _pressure3, _pressure4, _pressure5 \
                                     , _pressure6, _pressure7, _pressure8]})
+            
+        df_ipr_data = df_ipr_data.sort_values(by=['Flow rate', 'Pressure'], ascending=[False, True])
+        # ---------------------------- until here -----------------------------------------        
+
+        # ---------- Counting data for Flowrate di PSD (2Fields, 4Records) ----------------------- 
+        _pressure1b = _pressure2
+        _flowrate1b = 0
+        
+        _pressure2b = _pressure2
+        _flowrate2b = _flowrate2
+        
+        _pressure3b = _pressure2b
+        _flowrate3b = _flowrate2b
+        
+        _pressure4b = 0
+        _flowrate4b = _flowrate2b
+        
+        df_flowrate_psd = pd.DataFrame({'Flow rate': [_flowrate1b, _flowrate2b, _flowrate3b, _flowrate4b],
+                'Pressure': [_pressure1b, _pressure2b, _pressure3b, _pressure4b]})
+            
+        df_flowrate_psd = df_flowrate_psd.sort_values(by=['Flow rate', 'Pressure'], ascending=[True, False])
         # ---------------------------- until here -----------------------------------------        
     
         st.write('\n')
         st.title("Calculation")
         col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
         with col1:
-            _Pwf_at_Qdes = round(_Pwf_at_Qdes, 2) # jadi 786.7571 yg sblmnya 786.757076405096
-            _composite_sg = round(_composite_sg, 2) # sblmnya 0.490559258022
-            st.write("Pwf@Qdes: ", _Pwf_at_Qdes, 'psi')
-            st.write('Qdes         : ', _qdes, 'BPD')
-            st.write('Composite SG : ', _composite_sg) #, '(selisih/beda 0.0003 lbh kecil)')
-            #st.write('Di file xls: 0.490859')
-            #st.write('\n')
-    
-            _wfl = round(_wfl, 2) # sblmnya 4743.3883109093
-            st.write('PSD          : ', _psd, _measurement, 'TVD')
-            st.write('WFL          : ', _wfl, _measurement, 'TVD')
-            #st.write('Di file xls: 4744.936')
-            #st.write('Hitung2an:')
-            #st.write('WFL = PSD - (PIP * 2.31 / SGFluid)')
-            #st.write('=', _psd, '- ((', _pip, '* 2.31) /', _sgfluid)
-            #st.write('=', _psd, '-', (_pip * 2.31), '/', _sgfluid)
-            #st.write('=', _psd, '-', (_pip * 2.31) / _sgfluid)
-            #st.write('=', round(_psd - (_pip * 2.31) / _sgfluid, 2), '(selisih/beda 1.6 lbh kecil)')
-            #st.write('\n')
-            
-            _qmax = round(_qmax, 2)
-            _whp_hitung = round(_whp_hitung, 2)
-            st.write('Qmax         : ', _qmax, 'BPD')
-            st.write('WHP          : ', _whp_hitung, _measurement, 'TVD')
-            #st.write('Di file xls: 345.0997')
-            #st.write('Hitung2an WHP:')
-            #st.write('WHP = THP * 2.31 / SGFluid')
-            #st.write('= (', _whp, '* 2.31) /', _sgfluid)
-            #st.write('=', _whp * 2.31, '/', _sgfluid)
-            #st.write('=', round((_whp * 2.31) / _sgfluid, 2), '(selisih/beda 0.3 lbh besar)')
-            #st.write('\n')
-    
-            _sgfluid = round(_sgfluid, 4)
-            #st.write('SG Fluid = WC * SGw + (1 - WC) * Sgo')
-            #st.write('= (', _wc, '/100) * ', _sgw, '+ (1 - (',  _wc, '/100)) * ', _sgo)
-            #st.write('= ', _wc/100,' * ', _sgw, '+ (1 - ', _wc/100, ') * ', _sgo)
-            #st.write('= ', _wc/100,' * ', _sgw, '+ ', 1 - (_wc/100), ' * ', _sgo)
-            #st.write('= ', (_wc/100) * _sgw, '+ ', (1 - (_wc/100)) * _sgo)
-            #_sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
-            st.write('SG Fluid     : ', _sgfluid) #, '(selisih/beda 0.001 lbh kecil)')
-            #st.write('Di file xls: 1.004')
-            #st.write('\n')
-                    
-            _pip = round(_pip, 2)
-            st.write('PIP          : ', _pip, 'psi')
-            #st.write('Di file xls: 523.7896')
-            #st.write('Hitung2an:')
-            #st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
-            #st.write('MidPerf = 0.5(TopPerfoTVD + BottomPerfoTVD)')
-            #st.write('= 0.5 (', _top_perfo_tvd, '+ ', _bottom_perfo_tvd, ')')
-            #st.write('= 0.5 (', _top_perfo_tvd + _bottom_perfo_tvd, ')')        
-            #st.write('=', 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd))
-            #st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
-            #st.write('= ', _Pwf_at_Qdes, '- (', _MidPerf, '- ', _psd, ') * (',  _sgfluid, '/ 2.31)') 
-            #st.write('=', _Pwf_at_Qdes, '-', _MidPerf - _psd, '*',  _sgfluid/2.31 )
-            #st.write('=', _Pwf_at_Qdes, '-', (_MidPerf - _psd) * (_sgfluid/2.31) )
-            #st.write('=', round(_Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)), 2), 'psi (selisih/beda 0.3 lbh besar)')
-            #_pip = _Pwf_at_Qdes - (_MidPerf - _psd) * (_sgfluid/2.31) 
-    
+           st.write("Pwf@Qdes: ", round(_Pwf_at_Qdes,3), 'psi')
+           st.write('Qdes         : ', _qdes, 'BPD')
+           st.write('Composite SG : ', round(_composite_sg,3)) #, '(selisih/beda 0.0003 lbh kecil)')
+           #st.write('Di file xls: 0.490859')
+           #st.write('\n')
+        
+           st.write('PSD          : ', _psd, _measurement, 'TVD')
+           st.write('WFL          : ', round(_wfl,3), _measurement, 'TVD')
+           #st.write('Di file xls: 4744.936')
+           #st.write('Hitung2an:')
+           #st.write('WFL = PSD - (PIP * 2.31 / SGFluid)')
+           #st.write('=', _psd, '- ((', _pip, '* 2.31) /', _sgfluid)
+           #st.write('=', _psd, '-', (_pip * 2.31), '/', _sgfluid)
+           #st.write('=', _psd, '-', (_pip * 2.31) / _sgfluid)
+           #st.write('=', round(_psd - (_pip * 2.31) / _sgfluid, 2), '(selisih/beda 1.6 lbh kecil)')
+           #st.write('\n')
+           
+           st.write('Qmax         : ', round(_qmax,3), 'BPD')
+           st.write('WHP          : ', round(_whp_hitung,3), _measurement, 'TVD')
+           #st.write('Di file xls: 345.0997')
+           #st.write('Hitung2an WHP:')
+           #st.write('WHP = THP * 2.31 / SGFluid')
+           #st.write('= (', _whp, '* 2.31) /', _sgfluid)
+           #st.write('=', _whp * 2.31, '/', _sgfluid)
+           #st.write('=', round((_whp * 2.31) / _sgfluid, 2), '(selisih/beda 0.3 lbh besar)')
+           #st.write('\n')
+        
+           #st.write('SG Fluid = WC * SGw + (1 - WC) * Sgo')
+           #st.write('= (', _wc, '/100) * ', _sgw, '+ (1 - (',  _wc, '/100)) * ', _sgo)
+           #st.write('= ', _wc/100,' * ', _sgw, '+ (1 - ', _wc/100, ') * ', _sgo)
+           #st.write('= ', _wc/100,' * ', _sgw, '+ ', 1 - (_wc/100), ' * ', _sgo)
+           #st.write('= ', (_wc/100) * _sgw, '+ ', (1 - (_wc/100)) * _sgo)
+           #_sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
+           st.write('SG Fluid     : ', round(_sgfluid,3))
+           #st.write('Di file xls: 1.004')
+           #st.write('\n')
+           
+           st.write('PIP          : ', round(_pip,3), 'psi')
+           #st.write('Di file xls: 523.7896')
+           #st.write('Hitung2an:')
+           #st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
+           #st.write('MidPerf = 0.5(TopPerfoTVD + BottomPerfoTVD)')
+           #st.write('= 0.5 (', _top_perfo_tvd, '+ ', _bottom_perfo_tvd, ')')
+           #st.write('= 0.5 (', _top_perfo_tvd + _bottom_perfo_tvd, ')')        
+           #st.write('=', 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd))
+           #st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
+           #st.write('= ', _Pwf_at_Qdes, '- (', _MidPerf, '- ', _psd, ') * (',  _sgfluid, '/ 2.31)') 
+           #st.write('=', _Pwf_at_Qdes, '-', _MidPerf - _psd, '*',  _sgfluid/2.31 )
+           #st.write('=', _Pwf_at_Qdes, '-', (_MidPerf - _psd) * (_sgfluid/2.31) )
+           #st.write('=', round(_Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)), 2), 'psi (selisih/beda 0.3 lbh besar)')
+           #_pip = _Pwf_at_Qdes - (_MidPerf - _psd) * (_sgfluid/2.31) 
+        
         with col2:
-            _friction_loss = round(_friction_loss, 2)
-            _persen_free_gas = round(_persen_free_gas, 2)
-            st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
-            st.write('Friction Loss: ', _friction_loss, _measurement, 'TVD')
-            st.write('% Free Gas     : ', _persen_free_gas, '%')
-            #st.write('Di file xls: 51.80 %')
-            #st.write('Hitung2an % Free Gas:')
-            #st.write('Free Gas = (Vg / Vt) * 100')
-            #st.write('= (', _Vg, '/', _Vt, ') * 100')
-            #st.write('=', round((_Vg / _Vt) * 100, 2), '(selisih/beda 0.01 lbh kecil)')
-            #st.write('\n')
-    
-            _tdh = round(_tdh, 2)
-            st.write('TDH            : ', _tdh, _measurement, 'TVD')
-            #st.write('Di file xls: 5376.58')
-            #st.write('Hitung2an TDH:')
-            #st.write('= WFL + WHP + CP + FrictionLoss')
-            #st.write('CP Optional, bila tdk dinput, defaultnya nol')
-            #st.write('=', _wfl, '+', _whp_hitung, '+', _cp, '+', _friction_loss)
-            #st.write('=', round(_wfl + _whp_hitung + _cp + _friction_loss, 2), '(selisih/beda 1.2 lbh kecil)')
-            #st.write('\n')
-    
-            _fluid_over_pump = round(_fluid_over_pump, 2)
-            st.write('SBHP           : ', _sbhp, 'psig')
-            st.write('Fluid Over Pump: ', _fluid_over_pump, _measurement, 'TVD')
-            #st.write('Di file xls: 1205.1334')
-            #st.write('Hitung2an Fluid Over Pump:')
-            #st.write('= (PIP - CP) * 2.31 / SGFluid')
-            #st.write('= ((', _pip, '-', _cp, ') * 2.31) /', _sgfluid)
-            #st.write('= (', _pip - _cp, '* 2.31) /', _sgfluid)
-            #st.write('=', (_pip - _cp) * 2.31, '/', _sgfluid)
-            #st.write('=', round(((_pip - _cp) * 2.31) / _sgfluid, 2), '(selisih/beda 1.48 lbh besar)')
-            #st.write('\n')
-    
-            _fluid_gradient = round(_fluid_gradient, 2)
-            st.write('FBHP           : ', _fbhp, 'psig')
-            st.write('Fluid Gradient : ', _fluid_gradient, 'psi/', _measurement, 'TVD')
-            #st.write('Di file xls: 0.43463 (selisih/beda 0.0004 lbh kecil)')
+           st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
+           st.write('Friction Loss: ', round(_friction_loss,3), _measurement, 'TVD')
+           st.write('% Free Gas     : ', round(_persen_free_gas,3), '%')
+           #st.write('Di file xls: 51.80 %')
+           #st.write('Hitung2an % Free Gas:')
+           #st.write('Free Gas = (Vg / Vt) * 100')
+           #st.write('= (', _Vg, '/', _Vt, ') * 100')
+           #st.write('=', round((_Vg / _Vt) * 100, 2), '(selisih/beda 0.01 lbh kecil)')
+           #st.write('\n')
+        
+           st.write('TDH            : ', round(_tdh,3), _measurement, 'TVD')
+           #st.write('Di file xls: 5376.58')
+           #st.write('Hitung2an TDH:')
+           #st.write('= WFL + WHP + CP + FrictionLoss')
+           #st.write('CP Optional, bila tdk dinput, defaultnya nol')
+           #st.write('=', _wfl, '+', _whp_hitung, '+', _cp, '+', _friction_loss)
+           #st.write('=', round(_wfl + _whp_hitung + _cp + _friction_loss, 2), '(selisih/beda 1.2 lbh kecil)')
+           #st.write('\n')
+        
+           st.write('SBHP           : ', _sbhp, 'psig')
+           st.write('Fluid Over Pump: ', round(_fluid_over_pump,3), _measurement, 'TVD')
+           #st.write('Di file xls: 1205.1334')
+           #st.write('Hitung2an Fluid Over Pump:')
+           #st.write('= (PIP - CP) * 2.31 / SGFluid')
+           #st.write('= ((', _pip, '-', _cp, ') * 2.31) /', _sgfluid)
+           #st.write('= (', _pip - _cp, '* 2.31) /', _sgfluid)
+           #st.write('=', (_pip - _cp) * 2.31, '/', _sgfluid)
+           #st.write('=', round(((_pip - _cp) * 2.31) / _sgfluid, 2), '(selisih/beda 1.48 lbh besar)')
+           #st.write('\n')
+        
+           st.write('FBHP           : ', _fbhp, 'psig')
+           st.write('Fluid Gradient : ', round(_fluid_gradient,3), 'psi/', _measurement, 'TVD')
+           #st.write('Di file xls: 0.43463 (selisih/beda 0.0004 lbh kecil)')
     
         st.write('\n')
         st.title("Inflow Performance Relationships")    
-        #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
-        #with row5_1:
+        row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
+        with row5_1:
         # perbesar figsize
         #plt.figure(figsize=(20,10))
         #plt.figure(figsize=(10,5))
-        plt.figure(figsize=(5,2))
+            plt.figure(figsize=(5,2))
+    
+            fig, ax  = plt.subplots()
 
-        fig, ax  = plt.subplots()
-
-        # membuat line plot
-        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:')
-
-        # set title & label
-        plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
-        plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
-
-        # custom line
-        plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-        #plt.setp(plot_line, color='blue', linestyle='-',  linewidth=0.5, marker='o•')
-        plt.setp(plot_line, color='red', linestyle='-',  linewidth=0.1, marker='o') 
-
-        # set start 0 y axis
-        plt.ylim(ymin=0)
-        plt.xlim(xmin=0)
-
-        # set grid
-        #plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
-        plt.grid(color='darkgray', linestyle=':', linewidth=0.3)
-
-        st.pyplot(fig)
-    #with row5_2:
-    #    st.dataframe(df_ipr_data, hide_index=True)
-    #    st.write('')
+            # membuat line plot for IPR
+            plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:') 
+            # membuat line plot for PSD
+            plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure'], 'ob:')
+         
+            # set title & label
+            plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
+            plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
+         
+            # custom line
+            plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure']) # for IPR
+            plot_line2 = plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure']) # for PSD
+            plt.setp(plot_line, color='red', linestyle=':',  linewidth=0.1, marker='o') # for IPR
+            plt.setp(plot_line2, color='blue', linestyle=':',  linewidth=0.1, marker='o') # for PSD
+    
+            # set start 0 y axis
+            plt.ylim(ymin=0)
+            plt.xlim(xmin=0)
+    
+            # set grid
+            #plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
+            plt.grid(color='darkgray', linestyle=':', linewidth=0.3)
+    
+            st.pyplot(fig)
+        with row5_2:
+            st.dataframe(df_ipr_data, hide_index=True)
+            st.write('')
     
     elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
         #Hitung2an Calculation sblm IPR Curve
@@ -538,33 +550,47 @@ if id_calc_01:
         _fluid_gradient = _sgfluid/2.31
     
         # ---------- Counting data for ipr_curve (2Fields, 2Records) ----------------------- 
-        _settingDepth_or_PSD = 262.967487
+        _qmax = _sbhp * _pi               
+        
         _flowrate1 = 0 
-        _pressure1 = _settingDepth_or_PSD
-    
-        _qmax = _sbhp * _pi
-        _flowrate2 = _qmax * 1.05
-        _pressure2 = _settingDepth_or_PSD
+        _pressure1 = _sbhp
+        
+        _flowrate2 = _qmax
+        _pressure2 = 0
         
         df_ipr_data = pd.DataFrame({'Flow rate': [_flowrate1, _flowrate2],
                                     'Pressure': [_pressure1, _pressure2]})
+        
+        df_ipr_data = df_ipr_data.sort_values(by=['Flow rate', 'Pressure'], ascending=[False, True])
+        # ---------------------------- until here -----------------------------------------        
+
+        # ---------- Counting data for Flowrate di PSD (2Fields, 2Records) ----------------------- 
+        #_settingDepth_or_PSD = 262.967487
+        
+        _flowrate1b = _flowrate1
+        _pressure1b = (_MidPerf - _psd) * _sgfluid / 2.31 + _p_casing_hitung # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing        
+        
+        _flowrate2b = _qmax * 1.05
+        _pressure2b = _pressure1b        
+        
+        df_flowrate_psd = pd.DataFrame({'Flow rate': [_flowrate1b, _flowrate2b],
+                'Pressure': [_pressure1b, _pressure2b]})
+            
+        df_flowrate_psd = df_flowrate_psd.sort_values(by=['Flow rate', 'Pressure'], ascending=[True, False])
         # ---------------------------- until here -----------------------------------------        
     
         st.write('\n')
         st.title("Calculation")
         col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
         with col1:
-            _Pwf_at_Qdes = round(_Pwf_at_Qdes, 2) # jadi 786.7571 yg sblmnya 786.757076405096
-            _composite_sg = round(_composite_sg, 2) # sblmnya 0.490559258022
-            st.write("Pwf@Qdes: ", _Pwf_at_Qdes, 'psi')
+            st.write("Pwf@Qdes: ", round(_Pwf_at_Qdes,3), 'psi')
             st.write('Qdes         : ', _qdes, 'BPD')
-            st.write('Composite SG : ', _composite_sg) #, '(selisih/beda 0.0003 lbh kecil)')
+            st.write('Composite SG : ', round(_composite_sg,3)) #, '(selisih/beda 0.0003 lbh kecil)')
             #t.write('Di file xls: 0.490859')
             #st.write('\n')
     
-            _wfl = round(_wfl, 2) # sblmnya 4743.3883109093
             st.write('PSD          : ', _psd, _measurement, 'TVD')
-            st.write('Vertical Lift (Hd)  : ', _wfl, _measurement, 'TVD')
+            st.write('Vertical Lift (Hd)  : ', round(_wfl,3), _measurement, 'TVD')
             #st.write('Di file xls: 4744.936')
             #st.write('Hitung2an:')
             #st.write('WFL = PSD - (PIP * 2.31 / SGFluid)')
@@ -574,10 +600,8 @@ if id_calc_01:
             #st.write('=', round(_psd - (_pip * 2.31) / _sgfluid, 2), '(selisih/beda 1.6 lbh kecil)')
             #st.write('\n')
             
-            _pi = round(_pi, 2)
-            _whp_hitung = round(_whp_hitung, 2)
-            st.write('PI (Well Prod-tvt Index)   : ', _pi, 'BPD')
-            st.write('THP          : ', _whp_hitung, _measurement, 'TVD')
+            st.write('PI (Well Prod-tvt Index)   : ', round(_pi,3), 'BPD')
+            st.write('THP          : ', _whp_hitung, round(_measurement,3), 'TVD')
             #st.write('Di file xls: 345.0997')
             #st.write('Hitung2an WHP:')
             #st.write('WHP = THP * 2.31 / SGFluid')
@@ -586,19 +610,17 @@ if id_calc_01:
             #st.write('=', round((_whp * 2.31) / _sgfluid, 2), '(selisih/beda 0.3 lbh besar)')
             #st.write('\n')
     
-            _sgfluid = round(_sgfluid, 4)
             #st.write('SG Fluid = WC * SGw + (1 - WC) * Sgo')
             #st.write('= (', _wc, '/100) * ', _sgw, '+ (1 - (',  _wc, '/100)) * ', _sgo)
             #st.write('= ', _wc/100,' * ', _sgw, '+ (1 - ', _wc/100, ') * ', _sgo)
             #st.write('= ', _wc/100,' * ', _sgw, '+ ', 1 - (_wc/100), ' * ', _sgo)
             #st.write('= ', (_wc/100) * _sgw, '+ ', (1 - (_wc/100)) * _sgo)
             #_sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
-            st.write('SG Fluid     : ', _sgfluid) #, '(selisih/beda 0.001 lbh kecil)')
+            st.write('SG Fluid     : ', round(_sgfluid,3)) #, '(selisih/beda 0.001 lbh kecil)')
             #st.write('Di file xls: 1.004')
             #st.write('\n')
                     
-            _pip = round(_pip, 2)
-            st.write('PIP          : ', _pip, 'psi')
+            st.write('PIP          : ', round(_pip,3), 'psi')
             #st.write('Di file xls: 523.7896')
             #st.write('Hitung2an:')
             #st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
@@ -614,11 +636,9 @@ if id_calc_01:
             #_pip = _Pwf_at_Qdes - (_MidPerf - _psd) * (_sgfluid/2.31) 
     
         with col2:
-            _friction_loss = round(_friction_loss, 2)
-            _persen_free_gas = round(_persen_free_gas, 2)
             st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
-            st.write('Friction Loss: ', _friction_loss, _measurement, 'TVD')
-            st.write('% Free Gas     : ', _persen_free_gas, '%')
+            st.write('Friction Loss: ', round(_friction_loss,3), _measurement, 'TVD')
+            st.write('% Free Gas     : ', round(_persen_free_gas,3), '%')
             #st.write('Di file xls: 51.80 %')
             #st.write('Hitung2an % Free Gas:')
             #st.write('Free Gas = (Vg / Vt) * 100')
@@ -626,8 +646,7 @@ if id_calc_01:
             #st.write('=', round((_Vg / _Vt) * 100, 2), '(selisih/beda 0.01 lbh kecil)')
             #st.write('\n')
     
-            _tdh = round(_tdh, 2)
-            st.write('TDH            : ', _tdh, _measurement, 'TVD')
+            st.write('TDH            : ', round(_tdh,3), _measurement, 'TVD')
             #st.write('Di file xls: 5376.58')
             #st.write('Hitung2an TDH:')
             #st.write('= WFL + WHP + CP + FrictionLoss')
@@ -636,9 +655,8 @@ if id_calc_01:
             #st.write('=', round(_wfl + _whp_hitung + _cp + _friction_loss, 2), '(selisih/beda 1.2 lbh kecil)')
             #st.write('\n')
     
-            _fluid_over_pump = round(_fluid_over_pump, 2)
             st.write('SBHP           : ', _sbhp, 'psig')
-            st.write('Fluid Over Pump: ', _fluid_over_pump, _measurement, 'TVD')
+            st.write('Fluid Over Pump: ', round(_fluid_over_pump,3), _measurement, 'TVD')
             #st.write('Di file xls: 1205.1334')
             #st.write('Hitung2an Fluid Over Pump:')
             #st.write('= (PIP - CP) * 2.31 / SGFluid')
@@ -648,9 +666,8 @@ if id_calc_01:
             #st.write('=', round(((_pip - _cp) * 2.31) / _sgfluid, 2), '(selisih/beda 1.48 lbh besar)')
             #st.write('\n')
     
-            _fluid_gradient = round(_fluid_gradient, 2)
             st.write('FBHP           : ', _fbhp, 'psig')
-            st.write('Fluid Gradient : ', _fluid_gradient, 'psi/', _measurement, 'TVD')
+            st.write('Fluid Gradient : ', round(_fluid_gradient,3), 'psi/', _measurement, 'TVD')
             #st.write('Di file xls: 0.43463 (selisih/beda 0.0004 lbh kecil)')
     
         st.write('\n')
@@ -663,16 +680,20 @@ if id_calc_01:
 
         fig, ax  = plt.subplots()
 
-        # membuat line plot
-        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:')
-
+        # membuat line plot for IPR
+        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:') 
+        # membuat line plot for PSD
+        plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure'], 'ob:')
+     
         # set title & label
         plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
         plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
-
+     
         # custom line
-        plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-        plt.setp(plot_line, color='red', linestyle=':',  linewidth=0.1, marker='o')
+        plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure']) # for IPR
+        plot_line2 = plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure']) # for PSD
+        plt.setp(plot_line, color='red', linestyle=':',  linewidth=0.1, marker='o') # for IPR
+        plt.setp(plot_line2, color='blue', linestyle=':',  linewidth=0.1, marker='o') # for PSD
 
         # set start 0 y axis
         plt.ylim(ymin=0)
