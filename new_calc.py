@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from csv import writer
 
 #open datas
-mnomor1 = pd.read_csv('MNomor1.csv')
+mnomor1 = pd.read_csv('mnomor1.csv')
 tmycalc = pd.read_csv('tmycalc.csv')
 muserlogin = pd.read_csv('MUserLogin.csv')
 minstrument = pd.read_csv('MInstrument.csv')
@@ -98,8 +98,8 @@ with row3_1:
     _sgg = st.number_input('SGg', 0.00, None, 'min', 1.00, format="%0.2f")
     _qdes = st.number_input('Qdes (BPD)', 0.00, None, 'min', 1.00, format="%0.2f")
     _psd = st.number_input(f'PSD ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
-    _whp = st.number_input('WHP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
     _psd_md = st.number_input(f'PSD ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")    
+    _whp = st.number_input('WHP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
 
 with row3_2:
     _p_casing = _pb = cp = 0.01
@@ -108,7 +108,8 @@ with row3_2:
     st.header("Basic Data (Optional)", divider="gray")
     _p_casing = st.number_input('P. Casing (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
     _pb = st.number_input('Pb (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
-    _cp = st.number_input('CP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
+    #_cp = st.number_input('CP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
+    # cp itu sama dgn p.casing, jadi utk hitung cp gunakan p.casing
     
     st.header("API/Sgo", divider="gray")
     def api_to_sgo():
@@ -164,27 +165,15 @@ with row3_2:
     _tubing_id_list = mycalc_temp['tubing_id'].unique().tolist() 
 
     _tubing_id = st.selectbox("Tubing ID (inch)", _tubing_id_list)
-    mycalc_temp = mtubingid.loc[mtubingid['tubing_id']==_tubing_id] .reset_index(drop=True)
+    mycalc_temp = mtubingid.loc[mtubingid['tubing_id']==_tubing_id].reset_index(drop=True)
     _id_tubing_id = mycalc_temp['id_tubing_id'].values[0]
-
-    _id_tubing_coeff_list = mtubingcoeff['id_tubing_coeff'].unique().tolist()         
+        
     _tubing_coeff_list = mtubingcoeff['type'].unique().tolist()     
-    _coefficient_list = mtubingcoeff['coefficient'].unique().tolist()   
-    #Using list comprehension to change list of numbers to list of string
-    string_coefficient_list = [str(x) for x in _coefficient_list] # -> now means casing drift id
-    df_tubing_coeff_type = pd.DataFrame({
-        'ID': _id_tubing_coeff_list,
-        'Type': _tubing_coeff_list,
-        'Coefficient': string_coefficient_list})    
-    df_tubing_coeff_type['Combined'] = df_tubing_coeff_type['Type'] + ' - ' + df_tubing_coeff_type['Coefficient']
-    _tubing_coeff_type = st.selectbox("Tubing Coeffisien Type & Coefficient", df_tubing_coeff_type['Combined'], 1)
-
-    indexrow = df_tubing_coeff_type.loc[df_tubing_coeff_type['Combined']==_tubing_coeff_type].index[0]
-    st.session_state._id_tubing_coeff_type = indexrow + 1 # -> ditambah 1 krn index df_casing_size dimulai dari 0
-    therecord = mtubingcoeff.loc[mtubingcoeff['id_tubing_coeff']==st.session_state._id_tubing_coeff_type].reset_index(drop=True)
-    st.session_state._id_tubing_coeff = therecord['id_tubing_coeff'].values[0]
-    st.session_state._tubing_coeff_type = therecord['type'].values[0]
-    st.session_state._coefficient = therecord['coefficient'].values[0]
+    _tubing_coeff_type = st.selectbox("Tubing Coeffisien Type", _tubing_coeff_list) #dont have 2 be like casing size
+    mycalc_temp = mtubingcoeff.loc[mtubingcoeff['type']==_tubing_coeff_type].reset_index(drop=True)
+    st.session_state._id_tubing_coeff = mycalc_temp['id_tubing_coeff'].values[0]    
+    st.session_state._tubing_coeff_type = mycalc_temp['type'].values[0]
+    st.session_state._coefficient = mycalc_temp['coefficient'].values[0]
     st.write('\n')            
     
     st.header("Liner", divider="gray")
@@ -320,10 +309,12 @@ if st.button("Save"):
         _persen_free_gas = (_Vg / _Vt) * 100
         
         # TDH = sum(WFL, WHP, CP, FrictionLoss)  --> CP (Optional, bila tdk dinput, defaultnya nol) 
-        _tdh = _wfl + _whp_hitung + _cp + _friction_loss
+        #tdh = _wfl + _whp_hitung + _cp + _friction_loss
+        _tdh = _wfl + _whp_hitung + _p_casing_hitung + _friction_loss  # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
         
         #Fluid Over Pump = (PIP-CP)*2.31/SGFluid
-        _fluid_over_pump = (_pip - _cp)*2.31/_sgfluid
+        #_fluid_over_pump = (_pip - _cp)*2.31/_sgfluid
+        _fluid_over_pump = (_pip - _p_casing_hitung)*2.31/_sgfluid # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
         
         # Fluid Gradient = SGFluid/2.31
         _fluid_gradient = _sgfluid/2.31
@@ -335,7 +326,8 @@ if st.button("Save"):
         
         #_flowrate2 = (1-0.2*(Pressure2 / SBHP) - 0.8 * (Pressure2 / SBHP)^2) * Qmax
         #_pressure2 = (MidPerfo - PSD) * SGFluid / 2.31 + CP
-        _pressure2 = (_MidPerf - _psd) * _sgfluid / 2.31 + _cp
+        #_pressure2 = (_MidPerf - _psd) * _sgfluid / 2.31 + _cp 
+        _pressure2 = (_MidPerf - _psd) * _sgfluid / 2.31 + _p_casing_hitung # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
         _flowrate2 = (1-0.2*(_pressure2 / 1914) - 0.8 * (_pressure2 / 1914)**2) * 3002.746
         
         #_flowrate3 = (1-0.2*(Pressure3 / SBHP) - 0.8 * (Pressure3 / SBHP)^2) * Qmax
@@ -512,7 +504,7 @@ if st.button("Save"):
         new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                           _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                           _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
-                          _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
+                          _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
                           st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
                           st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]                               
         with open('tmycalc.csv', mode='a', newline='') as f_object:
@@ -610,11 +602,13 @@ if st.button("Save"):
         _persen_free_gas = (_Vg / _Vt) * 100
     
         # TDH = sum(WFL, WHP, CP, FrictionLoss)  --> CP (Optional, bila tdk dinput, defaultnya nol) 
-        _tdh = _wfl + _whp_hitung + _cp + _friction_loss
-    
+        #_tdh = _wfl + _whp_hitung + _cp + _friction_loss 
+        _tdh = _wfl + _whp_hitung + _p_casing_hitung + _friction_loss  # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
+        
         #Fluid Over Pump = (PIP-CP)*2.31/SGFluid
-        _fluid_over_pump = (_pip - _cp)*2.31/_sgfluid
-    
+        #_fluid_over_pump = (_pip - _cp)*2.31/_sgfluid # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
+        _fluid_over_pump = (_pip - _p_casing_hitung)*2.31/_sgfluid # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
+        
         # Fluid Gradient = SGFluid/2.31
         _fluid_gradient = _sgfluid/2.31
     
@@ -768,7 +762,7 @@ if st.button("Save"):
         new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                          _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                          _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
-                         _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
+                         _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
                          st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
                          st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]                               
         with open('tmycalc.csv', mode='a', newline='') as f_object:
