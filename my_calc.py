@@ -3,6 +3,7 @@ import pandas as pd
 import pandasql as ps
 import matplotlib.pyplot as plt
 from st_aggrid import AgGrid
+from st_aggrid.grid_options_builder import GridOptionsBuilder
 
 #@st.dialog("ID Calculation")
 #def show_id_form():
@@ -27,7 +28,7 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
         m.date_calc, m.id_instrument, i.instrument, m.id_calc_method, c.calc_method, m.id_welltype, \
         w.welltype, m.id_measurement, meas.measurement, m.comment_or_info, m.top_perfo_tvd, m.top_perfo_md, \
         m.bottom_perfo_tvd, m.bottom_perfo_md, m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, \
-        m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, m.p_casing, m.pb, m.cp, m.api, m.sgo, \
+        m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, m.p_casing, m.pb, m.api, m.sgo, \
         s.casing_size, s.casing_drift_id, tubsize.tubing_size, tubid.tubing_id, \
         tubcoef.type, tubcoef.coefficient, m.liner_id, m.top_liner_at, m.bottom_liner_at \
         from tmycalc m \
@@ -41,7 +42,24 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
             left join mtubingid tubid on m.id_tubing_id = tubid.id_tubing_id \
             left join mtubingcoeff tubcoef on m.id_tubing_coeff = tubcoef.id_tubing_coeff") 
 
-AgGrid(mycalc3)
+gd = GridOptionsBuilder.from_dataframe(mycalc3)
+gd.configure_pagination(enabled=True)
+#gd.configure_default_column(editable=True, groupable=True)
+
+#sel_mode = st.radio('Selection Type', options=['single', 'multiple'])
+#gd.configure_selection(selection_mode=sel_mode, use_checkbox=True)
+gd.configure_selection(use_checkbox=True)
+gridoptions = gd.build()
+
+#AgGrid(mycalc3, gridOptions=gridoptions)
+bs_grid_table = AgGrid(mycalc3, gridOptions=gridoptions,
+                        enable_enterprise_modul=True,
+                        height=500,
+                        allow_unsafe_jscode=True,
+                        theme='alpine')
+sel_row = bs_grid_table["selected_rows"]
+#if not sel_row.empty:
+#    st.dataframe(sel_row, hide_index=True)
 
 id_calc_01=0
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
@@ -112,7 +130,7 @@ if id_calc_01:
     _sgw=mycalc4['sgw'].values[0]; _sgg=mycalc4['sgg'].values[0]; _qdes=mycalc4['qdes'].values[0]
     _psd=mycalc4['psd'].values[0]; _whp=mycalc4['whp'].values[0]; _psd_md=mycalc4['psd_md'].values[0]
     
-    _p_casing=mycalc4['p_casing'].values[0]; _pb=mycalc4['pb'].values[0]; _cp=mycalc4['cp'].values[0]        
+    _p_casing=mycalc4['p_casing'].values[0]; _pb=mycalc4['pb'].values[0];       
     _api=mycalc4['api'].values[0]; _sgo=mycalc4['sgo'].values[0]
 
     _casing_size=mycalc4['casing_size'].values[0]; _casing_id=mycalc4['casing_drift_id'].values[0]
@@ -148,7 +166,6 @@ if id_calc_01:
         st.header("Basic Data (Optional)", divider="gray")
         st.write('P. Casing    : ', _p_casing, 'psi')
         st.write('Pb           : ', _pb, 'psig')
-        st.write('CP           : ', _cp, 'psi')
     with row3_2:
         st.header("API/Sgo", divider="gray")
         st.write('API          : ', _api)
@@ -240,10 +257,12 @@ if id_calc_01:
         _persen_free_gas = (_Vg / _Vt) * 100
     
         # TDH = sum(WFL, WHP, CP, FrictionLoss)  --> CP (Optional, bila tdk dinput, defaultnya nol) 
-        _tdh = _wfl + _whp_hitung + _cp + _friction_loss
+        #_tdh = _wfl + _whp_hitung + _cp + _friction_loss
+        _tdh = _wfl + _whp_hitung + _p_casing_hitung + _friction_loss # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
     
         #Fluid Over Pump = (PIP-CP)*2.31/SGFluid
-        _fluid_over_pump = (_pip - _cp)*2.31/_sgfluid
+        #_fluid_over_pump = (_pip - _cp)*2.31/_sgfluid
+        _fluid_over_pump = (_pip - _p_casing_hitung)*2.31/_sgfluid # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
     
         # Fluid Gradient = SGFluid/2.31
         _fluid_gradient = _sgfluid/2.31
@@ -255,7 +274,8 @@ if id_calc_01:
     
         #_flowrate2 = (1-0.2*(Pressure2 / SBHP) - 0.8 * (Pressure2 / SBHP)^2) * Qmax
         #_pressure2 = (MidPerfo - PSD) * SGFluid / 2.31 + CP
-        _pressure2 = (_MidPerf - _psd) * _sgfluid / 2.31 + _cp
+        #_pressure2 = (_MidPerf - _psd) * _sgfluid / 2.31 + _cp 
+        _pressure2 = (_MidPerf - _psd) * _sgfluid / 2.31 + _p_casing_hitung # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
         _flowrate2 = (1-0.2*(_pressure2 / 1914) - 0.8 * (_pressure2 / 1914)**2) * 3002.746
     
         #_flowrate3 = (1-0.2*(Pressure3 / SBHP) - 0.8 * (Pressure3 / SBHP)^2) * Qmax
@@ -507,10 +527,12 @@ if id_calc_01:
         _persen_free_gas = (_Vg / _Vt) * 100
     
         # TDH = sum(WFL, WHP, CP, FrictionLoss)  --> CP (Optional, bila tdk dinput, defaultnya nol) 
-        _tdh = _wfl + _whp_hitung + _cp + _friction_loss
-    
+        #_tdh = _wfl + _whp_hitung + _cp + _friction_loss 
+        _tdh = _wfl + _whp_hitung + _p_casing_hitung + _friction_loss  # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
+        
         #Fluid Over Pump = (PIP-CP)*2.31/SGFluid
-        _fluid_over_pump = (_pip - _cp)*2.31/_sgfluid
+        #_fluid_over_pump = (_pip - _cp)*2.31/_sgfluid  
+        _fluid_over_pump = (_pip - _p_casing_hitung)*2.31/_sgfluid  # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing
     
         # Fluid Gradient = SGFluid/2.31
         _fluid_gradient = _sgfluid/2.31
