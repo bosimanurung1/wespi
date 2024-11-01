@@ -85,10 +85,22 @@ with row3_1:
     
     st.header("Basic Data (Required)", divider="gray")
     _top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", 0.00, None, 'min', 1.00, format="%0.2f")
-    _top_perfo_md = st.number_input(f'Top Perfo ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
+    if _id_welltype == 1: # 1-Vertical, 2-Directional
+        _top_perfo_md = _top_perfo_tvd
+        st.write(f'Top Perfo ({_measurement} MD) : {_top_perfo_md:.2f}')
+    else:
+        _top_perfo_md = st.number_input(f'Top Perfo ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
+        
     _bottom_perfo_tvd = st.number_input(f'Bottom Perfo ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
-    _bottom_perfo_md = st.number_input(f'Bottom Perfo ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
+    if _id_welltype == 1: # 1-Vertical, 2-Directional
+        _bottom_perfo_md = _bottom_perfo_tvd
+        st.write(f'Bottom Perfo ({_measurement} MD) : {_bottom_perfo_md:.2f}')
+    else:
+        _bottom_perfo_md = st.number_input(f'Bottom Perfo ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
+    
     _qtest = st.number_input('Qtest (BPD)', 0.00, None, 'min', 1.00, format="%0.2f")
+    
+    if _id_instrument == 2: # 1-Downhole Sensor 2-Sonolog
     _sbhp = st.number_input('SBHP (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
     _fbhp = st.number_input('FBHP (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
     _producing_gor = st.number_input('Producing GOR (scf/stb)', 0.00, None, 'min', 1.00, format="%0.2f")
