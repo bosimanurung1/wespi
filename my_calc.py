@@ -22,6 +22,13 @@ mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
 df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
 
+if "sel_row" not in st.session_state:
+    st.session_state["sel_row"] = pd.DataFrame()
+if "bs_grid_table" not in st.session_state:
+    st.session_state["bs_grid_table"] = pd.DataFrame()
+if "click" not in st.session_state:
+    st.session_state["click"] = False
+
 st.title("My Calculations")
 
 mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
@@ -42,37 +49,76 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
             left join mtubingid tubid on m.id_tubing_id = tubid.id_tubing_id \
             left join mtubingcoeff tubcoef on m.id_tubing_coeff = tubcoef.id_tubing_coeff") 
 
-gd = GridOptionsBuilder.from_dataframe(mycalc3)
-gd.configure_pagination(enabled=True)
-#gd.configure_default_column(editable=True, groupable=True)
+#mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
+#        m.date_calc, m.id_instrument, i.instrument, m.id_calc_method, c.calc_method, w.welltype, meas.measurement, m.comment_or_info \
+#        from tmycalc m \
+#            left join muserlogin u on m.user_id = u.user_id \
+#            left join minstrument i on m.id_instrument = i.id_instrument \
+#            left join mcalcmethod c on m.id_calc_method = c.id_calc_method \
+#            left join mmeasurement meas on m.id_measurement = meas.id_measurement \
+#            left join mwelltype w on m.id_welltype = w.id_welltype")
+st.dataframe(mycalc3, hide_index=True)        
 
-#sel_mode = st.radio('Selection Type', options=['single', 'multiple'])
-#gd.configure_selection(selection_mode=sel_mode, use_checkbox=True)
-gd.configure_selection(use_checkbox=True)
-gridoptions = gd.build()
-
-#AgGrid(mycalc3, gridOptions=gridoptions)
-bs_grid_table = AgGrid(mycalc3, gridOptions=gridoptions,
-                        enable_enterprise_modul=True,
-                        height=500,
-                        allow_unsafe_jscode=True,
-                        theme='alpine')
-sel_row = bs_grid_table["selected_rows"]
-#if not sel_row.empty:
-#    st.dataframe(sel_row, hide_index=True)
-
+mycalc3b=pd.DataFrame()
+_well_name_search=''
 id_calc_01=0
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
 with col1:
-    st.markdown("<p style='text-align: justify;'>Masukkan Nomor ID Calculation untuk melihat detail informasi \
-        perhitungan yang sudah dibuat, seperti Well Name, Field Name, Created by, Company, \
-        dan lain-lain.</p>", unsafe_allow_html=True)
+    _well_name_search = st.text_input('Well Name To Search: ')
+    #if st.button('Submit'):
+    #    pass
+        #mycalc3b = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
+        #        m.date_calc, i.instrument, c.calc_method, w.welltype, meas.measurement, m.comment_or_info \
+        #        from tmycalc m \
+        #            left join muserlogin u on m.user_id = u.user_id \
+        #            left join minstrument i on m.id_instrument = i.id_instrument \
+        #            left join mcalcmethod c on m.id_calc_method = c.id_calc_method \
+        #            left join mmeasurement meas on m.id_measurement = meas.id_measurement \
+        #            left join mwelltype w on m.id_welltype = w.id_welltype \
+        #        where m.well_name like '%_well_name_search%'")
 
+        
 with col2:
     id_calc_01 = st.number_input("ID Calculation To Explore:", 0, None, "min", 1)
-   
+
+if _well_name_search: #_well_name_search!='':
+    mycalc3b = mycalc3[mycalc3['well_name'].str.contains(_well_name_search)]        
+    #st.dataframe(mycalc3b)
+    gd = GridOptionsBuilder.from_dataframe(mycalc3b)
+    gd.configure_pagination(enabled=True)
+    #gd.configure_default_column(editable=True, groupable=True)
+    
+    #sel_mode = st.radio('Selection Type', options=['single', 'multiple'])
+    #gd.configure_selection(selection_mode=sel_mode, use_checkbox=True)
+    gd.configure_selection(use_checkbox=True)
+    gridoptions = gd.build()        
+    #AgGrid(mycalc3, gridOptions=gridoptions)
+    st.session_state.bs_grid_table = AgGrid(mycalc3b, gridOptions=gridoptions,
+                            enable_enterprise_modul=True,
+                            height=500,
+                            allow_unsafe_jscode=True,
+                            theme='alpine')
+    st.session_state.sel_row = st.session_state.bs_grid_table["selected_rows"] # DataFrame
+    st.session_state.click = st.button('Add New')
+    if st.session_state.click:
+        st.dataframe(st.session_state.sel_row, hide_index=True)       
+        #st.write(type(st.session_state.sel_row))
+    else:
+        pass
+    
+    #if st.button('Add New'):
+    #    if st.session_state.sel_row or not st.session_state.sel_row:
+    #        st.dataframe(st.session_state.sel_row, hide_index=True)                            
+    #    else:
+    #        pass
+        #if not sel_row.empty:
+        #if st.session_state.sel_row == None:
+        #    st.write('Click one first!!')
+        #else:
+        #    st.dataframe(st.session_state.sel_row, hide_index=True)                            
+    
 if id_calc_01:
-    mycalc4 = mycalc3.loc[mycalc3['id_calc']==id_calc_01].reset_index(drop=True)
+    mycalc4 = mycalc3.loc[mycalc3['id_calc']==id_calc_01].reset_index(drop=True)    
 
     _username = mycalc4['username'].values[0]; _well_name = mycalc4['well_name'].values[0]
     _field_name=mycalc4['field_name'].values[0]; _company=mycalc4['company'].values[0]; _engineer=mycalc4['engineer'].values[0]
