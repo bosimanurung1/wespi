@@ -387,6 +387,25 @@ if st.button("Save"):
         df_flowrate_psd = df_flowrate_psd.sort_values(by=['Flow rate', 'Pressure'], ascending=[True, False])
         # ---------------------------- until here -----------------------------------------        
         
+        # ---------- Counting data for Flowrate di Pwf@Qdes (2Fields, 4Records) ----------------------- 
+        _flowrate1c = 0
+        _pressure1c = _Pwf_at_Qdes
+   
+        _flowrate2c = _flowrate5
+        _pressure2c = _Pwf_at_Qdes
+
+        _flowrate3c = _flowrate5
+        _pressure3c = _Pwf_at_Qdes
+
+        _flowrate4c = _flowrate5
+        _pressure4c = 0
+        
+        df_flowrate_PwfQdes = pd.DataFrame({'Flow rate': [_flowrate1c, _flowrate2c, _flowrate3c, _flowrate4c],
+                'Pressure': [_pressure1c, _pressure2c, _pressure3c, _pressure4c]})
+            
+        df_flowrate_PwfQdes = df_flowrate_PwfQdes.sort_values(by=['Flow rate', 'Pressure'], ascending=[True, False])
+        # ---------------------------- until here -----------------------------------------                   
+        
         st.write('\n')
         st.title("Calculation")
         col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
@@ -480,40 +499,44 @@ if st.button("Save"):
            #st.write('\n')
            
         st.title("Inflow Performance Relationships")    
-        row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
-        with row5_1:
+        #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
+        #with row5_1:
         # perbesar figsize
         #plt.figure(figsize=(20,10))
-            plt.figure(figsize=(10,5))
-         
-            fig, ax  = plt.subplots()
-         
-            # membuat line plot for IPR
-            plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:') 
-            # membuat line plot for PSD
-            plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure'], 'ob:')
-         
-            # set title & label
-            plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
-            plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
-         
-            # custom line
-            plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure']) # for IPR
-            plot_line2 = plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure']) # for PSD
-            plt.setp(plot_line, color='red', linestyle=':',  linewidth=0.1, marker='o') # for IPR
-            plt.setp(plot_line2, color='blue', linestyle=':',  linewidth=0.1, marker='o') # for PSD
-         
-            # set start 0 y axis
-            plt.ylim(ymin=0)
-            plt.xlim(xmin=0)
-            
-            # set grid
-            plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
-         
-            st.pyplot(fig)
-        with row5_2:
-            st.dataframe(df_ipr_data, hide_index=True)     
-            st.write('')
+        plt.figure(figsize=(10,5))
+     
+        fig, ax  = plt.subplots()
+     
+        # membuat line plot for IPR
+        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:') 
+        # membuat line plot for PSD
+        plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure'], 'ob:')
+        # membuat line plot for PwfQdes
+        plt.plot(df_flowrate_PwfQdes['Flow rate'], df_flowrate_PwfQdes['Pressure'], 'og:')
+     
+        # set title & label
+        plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
+        plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
+     
+        # custom line
+        plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure']) # for IPR
+        plot_line2 = plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure']) # for PSD
+        plot_line3 = plt.plot(df_flowrate_PwfQdes['Flow rate'], df_flowrate_PwfQdes['Pressure']) # for PSD
+        plt.setp(plot_line, color='red', linestyle=':',  linewidth=0.1, marker='o') # for IPR
+        plt.setp(plot_line2, color='blue', linestyle=':',  linewidth=0.1, marker='o') # for PSD
+        plt.setp(plot_line3, color='green', linestyle=':',  linewidth=0.1, marker='o') # for PSD
+     
+        # set start 0 y axis
+        plt.ylim(ymin=0)
+        plt.xlim(xmin=0)
+        
+        # set grid
+        plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
+     
+        st.pyplot(fig)
+        #with row5_2:
+        #    st.dataframe(df_ipr_data, hide_index=True)     
+        #    st.write('')
 
         new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                           _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
@@ -650,11 +673,36 @@ if st.button("Save"):
         _flowrate2b = _qmax * 1.05
         _pressure2b = _pressure1b
                 
-        df_flowrate_psd = pd.DataFrame({'Flow rate': [_flowrate1b, _flowrate2b],
-                'Pressure': [_pressure1b, _pressure2b]})
+        _flowrate3b = _qmax * 1.05
+        _pressure3b = _pressure1b    
+
+        _flowrate4b = _qmax * 1.05
+        _pressure4b = 0
+        
+        df_flowrate_psd = pd.DataFrame({'Flow rate': [_flowrate1b, _flowrate2b, _flowrate3b, _flowrate4b],
+                'Pressure': [_pressure1b, _pressure2b, _pressure3b, _pressure4b]})
             
         df_flowrate_psd = df_flowrate_psd.sort_values(by=['Flow rate', 'Pressure'], ascending=[True, False])
         # ---------------------------- until here -----------------------------------------        
+        
+        # ---------- Counting data for Flowrate di Pwf@Qdes (2Fields, 4Records) ----------------------- 
+        _flowrate1c = 0
+        _pressure1c = _Pwf_at_Qdes
+   
+        _flowrate2c = _qdes
+        _pressure2c = _Pwf_at_Qdes
+
+        _flowrate3c = _qdes
+        _pressure3c = _Pwf_at_Qdes
+
+        _flowrate4c = _qdes
+        _pressure4c = 0
+        
+        df_flowrate_PwfQdes = pd.DataFrame({'Flow rate': [_flowrate1c, _flowrate2c, _flowrate3c, _flowrate4c],
+                'Pressure': [_pressure1c, _pressure2c, _pressure3c, _pressure4c]})
+            
+        df_flowrate_PwfQdes = df_flowrate_PwfQdes.sort_values(by=['Flow rate', 'Pressure'], ascending=[True, False])
+        # ---------------------------- until here -----------------------------------------             
     
         st.write('\n')
         st.title("Calculation")
@@ -761,6 +809,8 @@ if st.button("Save"):
         plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:') 
         # membuat line plot for PSD
         plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure'], 'ob:')
+        # membuat line plot for PwfQdes
+        plt.plot(df_flowrate_PwfQdes['Flow rate'], df_flowrate_PwfQdes['Pressure'], 'og:')
      
         # set title & label
         plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
@@ -769,8 +819,10 @@ if st.button("Save"):
         # custom line
         plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure']) # for IPR
         plot_line2 = plt.plot(df_flowrate_psd['Flow rate'], df_flowrate_psd['Pressure']) # for PSD
+        plot_line3 = plt.plot(df_flowrate_PwfQdes['Flow rate'], df_flowrate_PwfQdes['Pressure']) # for PSD
         plt.setp(plot_line, color='red', linestyle=':',  linewidth=0.1, marker='o') # for IPR
         plt.setp(plot_line2, color='blue', linestyle=':',  linewidth=0.1, marker='o') # for PSD
+        plt.setp(plot_line3, color='green', linestyle=':',  linewidth=0.1, marker='o') # for PSD
 
         # set start 0 y axis
         plt.ylim(ymin=0)
