@@ -100,7 +100,7 @@ with row3_1:
     
     _qtest = st.number_input('Qtest (BPD)', 0.00, None, 'min', 1.00, format="%0.2f")
     
-    if _id_instrument == 2: # 1-Downhole Sensor 2-Sonolog
+    #if _id_instrument == 2: # 1-Downhole Sensor 2-Sonolog
     _sbhp = st.number_input('SBHP (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
     _fbhp = st.number_input('FBHP (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
     _producing_gor = st.number_input('Producing GOR (scf/stb)', 0.00, None, 'min', 1.00, format="%0.2f")
