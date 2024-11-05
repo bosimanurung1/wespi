@@ -350,7 +350,7 @@ def edit_and_add():
         st.session_state["new_id_calc"] += 1
         
         # change value of a single cell directly
-        mnomor1.at[0, 'tmycalc'] = new_id_calc
+        mnomor1.at[0, 'tmycalc'] = st.session_state["new_id_calc"]
         
         # write out the CSV file 
         mnomor1.to_csv("mnomor1.csv", index=False)
@@ -359,7 +359,7 @@ def edit_and_add():
         col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
         with col1:
             st.subheader('ID Calculation:')
-            st.markdown(new_id_calc)
+            st.markdown(st.session_state["new_id_calc"])
             st.subheader('Well Name:')
             st.markdown(_well_name)
             st.subheader('Field Name:')
