@@ -1017,7 +1017,8 @@ with col2:
 
 st.write('')
 if _well_name_search: #_well_name_search!='':
-    mycalc3b = mycalc3a[mycalc3a['well_name'].str.contains(_well_name_search)]        
+    #mycalc3b = mycalc3a[mycalc3a['well_name'].str.contains(_well_name_search)] # for minimalis, using mycalc3a
+    mycalc3b = mycalc3[mycalc3['well_name'].str.contains(_well_name_search)]         
     st.subheader(f"Well Name Contains Word '{_well_name_search}'")
     if st.dataframe(mycalc3b, hide_index=True):
         col1b, col2b = st.columns(2, gap="medium", vertical_alignment="top")
