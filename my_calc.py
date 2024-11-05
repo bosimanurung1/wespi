@@ -18,12 +18,15 @@ mtubingsize = pd.read_csv('MTubingSize.csv')
 mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
 df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
+last_id_calc = mnomor1['tmycalc'].values[0]
 
 # global variables
 mycalc3 = mycalc3a = mycalc3b = mycalc3c = pd.DataFrame()
 _well_name_search=''
 _id_calc = id_calc_01 = id_calc_02 = _id_instrument = 0
 
+if "new_id_calc" not in st.session_state:
+    st.session_state["new_id_calc"] = last_id_calc
 if "_well_name" not in st.session_state:
     st.session_state["_well_name"] = ''
 if "_date_calc" not in st.session_state:
@@ -342,8 +345,9 @@ def edit_and_add():
             
     if st.button("Save"):                   
         #last_num = mnomor1.iloc[-1:]    
-        last_id_calc = mnomor1['tmycalc'].values[0]
-        new_id_calc = last_id_calc + 1    
+        #last_id_calc = mnomor1['tmycalc'].values[0]
+        #new_id_calc = last_id_calc + 1    
+        st.session_state["new_id_calc"] += 1
         
         # change value of a single cell directly
         mnomor1.at[0, 'tmycalc'] = new_id_calc
@@ -696,7 +700,7 @@ def edit_and_add():
             #    st.dataframe(df_ipr_data, hide_index=True)     
             #    st.write('')
     
-            new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
+            new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                             _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                             _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
                             _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
@@ -992,7 +996,7 @@ def edit_and_add():
             st.pyplot(fig)
             #with row5_2:            
             #st.dataframe(df_ipr_data, hide_index=True)                  
-            new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
+            new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                             _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                             _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
                             _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
@@ -1018,7 +1022,7 @@ with col2:
 st.write('')
 if _well_name_search: #_well_name_search!='':
     #mycalc3b = mycalc3a[mycalc3a['well_name'].str.contains(_well_name_search)] # for minimalis, using mycalc3a
-    mycalc3b = mycalc3[mycalc3['well_name'].str.contains(_well_name_search)]         
+    mycalc3b = mycalc3[mycalc3['well_name'].str.contains(_well_name_search)]        
     st.subheader(f"Well Name Contains Word '{_well_name_search}'")
     if st.dataframe(mycalc3b, hide_index=True):
         col1b, col2b = st.columns(2, gap="medium", vertical_alignment="top")
