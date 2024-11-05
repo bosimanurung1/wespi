@@ -2,6 +2,16 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from csv import writer
+import requests
+import json
+import gspread
+from streamlit_gsheets import GSheetsConnection
+
+# Your DataFrame with data to be inserted
+#df = pd.DataFrame(results, columns=['query', 'batch_index', 'index_of_audio_output_tensor', 'audio_file_name', 'similarity_score_by_model', 'user_relevance_score'])
+
+# Call the function to insert data into the Google Sheet
+#insert_data_into_sheet(df)
 
 #open datas
 mnomor1 = pd.read_csv('MNomor1.csv')
@@ -19,6 +29,10 @@ df_temp = pd.DataFrame()
 
 st.title("Add New Calculation")
 new_records = []
+
+if "new_id_calc" not in st.session_state:
+    last_id_calc = mnomor1['tmycalc'].values[0]
+    st.session_state["new_id_calc"] = last_id_calc
 
 if "api" not in st.session_state:
     st.session_state["api"] = 0.00
@@ -196,11 +210,12 @@ with row3_2:
         
 if st.button("Save"):                   
     #last_num = mnomor1.iloc[-1:]    
-    last_id_calc = mnomor1['tmycalc'].values[0]
-    new_id_calc = last_id_calc + 1    
+    3last_id_calc = mnomor1['tmycalc'].values[0]
+    #new_id_calc = last_id_calc + 1    
+    st.session_state["new_id_calc"] += 1
     
     # change value of a single cell directly
-    mnomor1.at[0, 'tmycalc'] = new_id_calc
+    mnomor1.at[0, 'tmycalc'] = st.session_state["new_id_calc"]
     
     # write out the CSV file 
     mnomor1.to_csv("mnomor1.csv", index=False)
@@ -209,7 +224,7 @@ if st.button("Save"):
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
     with col1:
         st.subheader('ID Calculation:')
-        st.markdown(new_id_calc)
+        st.markdown(st.session_state["new_id_calc"])
         st.subheader('Well Name:')
         st.markdown(_well_name)
         st.subheader('Field Name:')
@@ -550,18 +565,75 @@ if st.button("Save"):
         #    st.dataframe(df_ipr_data, hide_index=True)     
         #    st.write('')
 
-        new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
+        new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                           _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                           _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
                           _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
                           st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
-                          st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]                               
+                          st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]   
+
         with open('tmycalc.csv', mode='a', newline='') as f_object:
            #writer_object = csv.writer(file)            
             writer_object = writer(f_object)            
             # Add new rows to the CSV
             writer_object.writerows(new_records)                    
             f_object.close() 
+
+        # ------------- to update table in google sheets but still error in credential ---------------------------
+        # to connect key & variables values in dictionary
+        #https://discuss.python.org/t/is-there-a-way-to-convert-a-variable-name-this-to-this/35303/2
+        #In [1]: a, b, c, e = 10, 20, 30, 50
+
+        #In [2]: keys = ("a", "b", "c", "e")
+
+        #In [3]: d = { k: globals().get(k) for k in keys }
+
+        #In [4]: d
+        #Out[4]: {'a': 10, 'b': 20, 'c': 30, 'e': 50}
+
+        # ---------- error here in credential -----------------------------------
+        # Create a connection object.
+        #conn = st.connection("gsheets", type=GSheetsConnection)
+        #df = conn.read()
+
+        # Create a connection object.
+        #credentials = service_account.Credentials.from_service_account_info(
+        #    st.secrets["gcp_service_account"],
+        #    scopes=[
+        #        "https://www.googleapis.com/auth/spreadsheets",
+        #        wespi-711@fifth-bonbon-440712-g9.iam.gserviceaccount.com
+        #    ],
+        #)
+        # --------------- until here is the error problem -------------------------------
+
+        # -------------- remark them all first, we'll continue it later --------------------------------
+        #gc = gspread.authorize(credentials)
+
+        # Get the Google Sheet by URL.
+        #sheet_url = st.secrets["private_gsheets_url"]
+        #sheet = gc.open_by_url(sheet_url)
+
+        # Function to find the last filled row in the worksheet.
+        #def find_last_filled_row(worksheet):
+        #    return len(worksheet.get_all_values()) + 1
+
+        # Function to insert data into the Google Sheet after the last filled row.
+        #def insert_data_into_sheet(dataframe):
+        #    worksheet = sheet.get_worksheet(0)  # Replace 0 with the index of your desired worksheet
+        #    values = dataframe.values.tolist()
+
+            # Find the last filled row
+        #    last_filled_row = find_last_filled_row(worksheet)
+
+            # Insert the data after the last filled row
+        #    worksheet.insert_rows(values, last_filled_row)
+
+                                           #new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc     
+        # Your DataFrame with data to be inserted
+        #df = pd.DataFrame(results, columns=['id_calc', '_user_id', '_well_name', 'field_name', '_company', '_engineer', 'date_calc'])
+
+        # Call the function to insert data into the Google Sheet
+        #insert_data_into_sheet(df)
                
         if st.button("Confirm"):      
             st.write('')            
@@ -846,7 +918,7 @@ if st.button("Save"):
         st.pyplot(fig)
         #with row5_2:            
         #st.dataframe(df_ipr_data, hide_index=True)                  
-        new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
+        new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                          _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                          _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
                          _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
