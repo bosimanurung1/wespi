@@ -3,9 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from csv import writer
 import requests
-import json
-import gspread
-from streamlit_gsheets import GSheetsConnection
+#import json
+#import gspread
+#from streamlit_gsheets import GSheetsConnection
 
 # Your DataFrame with data to be inserted
 #df = pd.DataFrame(results, columns=['query', 'batch_index', 'index_of_audio_output_tensor', 'audio_file_name', 'similarity_score_by_model', 'user_relevance_score'])
