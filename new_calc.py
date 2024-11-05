@@ -210,7 +210,7 @@ with row3_2:
         
 if st.button("Save"):                   
     #last_num = mnomor1.iloc[-1:]    
-    3last_id_calc = mnomor1['tmycalc'].values[0]
+    #last_id_calc = mnomor1['tmycalc'].values[0]
     #new_id_calc = last_id_calc + 1    
     st.session_state["new_id_calc"] += 1
     
