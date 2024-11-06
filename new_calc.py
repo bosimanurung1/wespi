@@ -3,9 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from csv import writer
 import requests
-#import json
-#import gspread
-#from streamlit_gsheets import GSheetsConnection
+import json
+import gspread
+from streamlit_gsheets import GSheetsConnection
 
 # Your DataFrame with data to be inserted
 #df = pd.DataFrame(results, columns=['query', 'batch_index', 'index_of_audio_output_tensor', 'audio_file_name', 'similarity_score_by_model', 'user_relevance_score'])
@@ -206,7 +206,7 @@ with row3_2:
     _liner_id = _top_liner_at = _bottom_liner_at = 0
     _liner_id = st.number_input('Liner ID (inch)', 0.00, None, 'min', 1.00, format="%0.2f")
     _top_liner_at = st.number_input(f'Top Liner at ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
-    _bottom_liner_at = st.number_input(f'Bottom Liner at ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
+    _bottom_liner_at = st.number_input(f'Bottom Liner at ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
         
 if st.button("Save"):                   
     #last_num = mnomor1.iloc[-1:]    
@@ -754,13 +754,16 @@ if st.button("Save"):
         _flowrate1b = _flowrate1
         _pressure1b = (_MidPerf - _psd) * _sgfluid / 2.31 + _p_casing_hitung # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing        
         
-        _flowrate2b = _qmax * 1.05
+        #_flowrate2b = _qmax * 1.05
+        _flowrate2b = _qmax
         _pressure2b = _pressure1b
                 
-        _flowrate3b = _qmax * 1.05
+        #_flowrate3b = _qmax * 1.05
+        _flowrate3b = _qmax
         _pressure3b = _pressure1b    
 
-        _flowrate4b = _qmax * 1.05
+        #_flowrate4b = _qmax * 1.05
+        _flowrate4b = _qmax
         _pressure4b = 0
         
         df_flowrate_psd = pd.DataFrame({'Flow rate': [_flowrate1b, _flowrate2b, _flowrate3b, _flowrate4b],
