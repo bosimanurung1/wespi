@@ -62,8 +62,10 @@ def edit_and_add():
     _coefficient=st.session_state.mycalc3c['coefficient'].values[0]; st.session_state["coefficient"] = _coefficient
     
     _liner_id=st.session_state.mycalc3c['liner_id'].values[0]; st.session_state["_liner_id"] = float(_liner_id)
-    _top_liner_at=st.session_state.mycalc3c['top_liner_at'].values[0]; st.session_state["_top_liner_at"] = float(_top_liner_at)
-    _bottom_liner_at=st.session_state.mycalc3c['bottom_liner_at'].values[0]; st.session_state["_bottom_liner_at"] = float(_bottom_liner_at)
+    _top_liner_at_tvd=st.session_state.mycalc3c['top_liner_at_tvd'].values[0]; st.session_state["_top_liner_at_tvd"] = float(_top_liner_at_tvd)
+    _top_liner_at_md=st.session_state.mycalc3c['top_liner_at_md'].values[0]; st.session_state["_top_liner_at_md"] = float(_top_liner_at_md)
+    _bottom_liner_at_tvd=st.session_state.mycalc3c['bottom_liner_at_tvd'].values[0]; st.session_state["_bottom_liner_at_tvd"] = float(_bottom_liner_at_tvd)
+    _bottom_liner_at_md=st.session_state.mycalc3c['bottom_liner_at_md'].values[0]; st.session_state["_bottom_liner_at_md"] = float(_bottom_liner_at_md)
 
     st.subheader(f"ID Calculation {st.session_state.id_calc_02} To Edit")
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
@@ -217,9 +219,21 @@ def edit_and_add():
         
         st.header("Liner", divider="gray")
         _liner_id = st.number_input('Liner ID (inch)', st.session_state["_liner_id"], None, 'min', 1.00, format="%0.2f")
-        _top_liner_at = st.number_input(f'Top Liner at ({_measurement} TVD)', st.session_state["_top_liner_at"], None, 'min', 1.00, format="%0.2f")
-        _bottom_liner_at = st.number_input(f'Bottom Liner at ({_measurement} TVD)', st.session_state["_bottom_liner_at"], None, 'min', 1.00, format="%0.2f")
-            
+        _top_liner_at_tvd = st.number_input(f'Top Liner at ({_measurement} TVD)', st.session_state._top_liner_at_tvd, None, 'min', 1.00, format="%0.2f")
+        if _id_welltype == 1: # 1-Vertical, 2-Directional
+            _top_liner_at_md = _top_liner_at_tvd
+            st.write(f'Top Liner at ({_measurement} MD) : {_top_liner_at_md:.2f}')
+        else:
+            _top_liner_at_md = st.number_input(f'Top Liner at ({_measurement} MD)', st.session_state["_top_liner_at_md"], None, 'min', 1.00, format="%0.2f")
+
+        _bottom_liner_at_tvd = st.number_input(f'Bottom Liner at ({_measurement} TVD)', st.session_state["_bottom_liner_at_tvd"], None, 'min', 1.00, format="%0.2f")
+        if _id_welltype == 1: # 1-Vertical, 2-Directional
+            _bottom_liner_at_md = _bottom_liner_at_tvd
+            st.write(f'Bottom Liner at ({_measurement} MD) : {_bottom_liner_at_md:.2f}')
+        else:
+            #_bottom_perfo_md = st.number_input(f'Bottom Perfo ({_measurement} MD)', st.session_state["_bottom_perfo_md"], None, 'min', 1.00, format="%0.2f")
+            _bottom_liner_at_md = st.number_input(f'Bottom Liner at ({_measurement} MD)', st.session_state["_bottom_liner_at_md"], None, 'min', 1.00, format="%0.2f")
+             
     if st.button("Save"):                   
         #last_num = mnomor1.iloc[-1:]    
         #last_id_calc = mnomor1['tmycalc'].values[0]
