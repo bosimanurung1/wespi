@@ -36,7 +36,8 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
         m.bottom_perfo_tvd, m.bottom_perfo_md, m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, \
         m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, m.p_casing, m.pb, m.api, m.sgo, \
         m.id_casing_size, s.casing_size, s.casing_drift_id, m.id_tubing_size, tubsize.tubing_size, m.id_tubing_id, tubid.tubing_id, \
-        m.id_tubing_coeff, tubcoef.type, tubcoef.coefficient, m.liner_id, m.top_liner_at, m.bottom_liner_at \
+        m.id_tubing_coeff, tubcoef.type, tubcoef.coefficient, m.liner_id, m.top_liner_at_tvd, m.top_liner_at_md, \
+        m.bottom_liner_at_tvd, m.bottom_liner_at_md \
         from tmycalc m \
             left join muserlogin u on m.user_id = u.user_id \
             left join minstrument i on m.id_instrument = i.id_instrument \
@@ -94,7 +95,7 @@ if _well_name_search: #_well_name_search!='':
         m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, \
         m.p_casing, m.pb, m.api, m.sgo, m.id_casing_size, s.casing_size, s.casing_drift_id, m.id_tubing_size, \
         tubsize.tubing_size, m.id_tubing_id, tubid.tubing_id, m.id_tubing_coeff, tubcoef.type, tubcoef.coefficient, \
-        m.liner_id, m.top_liner_at, m.bottom_liner_at \
+        m.liner_id, m.top_liner_at_tvd, m.top_liner_at_md, m.bottom_liner_at_tvd, m.bottom_liner_at_md \
         from mycalc3b m \
             left join muserlogin u on m.user_id = u.user_id \
             left join minstrument i on m.id_instrument = i.id_instrument \
@@ -137,7 +138,7 @@ if st.session_state["id_calc_01"]:
     _date_calc=mycalc4['date_calc'].values[0]
     _instrument=mycalc4['instrument'].values[0]; _id_instrument=mycalc4['id_instrument'].values[0]
     _calc_method=mycalc4['calc_method'].values[0]; _welltype=mycalc4['welltype'].values[0]
-    _id_calc_method=mycalc4['id_calc_method'].values[0]
+    _id_calc_method=mycalc4['id_calc_method'].values[0]; _id_welltype=mycalc4['id_welltype'].values[0]
     _measurement=mycalc4['measurement'].values[0]; _comment_or_info=mycalc4['comment_or_info'].values[0]
     
     #st.write('id instrument=', _id_instrument, 'id calc methon=', _id_calc_method)
@@ -181,8 +182,18 @@ if st.session_state["id_calc_01"]:
         st.markdown(_comment_or_info)
         #st.write('\n')
 
-    _top_perfo_tvd=mycalc4['top_perfo_tvd'].values[0]; _top_perfo_md=mycalc4['top_perfo_md'].values[0]
-    _bottom_perfo_tvd=mycalc4['bottom_perfo_tvd'].values[0]; _bottom_perfo_md=mycalc4['bottom_perfo_md'].values[0]
+    _top_perfo_tvd=mycalc4['top_perfo_tvd'].values[0]
+    if _id_welltype == 1: # 1-Vertical, 2-Directional
+        _top_perfo_md = _top_perfo_tvd
+    else:
+        _top_perfo_md=mycalc4['top_perfo_md'].values[0]
+
+    _bottom_perfo_tvd=mycalc4['bottom_perfo_tvd'].values[0]
+    if _id_welltype == 1: # 1-Vertical, 2-Directional
+        _bottom_perfo_md = _bottom_perfo_tvd
+    else:
+        _bottom_perfo_md=mycalc4['bottom_perfo_md'].values[0]
+
     _qtest=mycalc4['qtest'].values[0]; _sbhp=mycalc4['sbhp'].values[0]; _fbhp=mycalc4['fbhp'].values[0]
     _producing_gor=mycalc4['producing_gor'].values[0]; _wc=mycalc4['wc'].values[0]; _bht=mycalc4['bht'].values[0]
     _sgw=mycalc4['sgw'].values[0]; _sgg=mycalc4['sgg'].values[0]; _qdes=mycalc4['qdes'].values[0]
@@ -196,8 +207,19 @@ if st.session_state["id_calc_01"]:
     _tubing_coeff_type=mycalc4['type'].values[0]
     _coefficient=mycalc4['coefficient'].values[0]
 
-    _liner_id=mycalc4['liner_id'].values[0]; _top_liner_at=mycalc4['top_liner_at'].values[0]
-    _bottom_liner_at=mycalc4['bottom_liner_at'].values[0]
+    _liner_id=mycalc4['liner_id'].values[0]; 
+    _top_liner_at_tvd=mycalc4['top_liner_at_tvd'].values[0]
+    if _id_welltype == 1: # 1-Vertical, 2-Directional
+        _top_liner_at_md = _top_liner_at_tvd
+    else:
+        _top_liner_at_md=mycalc4['top_liner_at_md'].values[0]
+
+    _bottom_liner_at_tvd=mycalc4['bottom_liner_at_tvd'].values[0] 
+    if _id_welltype == 1: # 1-Vertical, 2-Directional
+        _bottom_liner_at_md = _bottom_liner_at_tvd
+    else:
+        _bottom_liner_at_md=mycalc4['bottom_liner_at_md'].values[0]
+
     st.write('\n')
     st.title("Data Input")
     #col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")    
@@ -208,7 +230,7 @@ if st.session_state["id_calc_01"]:
         st.write('Top Perfo    : ', _top_perfo_tvd, _measurement, 'TVD')
         st.write('Top Perfo    : ', _top_perfo_md, _measurement, 'MD')
         st.write('Bottom Perfo : ', _bottom_perfo_tvd, _measurement, 'TVD')
-        st.write('Bottom Perfo : ', _bottom_perfo_md, _measurement, 'MD')
+        st.write('Bottom Perfo : ', _bottom_perfo_md, _measurement, 'MD')          
         st.write('Qtest        : ', _qtest, 'BPD')
         st.write('SBHP         : ', _sbhp, 'psig')
         st.write('FBHP         : ', _fbhp, 'psig')
@@ -238,8 +260,10 @@ if st.session_state["id_calc_01"]:
         st.write('\n')
         st.header("Liner", divider="gray")
         st.write('Liner ID     : ', _liner_id, 'inch')
-        st.write('Top Liner at : ', _top_liner_at, _measurement, 'TVD')
-        st.write('Bottom Liner at: ', _bottom_liner_at, _measurement, 'TVD')
+        st.write('Top Liner at : ', _top_liner_at_tvd, _measurement, 'TVD')
+        st.write('Top Liner at : ', _top_liner_at_md, _measurement, 'MD')
+        st.write('Bottom Liner at: ', _bottom_liner_at_tvd, _measurement, 'TVD')
+        st.write('Bottom Liner at: ', _bottom_liner_at_md, _measurement, 'MD')
 
     if _id_instrument==1 and _id_calc_method==2: #Downhole Sensor & Vogel    
         #Hitung2an Calculation sblm IPR Curve
