@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 from csv import writer
 import requests
 import json
-import gspread
-from streamlit_gsheets import GSheetsConnection
 
 # Your DataFrame with data to be inserted
 #df = pd.DataFrame(results, columns=['query', 'batch_index', 'index_of_audio_output_tensor', 'audio_file_name', 'similarity_score_by_model', 'user_relevance_score'])
@@ -205,9 +203,20 @@ with row3_2:
     st.header("Liner", divider="gray")
     _liner_id = _top_liner_at = _bottom_liner_at = 0
     _liner_id = st.number_input('Liner ID (inch)', 0.00, None, 'min', 1.00, format="%0.2f")
-    _top_liner_at = st.number_input(f'Top Liner at ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
-    _bottom_liner_at = st.number_input(f'Bottom Liner at ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
-        
+    _top_liner_at_tvd = st.number_input(f'Top Liner at ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
+    if _id_welltype == 1: # 1-Vertical, 2-Directional
+        _top_liner_at_md = _top_liner_at_tvd
+        st.write(f'Top Liner at ({_measurement} MD) : {_top_liner_at_md:.2f}')
+    else:
+        _top_liner_at_md = st.number_input(f'Top Liner at ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
+
+    _bottom_liner_at_tvd = st.number_input(f'Bottom Liner at ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
+    if _id_welltype == 1: # 1-Vertical, 2-Directional
+        _bottom_liner_at_md = _bottom_liner_at_tvd
+        st.write(f'Bottom Liner at ({_measurement} MD) : {_bottom_liner_at_md:.2f}')
+    else:
+        _bottom_liner_at_md = st.number_input(f'Bottom Liner at ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
+
 if st.button("Save"):                   
     #last_num = mnomor1.iloc[-1:]    
     #last_id_calc = mnomor1['tmycalc'].values[0]
