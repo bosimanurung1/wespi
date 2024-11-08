@@ -298,11 +298,11 @@ if st.session_state["id_calc_01"]:
         _composite_sg = ( ( (1-(_wc/100))*_qdes*_sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
     
         # WFL =PSD-(PIP*2.31/SGFluid)
-        if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
+        if _measurement=='m': # PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
             _wfl = (_psd*3.28084)-(_pip*2.31/_sgfluid)
             # lalu dirubah lgi ke mtr:
             _wfl = _wfl * 0.3048 # 0.3048 adalah 1/3.28084
-        elif _id_measurement==2: # ft (feet) PSD nya gak perlu dikali 3.28084 dulu
+        elif _measurement=='ft': # PSD nya gak perlu dikali 3.28084 dulu
             _wfl = _psd-(_pip*2.31/_sgfluid)
 
         # WHP = THP(WHP)*2.31/SGFluid
@@ -311,9 +311,9 @@ if st.session_state["id_calc_01"]:
         if _p_casing == 0:
             _p_casing_hitung = 0
         else:
-            if _id_measurement==1: # m (meter)
+            if _measurement=='m': # m (meter)
                 _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-            elif _id_measurement==2: # ft (feet)
+            elif _measurement=='ft': # ft (feet)
                 _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
 
         # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
@@ -618,11 +618,11 @@ if st.session_state["id_calc_01"]:
         _composite_sg = ( ( (1-(_wc/100))*_qdes*_sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
     
         # WFL =PSD-(PIP*2.31/SGFluid)
-        if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
+        if _measurement=='m': # PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
             _wfl = (_psd*3.28084)-(_pip*2.31/_sgfluid)
             # lalu dirubah lgi ke mtr:
             _wfl = _wfl * 0.3048 # 0.3048 adalah 1/3.28084
-        elif _id_measurement==2: # ft (feet) PSD nya gak perlu dikali 3.28084 dulu
+        elif _measurement=='ft': # PSD nya gak perlu dikali 3.28084 dulu
             _wfl = _psd-(_pip*2.31/_sgfluid)
                 
         # WHP = THP(WHP)*2.31/SGFluid
@@ -631,9 +631,9 @@ if st.session_state["id_calc_01"]:
         if _p_casing == 0:
             _p_casing_hitung = 0
         else:
-            if _id_measurement==1: # m (meter)
+            if _measurement=='m': 
                 _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-            elif _id_measurement==2: # ft (feet)
+            elif _measurement=='ft':
                 _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
 
         # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
