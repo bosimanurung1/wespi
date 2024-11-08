@@ -219,7 +219,10 @@ def edit_and_add():
         _liner_id = st.number_input('Liner ID (inch)', st.session_state["_liner_id"], None, 'min', 1.00, format="%0.2f")
         _top_liner_at = st.number_input(f'Top Liner at ({_measurement} TVD)', st.session_state["_top_liner_at"], None, 'min', 1.00, format="%0.2f")
         _bottom_liner_at = st.number_input(f'Bottom Liner at ({_measurement} TVD)', st.session_state["_bottom_liner_at"], None, 'min', 1.00, format="%0.2f")
+         _top_liner_at = st.number_input(f'Top Liner at ({_measurement} TVD)', st.session_state["_top_liner_at"], None, 'min', 1.00, format="%0.2f")
+        _bottom_liner_at = st.number_input(f'Bottom Liner at ({_measurement} TVD)', st.session_state["_bottom_liner_at"], None, 'min', 1.00, format="%0.2f")
             
+    
     if st.button("Save"):                   
         #last_num = mnomor1.iloc[-1:]    
         #last_id_calc = mnomor1['tmycalc'].values[0]
@@ -706,19 +709,21 @@ def edit_and_add():
             # ---------- Counting data for Flowrate di PSD (2Fields, 2Records) ----------------------- 
             #_settingDepth_or_PSD = 262.967487
             
-            _flowrate1b = _flowrate1
+            _flowrate1b = 0
             _pressure1b = (_MidPerf - _psd) * _sgfluid / 2.31 + _p_casing_hitung # cp dihapus, jadi kalau perlu cp, diganti dgn p.casing        
-            
+            _settingDepth_or_PSD = _pressure1b
+
             #_flowrate2b = _qmax * 1.05
-            _flowrate2b = _qmax
-            _pressure2b = _pressure1b
-                    
+            #_flowrate2b = (SettingDepthPSD - SBHP) / ((FBHP - SBHP) / (Qtest - 0))
+            _flowrate2b = (_settingDepth_or_PSD - _sbhp) / ((_fbhp - _sbhp) / (_qtest - 0))
+            _pressure2b = _pressure1b        
+            
             #_flowrate3b = _qmax * 1.05
-            _flowrate3b = _qmax
+            _flowrate3b = _flowrate2b
             _pressure3b = _pressure1b    
-    
+
             #_flowrate4b = _qmax * 1.05
-            _flowrate4b = _qmax
+            _flowrate4b = _flowrate2b
             _pressure4b = 0
             
             df_flowrate_psd = pd.DataFrame({'Flow rate': [_flowrate1b, _flowrate2b, _flowrate3b, _flowrate4b],
