@@ -643,7 +643,7 @@ if st.button("Save"):
         # Call the function to insert data into the Google Sheet
         #insert_data_into_sheet(df)
                
-        if st.button("Confirm"):      
+        if st.button("Next"):      
             st.write('')            
             #st.session_state["api"] = 0.00; st.session_state.sgo = 0.00    
             #st.session_state["_id_tubing_coeff"] = 0; st.session_state._tubing_coeff_type = ''    
@@ -946,6 +946,6 @@ if st.button("Save"):
             writer_object.writerows(new_records)                    
             f_object.close() 
                
-        if st.button("Confirm"):      
+        if st.button("Next"):      
             st.write('')
     
