@@ -219,10 +219,7 @@ def edit_and_add():
         _liner_id = st.number_input('Liner ID (inch)', st.session_state["_liner_id"], None, 'min', 1.00, format="%0.2f")
         _top_liner_at = st.number_input(f'Top Liner at ({_measurement} TVD)', st.session_state["_top_liner_at"], None, 'min', 1.00, format="%0.2f")
         _bottom_liner_at = st.number_input(f'Bottom Liner at ({_measurement} TVD)', st.session_state["_bottom_liner_at"], None, 'min', 1.00, format="%0.2f")
-         _top_liner_at = st.number_input(f'Top Liner at ({_measurement} TVD)', st.session_state["_top_liner_at"], None, 'min', 1.00, format="%0.2f")
-        _bottom_liner_at = st.number_input(f'Bottom Liner at ({_measurement} TVD)', st.session_state["_bottom_liner_at"], None, 'min', 1.00, format="%0.2f")
             
-    
     if st.button("Save"):                   
         #last_num = mnomor1.iloc[-1:]    
         #last_id_calc = mnomor1['tmycalc'].values[0]
@@ -333,16 +330,24 @@ def edit_and_add():
             _composite_sg = ( ( (1-(_wc/100))*_qdes*_sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
             
             # WFL =PSD-(PIP*2.31/SGFluid)
-            _wfl = _psd-(_pip*2.31/_sgfluid)
-            
+            if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
+                _wfl = (_psd*3.28084)-(_pip*2.31/_sgfluid)
+                # lalu dirubah lgi ke mtr:
+                _wfl = _wfl * 0.3048 # 0.3048 adalah 1/3.28084
+            elif _id_measurement==2: # ft (feet) PSD nya gak perlu dikali 3.28084 dulu
+                _wfl = _psd-(_pip*2.31/_sgfluid)
+
             # WHP = THP(WHP)*2.31/SGFluid
             _whp_hitung=_whp*2.31/_sgfluid
             
             if _p_casing == 0:
                 _p_casing_hitung = 0
             else:
-                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-            
+                if _id_measurement==1: # m (meter)
+                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
+                elif _id_measurement==2: # ft (feet)
+                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
+
             # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
             #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
             _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
@@ -663,16 +668,24 @@ def edit_and_add():
             _composite_sg = ( ( (1-(_wc/100))*_qdes*_sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
         
             # WFL =PSD-(PIP*2.31/SGFluid)
-            _wfl = _psd-(_pip*2.31/_sgfluid)
-        
+            if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
+                _wfl = (_psd*3.28084)-(_pip*2.31/_sgfluid)
+                # lalu dirubah lgi ke mtr:
+                _wfl = _wfl * 0.3048 # 0.3048 adalah 1/3.28084
+            elif _id_measurement==2: # ft (feet) PSD nya gak perlu dikali 3.28084 dulu
+                _wfl = _psd-(_pip*2.31/_sgfluid)
+
             # WHP = THP(WHP)*2.31/SGFluid
             _whp_hitung=_whp*2.31/_sgfluid
         
             if _p_casing == 0:
                 _p_casing_hitung = 0
             else:
-                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-        
+                if _id_measurement==1: # m (meter)
+                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
+                elif _id_measurement==2: # ft (feet)
+                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
+
             # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
             #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
             _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
@@ -725,7 +738,7 @@ def edit_and_add():
             #_flowrate4b = _qmax * 1.05
             _flowrate4b = _flowrate2b
             _pressure4b = 0
-            
+                
             df_flowrate_psd = pd.DataFrame({'Flow rate': [_flowrate1b, _flowrate2b, _flowrate3b, _flowrate4b],
                     'Pressure': [_pressure1b, _pressure2b, _pressure3b, _pressure4b]})
                 
