@@ -119,43 +119,44 @@ def edit_and_add(wellnamesearch):
     row3_1, row3_spacer, row3_2= st.columns((3, 1, 3))
     with row3_1:
         st.header("Basic Data (Required)", divider="gray")
-        _top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", st.session_state["_top_perfo_tvd"], None, 'min', 1.00, format="%0.2f")
+        #_top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", st.session_state["_top_perfo_tvd"], None, 'min', 1.00, format="%0.2f")
+        _top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", 0.00, None, _top_perfo_tvd, 1.00, format="%0.2f")
         if _id_welltype == 1: # 1-Vertical, 2-Directional
             _top_perfo_md = _top_perfo_tvd
             st.write(f'Top Perfo ({_measurement} MD) : {_top_perfo_md:.2f}')
         else:
-            _top_perfo_md = st.number_input(f'Top Perfo ({_measurement} MD)', st.session_state["_top_perfo_md"], None, 'min', 1.00, format="%0.2f")
+            _top_perfo_md = st.number_input(f'Top Perfo ({_measurement} MD)', 0.00, None, _top_perfo_md, 1.00, format="%0.2f")
             
-        _bottom_perfo_tvd = st.number_input(f'Bottom Perfo ({_measurement} TVD)', st.session_state["_bottom_perfo_tvd"], None, 'min', 1.00, format="%0.2f")
+        _bottom_perfo_tvd = st.number_input(f'Bottom Perfo ({_measurement} TVD)', 0.00, None, _bottom_perfo_tvd, 1.00, format="%0.2f")
         if _id_welltype == 1: # 1-Vertical, 2-Directional
             _bottom_perfo_md = _bottom_perfo_tvd
             st.write(f'Bottom Perfo ({_measurement} MD) : {_bottom_perfo_md:.2f}')
         else:
             #_bottom_perfo_md = st.number_input(f'Bottom Perfo ({_measurement} MD)', st.session_state["_bottom_perfo_md"], None, 'min', 1.00, format="%0.2f")
-            _bottom_perfo_md = st.number_input(f'Bottom Perfo ({_measurement} MD)', st.session_state["_bottom_perfo_md"], None, 'min', 1.00, format="%0.2f")
+            _bottom_perfo_md = st.number_input(f'Bottom Perfo ({_measurement} MD)', 0.00, None, _bottom_perfo_md, 1.00, format="%0.2f")
         
-        _qtest = st.number_input('Qtest (BPD)', st.session_state["_qtest"], None, 'min', 1.00, format="%0.2f")
+        _qtest = st.number_input('Qtest (BPD)', 0.00, None, _qtest, 1.00, format="%0.2f")
         
         if _id_instrument == 1: # Downhole Sensor
-            _sbhp = st.number_input('SBHP (psig)', st.session_state["_sbhp"], None, 'min', 1.00, format="%0.2f")
-            _fbhp = st.number_input('FBHP (psig)', st.session_state["_fbhp"], None, 'min', 1.00, format="%0.2f")
+            _sbhp = st.number_input('SBHP (psig)', 0.00, None, _sbhp, 1.00, format="%0.2f")
+            _fbhp = st.number_input('FBHP (psig)', 0.00, None, _fbhp, 1.00, format="%0.2f")
         elif _id_instrument == 2: # Sonolog
-            _sfl = st.number_input(f'SFL ({_measurement})', st.session_state["_sfl"], None, 'min', 1.00, format="%0.2f")
-            _smgFreeGasAtQtest = st.number_input(f'SMG Free Gas @ Qtest ({_measurement})', st.session_state["_smgFreeGasAtQtest"], None, 'min', 1.00, format="%0.2f")
-        _producing_gor = st.number_input('Producing GOR (scf/stb)', st.session_state["_producing_gor"], None, 'min', 1.00, format="%0.2f")
-        _wc = st.number_input('WC (%)', st.session_state["_wc"], None, 'min', 1.00, format="%0.2f")
-        _bht = st.number_input('BHT (℉)', st.session_state["_bht"], None, 'min', 1.00, format="%0.2f")
-        _sgw = st.number_input('SGw', st.session_state["_sgw"], None, 'min', 1.00, format="%0.2f")
-        _sgg = st.number_input('SGg', st.session_state["_sgg"], None, 'min', 1.00, format="%0.2f")
-        _qdes = st.number_input('Qdes (BPD)', st.session_state["_qdes"], None, 'min', 1.00, format="%0.2f")
-        _psd = st.number_input(f'PSD ({_measurement} TVD)', st.session_state["_psd"], None, 'min', 1.00, format="%0.2f")
-        _psd_md = st.number_input(f'PSD ({_measurement} MD)', st.session_state["_psd_md"], None, 'min', 1.00, format="%0.2f")    
-        _whp = st.number_input('WHP (psi)', st.session_state["_whp"], None, 'min', 1.00, format="%0.2f")
+            _sfl = st.number_input(f'SFL ({_measurement})', 0.00, None, _sfl, 1.00, format="%0.2f")
+            _smgFreeGasAtQtest = st.number_input(f'SMG Free Gas @ Qtest ({_measurement})', 0.00, None, _smgFreeGasAtQtest, 1.00, format="%0.2f")
+        _producing_gor = st.number_input('Producing GOR (scf/stb)', 0.00, None, _producing_gor, 1.00, format="%0.2f")
+        _wc = st.number_input('WC (%)', 0.00, None, _wc, 1.00, format="%0.2f")
+        _bht = st.number_input('BHT (℉)', 0.00, None, _bht, 1.00, format="%0.2f")
+        _sgw = st.number_input('SGw', 0.00, None, _sgw, 1.00, format="%0.2f")
+        _sgg = st.number_input('SGg', 0.00, None, _sgg, 1.00, format="%0.2f")
+        _qdes = st.number_input('Qdes (BPD)', 0.00, None, _qdes, 1.00, format="%0.2f")
+        _psd = st.number_input(f'PSD ({_measurement} TVD)', 0.00, None, _psd, 1.00, format="%0.2f")
+        _psd_md = st.number_input(f'PSD ({_measurement} MD)', 0.00, None, _psd_md, 1.00, format="%0.2f")    
+        _whp = st.number_input('WHP (psi)', 0.00, None, _whp, 1.00, format="%0.2f")
     
     with row3_2:
         st.header("Basic Data (Optional)", divider="gray")
-        _p_casing = st.number_input('P. Casing (psi)', st.session_state["_p_casing"], None, 'min', 1.00, format="%0.2f")
-        _pb = st.number_input('Pb (psig)', st.session_state["_pb"], None, 'min', 1.00, format="%0.2f")
+        _p_casing = st.number_input('P. Casing (psi)', 0.00, None, _p_casing, 1.00, format="%0.2f")
+        _pb = st.number_input('Pb (psig)', 0.00, None, _pb, 1.00, format="%0.2f")
         #_cp = st.number_input('CP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
         # cp itu sama dgn p.casing, jadi utk hitung cp gunakan p.casing
         
@@ -173,10 +174,10 @@ def edit_and_add(wellnamesearch):
         # ------------- now how callback work ---------------
         col1, buff, col2 = st.columns([2,1,2])
         with col1:
-            _api = st.number_input('API', st.session_state["_api"], None, 'min', 1.00, format="%0.2f", 
+            _api = st.number_input('API', 0.00, None, st.session_state._api, 1.00, format="%0.2f", 
                                 key="api", on_change=api_to_sgo)            
         with col2:
-            _sgo = st.number_input('Sgo', st.session_state["_sgo"], None, 'min', 1.00, format="%0.2f", 
+            _sgo = st.number_input('Sgo', 0.00, None, st.session_state._sgo, 1.00, format="%0.2f", 
                                 key="sgo", on_change=sgo_to_api)    
         
         # 2Nov2024 -> blm data real dari nmr id_calc yg dipilih utk diedit (casing size, tubing size & id, juga type & coeffsiennya)
@@ -223,20 +224,20 @@ def edit_and_add(wellnamesearch):
         st.write('\n')            
         
         st.header("Liner", divider="gray")
-        _liner_id = st.number_input('Liner ID (inch)', st.session_state["_liner_id"], None, 'min', 1.00, format="%0.2f")
-        _top_liner_at_tvd = st.number_input(f'Top Liner at ({_measurement} TVD)', st.session_state._top_liner_at_tvd, None, 'min', 1.00, format="%0.2f")
+        _liner_id = st.number_input('Liner ID (inch)', 0.00, None, _liner_id, 1.00, format="%0.2f")
+        _top_liner_at_tvd = st.number_input(f'Top Liner at ({_measurement} TVD)', 0.00, None, _top_liner_at_tvd, 1.00, format="%0.2f")
         if _id_welltype == 1: # 1-Vertical, 2-Directional
             _top_liner_at_md = _top_liner_at_tvd
             st.write(f'Top Liner at ({_measurement} MD) : {_top_liner_at_md:.2f}')
         else:
-            _top_liner_at_md = st.number_input(f'Top Liner at ({_measurement} MD)', st.session_state["_top_liner_at_md"], None, 'min', 1.00, format="%0.2f")
+            _top_liner_at_md = st.number_input(f'Top Liner at ({_measurement} MD)', 0.00, None, _top_liner_at_md, 1.00, format="%0.2f")
 
-        _bottom_liner_at_tvd = st.number_input(f'Bottom Liner at ({_measurement} TVD)', st.session_state["_bottom_liner_at_tvd"], None, 'min', 1.00, format="%0.2f")
+        _bottom_liner_at_tvd = st.number_input(f'Bottom Liner at ({_measurement} TVD)', 0.00, None, _bottom_liner_at_tvd, 1.00, format="%0.2f")
         if _id_welltype == 1: # 1-Vertical, 2-Directional
             _bottom_liner_at_md = _bottom_liner_at_tvd
             st.write(f'Bottom Liner at ({_measurement} MD) : {_bottom_liner_at_md:.2f}')
         else:
-            _bottom_liner_at_md = st.number_input(f'Bottom Liner at ({_measurement} MD)', st.session_state["_bottom_liner_at_md"], None, 'min', 1.00, format="%0.2f")
+            _bottom_liner_at_md = st.number_input(f'Bottom Liner at ({_measurement} MD)', 0.00, None, _bottom_liner_at_md, 1.00, format="%0.2f")
              
     if st.button("Save"):                   
         #last_num = mnomor1.iloc[-1:]    
