@@ -174,10 +174,10 @@ def edit_and_add(wellnamesearch):
         # ------------- now how callback work ---------------
         col1, buff, col2 = st.columns([2,1,2])
         with col1:
-            _api = st.number_input('API', 0.00, None, st.session_state._api, 1.00, format="%0.2f", 
+            st.session_state._api = st.number_input('API', 0.00, None, st.session_state._api, 1.00, format="%0.2f", 
                                 key="api", on_change=api_to_sgo)            
         with col2:
-            _sgo = st.number_input('Sgo', 0.00, None, st.session_state._sgo, 1.00, format="%0.2f", 
+            st.session_state._sgo = st.number_input('Sgo', 0.00, None, st.session_state._sgo, 1.00, format="%0.2f", 
                                 key="sgo", on_change=sgo_to_api)    
         
         # 2Nov2024 -> blm data real dari nmr id_calc yg dipilih utk diedit (casing size, tubing size & id, juga type & coeffsiennya)
