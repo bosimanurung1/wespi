@@ -74,13 +74,14 @@ with col1:
     #_well_name_search = st.text_input('Well Name To Search: ')
     _well_name_search = st.text_input('Well Name To Search: ', _well_name_search, None, key="_well_name_search", 
                         on_change=search_to_explore)
+    #st.session_state._well_name_search = _well_name_search  
 with col2:
     #st.session_state["id_calc_01"] = st.number_input("ID Calculation To Explore:", st.session_state["id_calc_01"], None, "min", 1)
     id_calc_01 = st.number_input("ID Calculation To Explore:", id_calc_01, None, "min", 1, 
                 key="id_calc_01", on_change=explore_to_search)  
 
 st.write('')
-if _well_name_search: #_well_name_search!='':
+if st.session_state._well_name_search:
     #mycalc3b = mycalc3a[mycalc3a['well_name'].str.contains(_well_name_search)] # for minimalis, using mycalc3a
     mycalc3b = pd.DataFrame()
     mycalc3b = mycalc3[mycalc3['well_name'].str.contains(_well_name_search)]            
@@ -92,11 +93,10 @@ if _well_name_search: #_well_name_search!='':
         m.field_name as 'Field Name', w.welltype 'Well Type', m.date_calc as 'Date Calculation', \
         i.instrument as Instrument, c.calc_method as Method, meas.measurement as Meeasurement, \
         m.comment_or_info as Comment, m.top_perfo_tvd, m.top_perfo_md, m.bottom_perfo_tvd, m.bottom_perfo_md, \
-        m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, \
+        m.qtest, m.sfl, m.smg, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, \
         m.p_casing, m.pb, m.api, m.sgo, m.id_casing_size, s.casing_size, s.casing_drift_id, m.id_tubing_size, \
         tubsize.tubing_size, m.id_tubing_id, tubid.tubing_id, m.id_tubing_coeff, tubcoef.type, tubcoef.coefficient, \
-        m.liner_id, m.top_liner_at_tvd, m.top_liner_at_md, m.bottom_liner_at_tvd, m.bottom_liner_at_md, \
-        m.sfl, m.smg \
+        m.liner_id, m.top_liner_at_tvd, m.top_liner_at_md, m.bottom_liner_at_tvd, m.bottom_liner_at_md \
         from mycalc3b m \
             left join muserlogin u on m.user_id = u.user_id \
             left join minstrument i on m.id_instrument = i.id_instrument \
@@ -125,7 +125,7 @@ if st.session_state["id_calc_02"]:
     mycalc3c = mycalc3[mycalc3['id_calc']==id_calc_02].reset_index(drop=True)
     if mycalc3c.shape[0]!=0:
         st.session_state["mycalc3c"] = mycalc3c
-        edit_and_add() # di new_calc2.py
+        edit_and_add(st.session_state._well_name_search) # di new_calc2.py, msh blm berhasil membersihkan hasil edit inputan
     else:
         if _well_name_search != '':
             st.write('Data Tidak Ada')
