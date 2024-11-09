@@ -81,7 +81,7 @@ with col2:
                 key="id_calc_01", on_change=explore_to_search)  
 
 st.write('')
-if st.session_state._well_name_search:
+if _well_name_search:
     #mycalc3b = mycalc3a[mycalc3a['well_name'].str.contains(_well_name_search)] # for minimalis, using mycalc3a
     mycalc3b = pd.DataFrame()
     mycalc3b = mycalc3[mycalc3['well_name'].str.contains(_well_name_search)]            
