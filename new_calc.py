@@ -92,7 +92,7 @@ with col2:
 row3_1, row3_spacer, row3_2= st.columns((3, 1, 3))
 with row3_1:
     _top_perfo_tvd = _top_perfo_md = _bottom_perfo_tvd = _bottom_perfo_md = 0.00
-    _qtest = _sbhp = _fbhp = _producing_gor = _wc = _bht = 0.00
+    _qtest = _sbhp = _fbhp = _sfl = _smgFreeGasAtQtest = _producing_gor = _wc = _bht = 0.00
     _sgw = _sgg = _qdes = _psd = _whp = _psd_md = 0.00
     
     st.header("Basic Data (Required)", divider="gray")
@@ -112,9 +112,12 @@ with row3_1:
     
     _qtest = st.number_input('Qtest (BPD)', 0.00, None, 'min', 1.00, format="%0.2f")
     
-    #if _id_instrument == 2: # 1-Downhole Sensor 2-Sonolog
-    _sbhp = st.number_input('SBHP (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
-    _fbhp = st.number_input('FBHP (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
+    if _id_instrument == 1: # Downhole Sensor
+        _sbhp = st.number_input('SBHP (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
+        _fbhp = st.number_input('FBHP (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
+    elif _id_instrument == 2: # Sonolog
+         _sfl = st.number_input(f'SFL ({_measurement})', _sfl, None, 'min', 1.00, format="%0.2f")
+         _smgFreeGasAtQtest = st.number_input(f'SMG Free Gas @ Qtest ({_measurement})', _smgFreeGasAtQtest, None, 'min', 1.00, format="%0.2f")
     _producing_gor = st.number_input('Producing GOR (scf/stb)', 0.00, None, 'min', 1.00, format="%0.2f")
     _wc = st.number_input('WC (%)', 0.00, None, 'min', 1.00, format="%0.2f")
     _bht = st.number_input('BHT (℉)', 0.00, None, 'min', 1.00, format="%0.2f")
@@ -269,11 +272,9 @@ if st.button("Save"):
         st.markdown(_comment_or_info)
         #st.write('\n')
 
-    if _id_instrument==1 and _id_calc_method==2: #Downhole Sensor & Vogel         
+    #if _id_instrument==1 and _id_calc_method==2: #Downhole Sensor & Vogel         
+    if _id_calc_method==2: # Vogel         
         #Hitung2an Calculation sblm IPR Curve
-        _qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
-        # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
-        _Pwf_at_Qdes = (5 * (3.24 - 3.2 * (_qdes/_qmax))**0.5 - 1) / 8 * _sbhp
         # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
         # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
         # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) ) ^1.2048)
@@ -286,12 +287,29 @@ if st.button("Save"):
         # Sg=(1-WC)*Qdes*Rs/1000
         # Free Gas (FG) = Tg - Sg; 
         
+        if _p_casing == 0:
+            _p_casing_hitung = 0
+        else:
+            if _measurement=='m': # m (meter)
+                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
+            elif _measurement=='ft': # ft (feet)
+                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
+
         # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
         _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
         # SGFluid = WC * SGw + (1 - WC) * Sgo
         #         = 88% * 1.02 + (1- 88%) * 0.887147335
         _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
         
+        # to convert SFL & SMG (already in ft) into SBHP & FBHP
+        if _id_instrument==2: # Sonolog                
+            _sbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - _sfl)
+            _fbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - (_sfl+_smgFreeGasAtQtest))
+
+        _qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
+        # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
+        _Pwf_at_Qdes = (5 * (3.24 - 3.2 * (_qdes/_qmax))**0.5 - 1) / 8 * _sbhp
+
         # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
         _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
         
@@ -337,14 +355,6 @@ if st.button("Save"):
         # WHP = THP(WHP)*2.31/SGFluid
         _whp_hitung=_whp*2.31/_sgfluid
         
-        if _p_casing == 0:
-            _p_casing_hitung = 0
-        else:
-            if _id_measurement==1: # m (meter)
-                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-            elif _id_measurement==2: # ft (feet)
-                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
-
         # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
         #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
         _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
@@ -584,7 +594,7 @@ if st.button("Save"):
 
         new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                           _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                          _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
+                          _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
                           _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
                           st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
                           st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]   
@@ -663,12 +673,9 @@ if st.button("Save"):
                 
             #st.session_state   
 
-    elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
+    #elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
+    elif _id_calc_method==1: # Straight Line
         #Hitung2an Calculation sblm IPR Curve
-        _pi = _qtest / (_sbhp - _fbhp)
-        # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
-        _Pwf_at_Qdes = _sbhp - _qdes / _pi
-    
         # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
         # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
         # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) ) ^1.2048)
@@ -681,15 +688,37 @@ if st.button("Save"):
         # Sg=(1-WC)*Qdes*Rs/1000
         # Free Gas (FG) = Tg - Sg; 
     
+        if _p_casing == 0:
+            _p_casing_hitung = 0
+        else:
+            if _measurement=='m': # m (meter)
+                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
+            elif _measurement=='ft': # ft (feet)
+                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
+
         # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
         _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
         # SGFluid = WC * SGw + (1 - WC) * Sgo
         #         = 88% * 1.02 + (1- 88%) * 0.887147335
         _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
         
+        # to convert SFL & SMG (already in ft) into SBHP & FBHP
+        if _id_instrument==2: # Sonolog
+            _sbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - _sfl)
+            _fbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - (_sfl+_smgFreeGasAtQtest))
+
+        # in straight line no need _qmax but _pi
+        _pi = _qtest / (_sbhp - _fbhp)
+        #_qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
+
+        # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
+        #_Pwf_at_Qdes = (5 * (3.24 - 3.2 * (_qdes/_qmax))**0.5 - 1) / 8 * _sbhp
+        # in straight line:
+        _Pwf_at_Qdes = _sbhp - _qdes / _pi
+
         # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
         _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
-        
+    
         # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
         #_Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
         _Rs=_sgg*(( (_pip/18) * (10**(0.0125*st.session_state.api - 0.00091*_bht)) )**1.2048)
@@ -732,14 +761,6 @@ if st.button("Save"):
         # WHP = THP(WHP)*2.31/SGFluid
         _whp_hitung=_whp*2.31/_sgfluid
     
-        if _p_casing == 0: # _p_casing satuannya psi
-            _p_casing_hitung = 0
-        else:
-            if _id_measurement==1: # m (meter)
-                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-            elif _id_measurement==2: # ft (feet)
-                _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
-
         # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
         #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
         _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
@@ -944,7 +965,7 @@ if st.button("Save"):
         #st.dataframe(df_ipr_data, hide_index=True)                  
         new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                          _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                         _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
+                         _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
                          _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
                          st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
                          st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]                               
