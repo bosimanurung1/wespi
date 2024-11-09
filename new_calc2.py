@@ -31,30 +31,30 @@ def edit_and_add(wellnamesearch):
     _welltype = st.session_state.mycalc3c['welltype'].values[0]
     _comment_or_info = st.session_state.mycalc3c['comment_or_info'].values[0]; st.session_state["_comment_or_info"] = _comment_or_info
 
-    _top_perfo_tvd=st.session_state.mycalc3c['top_perfo_tvd'].values[0]; st.session_state["_top_perfo_tvd"] = float(_top_perfo_tvd); _top_perfo_tvd=float(_top_perfo_tvd)
-    _top_perfo_md=st.session_state.mycalc3c['top_perfo_md'].values[0]; st.session_state["_top_perfo_md"] = float(_top_perfo_md)
-    _bottom_perfo_tvd=st.session_state.mycalc3c['bottom_perfo_tvd'].values[0]; st.session_state["_bottom_perfo_tvd"] = float(_bottom_perfo_tvd)
-    _bottom_perfo_md=st.session_state.mycalc3c['bottom_perfo_md'].values[0]; st.session_state["_bottom_perfo_md"] = float(_bottom_perfo_md)
+    _top_perfo_tvd=st.session_state.mycalc3c['top_perfo_tvd'].values[0]; st.session_state["_top_perfo_tvd"] = float(_top_perfo_tvd); _top_perfo_tvd = float(_top_perfo_tvd)
+    _top_perfo_md=st.session_state.mycalc3c['top_perfo_md'].values[0]; st.session_state["_top_perfo_md"] = float(_top_perfo_md); _top_perfo_md = float(_top_perfo_md)
+    _bottom_perfo_tvd=st.session_state.mycalc3c['bottom_perfo_tvd'].values[0]; st.session_state["_bottom_perfo_tvd"] = float(_bottom_perfo_tvd); _bottom_perfo_tvd = float(_bottom_perfo_tvd)
+    _bottom_perfo_md=st.session_state.mycalc3c['bottom_perfo_md'].values[0]; st.session_state["_bottom_perfo_md"] = float(_bottom_perfo_md); _bottom_perfo_md = float(_bottom_perfo_md)
 
-    _sfl=st.session_state.mycalc3c['sfl'].values[0]; st.session_state["_sfl"] = float(_sfl)
-    _smgFreeGasAtQtest=st.session_state.mycalc3c['smg'].values[0]; st.session_state["_smgFreeGasAtQtest"] = float(_smgFreeGasAtQtest)
-    _qtest=st.session_state.mycalc3c['qtest'].values[0]; st.session_state["_qtest"] = float(_qtest)
-    _sbhp=st.session_state.mycalc3c['sbhp'].values[0]; st.session_state["_sbhp"] = float(_sbhp)
-    _fbhp=st.session_state.mycalc3c['fbhp'].values[0]; st.session_state["_fbhp"] = float(_fbhp)
-    _producing_gor=st.session_state.mycalc3c['producing_gor'].values[0]; st.session_state["_producing_gor"] = float(_producing_gor)
-    _wc=st.session_state.mycalc3c['wc'].values[0]; st.session_state["_wc"] = float(_wc)
-    _bht=st.session_state.mycalc3c['bht'].values[0]; st.session_state["_bht"] = float(_bht)
-    _sgw=st.session_state.mycalc3c['sgw'].values[0]; st.session_state["_sgw"] = float(_sgw)
-    _sgg=st.session_state.mycalc3c['sgg'].values[0]; st.session_state["_sgg"] = float(_sgg)
-    _qdes=st.session_state.mycalc3c['qdes'].values[0]; st.session_state["_qdes"] = float(_qdes)
-    _psd=st.session_state.mycalc3c['psd'].values[0]; st.session_state["_psd"] = float(_psd)
-    _whp=st.session_state.mycalc3c['whp'].values[0]; st.session_state["_whp"] = float(_whp)
-    _psd_md=st.session_state.mycalc3c['psd_md'].values[0]; st.session_state["_psd_md"] = float(_psd_md)
+    _sfl=st.session_state.mycalc3c['sfl'].values[0]; st.session_state["_sfl"] = float(_sfl); _sfl = float(_sfl)
+    _smgFreeGasAtQtest=st.session_state.mycalc3c['smg'].values[0]; st.session_state["_smgFreeGasAtQtest"] = float(_smgFreeGasAtQtest); _smgFreeGasAtQtest= float(_smgFreeGasAtQtest)
+    _qtest=st.session_state.mycalc3c['qtest'].values[0]; st.session_state["_qtest"] = float(_qtest); _qtest = float(_qtest)
+    _sbhp=st.session_state.mycalc3c['sbhp'].values[0]; st.session_state["_sbhp"] = float(_sbhp); _sbhp = float(_sbhp)
+    _fbhp=st.session_state.mycalc3c['fbhp'].values[0]; st.session_state["_fbhp"] = float(_fbhp); _fbhp = float(_fbhp)
+    _producing_gor=st.session_state.mycalc3c['producing_gor'].values[0]; st.session_state["_producing_gor"] = float(_producing_gor); _producing_gor = float(_producing_gor)
+    _wc=st.session_state.mycalc3c['wc'].values[0]; st.session_state["_wc"] = float(_wc); _wc = float(_wc)
+    _bht=st.session_state.mycalc3c['bht'].values[0]; st.session_state["_bht"] = float(_bht); _bht = float(_bht)
+    _sgw=st.session_state.mycalc3c['sgw'].values[0]; st.session_state["_sgw"] = float(_sgw); _sgw = float(_sgw)
+    _sgg=st.session_state.mycalc3c['sgg'].values[0]; st.session_state["_sgg"] = float(_sgg); _sgg = float(_sgg)
+    _qdes=st.session_state.mycalc3c['qdes'].values[0]; st.session_state["_qdes"] = float(_qdes); _qdes = float(_qdes)
+    _psd=st.session_state.mycalc3c['psd'].values[0]; st.session_state["_psd"] = float(_psd); _psd = float(_psd)
+    _whp=st.session_state.mycalc3c['whp'].values[0]; st.session_state["_whp"] = float(_whp); _whp = float(_whp)
+    _psd_md=st.session_state.mycalc3c['psd_md'].values[0]; st.session_state["_psd_md"] = float(_psd_md); _psd_md = float(_psd_md)
 
-    _p_casing=st.session_state.mycalc3c['p_casing'].values[0]; st.session_state["_p_casing"] = float(_p_casing)
-    _pb=st.session_state.mycalc3c['pb'].values[0]; st.session_state["_pb"] = float(_pb)
-    _api=st.session_state.mycalc3c['api'].values[0]; st.session_state["_api"] = float(_api)
-    _sgo=st.session_state.mycalc3c['sgo'].values[0]; st.session_state["_sgo"] = float(_sgo)
+    _p_casing=st.session_state.mycalc3c['p_casing'].values[0]; st.session_state["_p_casing"] = float(_p_casing); _p_casing = float(_p_casing)
+    _pb=st.session_state.mycalc3c['pb'].values[0]; st.session_state["_pb"] = float(_pb); _pb = float(_pb)
+    _api=st.session_state.mycalc3c['api'].values[0]; st.session_state["_api"] = float(_api); _api = float(_api)
+    _sgo=st.session_state.mycalc3c['sgo'].values[0]; st.session_state["_sgo"] = float(_sgo); _sgo = float(_sgo)
 
     _casing_size=st.session_state.mycalc3c['casing_size'].values[0]; st.session_state["_casing_size"] = _casing_size
     _casing_id=st.session_state.mycalc3c['casing_drift_id'].values[0]; st.session_state["_casing_id"] = _casing_id
@@ -63,11 +63,11 @@ def edit_and_add(wellnamesearch):
     _tubing_coeff_type=st.session_state.mycalc3c['type'].values[0]; st.session_state["_tubing_coeff_type"] = _tubing_coeff_type
     _coefficient=st.session_state.mycalc3c['coefficient'].values[0]; st.session_state["coefficient"] = _coefficient
     
-    _liner_id=st.session_state.mycalc3c['liner_id'].values[0]; st.session_state["_liner_id"] = float(_liner_id)
-    _top_liner_at_tvd=st.session_state.mycalc3c['top_liner_at_tvd'].values[0]; st.session_state["_top_liner_at_tvd"] = float(_top_liner_at_tvd)
-    _top_liner_at_md=st.session_state.mycalc3c['top_liner_at_md'].values[0]; st.session_state["_top_liner_at_md"] = float(_top_liner_at_md)
-    _bottom_liner_at_tvd=st.session_state.mycalc3c['bottom_liner_at_tvd'].values[0]; st.session_state["_bottom_liner_at_tvd"] = float(_bottom_liner_at_tvd)
-    _bottom_liner_at_md=st.session_state.mycalc3c['bottom_liner_at_md'].values[0]; st.session_state["_bottom_liner_at_md"] = float(_bottom_liner_at_md)
+    _liner_id=st.session_state.mycalc3c['liner_id'].values[0]; st.session_state["_liner_id"] = float(_liner_id); _liner_id = float(_liner_id)
+    _top_liner_at_tvd=st.session_state.mycalc3c['top_liner_at_tvd'].values[0]; st.session_state["_top_liner_at_tvd"] = float(_top_liner_at_tvd); _top_liner_at_tvd = float(_top_liner_at_tvd)
+    _top_liner_at_md=st.session_state.mycalc3c['top_liner_at_md'].values[0]; st.session_state["_top_liner_at_md"] = float(_top_liner_at_md); _top_liner_at_md = float(_top_liner_at_md)
+    _bottom_liner_at_tvd=st.session_state.mycalc3c['bottom_liner_at_tvd'].values[0]; st.session_state["_bottom_liner_at_tvd"] = float(_bottom_liner_at_tvd); _bottom_liner_at_tvd = float(_bottom_liner_at_tvd)
+    _bottom_liner_at_md=st.session_state.mycalc3c['bottom_liner_at_md'].values[0]; st.session_state["_bottom_liner_at_md"] = float(_bottom_liner_at_md); _bottom_liner_at_md = float(_bottom_liner_at_md)
 
     st.subheader(f"ID Calculation {st.session_state.id_calc_02} To Edit")
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
@@ -120,7 +120,7 @@ def edit_and_add(wellnamesearch):
     with row3_1:
         st.header("Basic Data (Required)", divider="gray")
         #_top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", st.session_state["_top_perfo_tvd"], None, 'min', 1.00, format="%0.2f")
-        _top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", 0.00, None, _top_perfo_tvd, 0.00, format="%0.2f")
+        _top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", 0.00, None, _top_perfo_tvd, 1.00, format="%0.2f")
         if _id_welltype == 1: # 1-Vertical, 2-Directional
             _top_perfo_md = _top_perfo_tvd
             st.write(f'Top Perfo ({_measurement} MD) : {_top_perfo_md:.2f}')
