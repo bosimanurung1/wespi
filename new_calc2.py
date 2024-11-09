@@ -31,7 +31,7 @@ def edit_and_add(wellnamesearch):
     _welltype = st.session_state.mycalc3c['welltype'].values[0]
     _comment_or_info = st.session_state.mycalc3c['comment_or_info'].values[0]; st.session_state["_comment_or_info"] = _comment_or_info
 
-    _top_perfo_tvd=st.session_state.mycalc3c['top_perfo_tvd'].values[0]; st.session_state["_top_perfo_tvd"] = float(_top_perfo_tvd)
+    _top_perfo_tvd=st.session_state.mycalc3c['top_perfo_tvd'].values[0]; st.session_state["_top_perfo_tvd"] = float(_top_perfo_tvd); _top_perfo_tvd=float(_top_perfo_tvd)
     _top_perfo_md=st.session_state.mycalc3c['top_perfo_md'].values[0]; st.session_state["_top_perfo_md"] = float(_top_perfo_md)
     _bottom_perfo_tvd=st.session_state.mycalc3c['bottom_perfo_tvd'].values[0]; st.session_state["_bottom_perfo_tvd"] = float(_bottom_perfo_tvd)
     _bottom_perfo_md=st.session_state.mycalc3c['bottom_perfo_md'].values[0]; st.session_state["_bottom_perfo_md"] = float(_bottom_perfo_md)
@@ -120,7 +120,7 @@ def edit_and_add(wellnamesearch):
     with row3_1:
         st.header("Basic Data (Required)", divider="gray")
         #_top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", st.session_state["_top_perfo_tvd"], None, 'min', 1.00, format="%0.2f")
-        _top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", 0.00, None, _top_perfo_tvd, 1.00, format="%0.2f")
+        _top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", 0.00, None, _top_perfo_tvd, 0.00, format="%0.2f")
         if _id_welltype == 1: # 1-Vertical, 2-Directional
             _top_perfo_md = _top_perfo_tvd
             st.write(f'Top Perfo ({_measurement} MD) : {_top_perfo_md:.2f}')
