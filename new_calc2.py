@@ -17,7 +17,7 @@ mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
 df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
 
-def edit_and_add():
+def edit_and_add(wellnamesearch):
     _id_user_id = st.session_state.mycalc3c['user_id'].values[0]; _user_id = st.session_state.mycalc3c['user_id'].values[0]
     _well_name = st.session_state.mycalc3c['well_name'].values[0]; st.session_state["_well_name"] = _well_name
     _field_name = st.session_state.mycalc3c['field_name'].values[0]; st.session_state["_field_name"] = _field_name
@@ -36,6 +36,8 @@ def edit_and_add():
     _bottom_perfo_tvd=st.session_state.mycalc3c['bottom_perfo_tvd'].values[0]; st.session_state["_bottom_perfo_tvd"] = float(_bottom_perfo_tvd)
     _bottom_perfo_md=st.session_state.mycalc3c['bottom_perfo_md'].values[0]; st.session_state["_bottom_perfo_md"] = float(_bottom_perfo_md)
 
+    _sfl=st.session_state.mycalc3c['sfl'].values[0]; st.session_state["_sfl"] = float(_sfl)
+    _smgFreeGasAtQtest=st.session_state.mycalc3c['smg'].values[0]; st.session_state["_smgFreeGasAtQtest"] = float(_smgFreeGasAtQtest)
     _qtest=st.session_state.mycalc3c['qtest'].values[0]; st.session_state["_qtest"] = float(_qtest)
     _sbhp=st.session_state.mycalc3c['sbhp'].values[0]; st.session_state["_sbhp"] = float(_sbhp)
     _fbhp=st.session_state.mycalc3c['fbhp'].values[0]; st.session_state["_fbhp"] = float(_fbhp)
@@ -134,9 +136,12 @@ def edit_and_add():
         
         _qtest = st.number_input('Qtest (BPD)', st.session_state["_qtest"], None, 'min', 1.00, format="%0.2f")
         
-        #if _id_instrument == 2: # 1-Downhole Sensor 2-Sonolog
-        _sbhp = st.number_input('SBHP (psig)', st.session_state["_sbhp"], None, 'min', 1.00, format="%0.2f")
-        _fbhp = st.number_input('FBHP (psig)', st.session_state["_fbhp"], None, 'min', 1.00, format="%0.2f")
+        if _id_instrument == 1: # Downhole Sensor
+            _sbhp = st.number_input('SBHP (psig)', st.session_state["_sbhp"], None, 'min', 1.00, format="%0.2f")
+            _fbhp = st.number_input('FBHP (psig)', st.session_state["_fbhp"], None, 'min', 1.00, format="%0.2f")
+        elif _id_instrument == 2: # Sonolog
+            _sfl = st.number_input(f'SFL ({_measurement})', st.session_state["_sfl"], None, 'min', 1.00, format="%0.2f")
+            _smgFreeGasAtQtest = st.number_input(f'SMG Free Gas @ Qtest ({_measurement})', st.session_state["_smgFreeGasAtQtest"], None, 'min', 1.00, format="%0.2f")
         _producing_gor = st.number_input('Producing GOR (scf/stb)', st.session_state["_producing_gor"], None, 'min', 1.00, format="%0.2f")
         _wc = st.number_input('WC (%)', st.session_state["_wc"], None, 'min', 1.00, format="%0.2f")
         _bht = st.number_input('BHT (℉)', st.session_state["_bht"], None, 'min', 1.00, format="%0.2f")
@@ -231,7 +236,6 @@ def edit_and_add():
             _bottom_liner_at_md = _bottom_liner_at_tvd
             st.write(f'Bottom Liner at ({_measurement} MD) : {_bottom_liner_at_md:.2f}')
         else:
-            #_bottom_perfo_md = st.number_input(f'Bottom Perfo ({_measurement} MD)', st.session_state["_bottom_perfo_md"], None, 'min', 1.00, format="%0.2f")
             _bottom_liner_at_md = st.number_input(f'Bottom Liner at ({_measurement} MD)', st.session_state["_bottom_liner_at_md"], None, 'min', 1.00, format="%0.2f")
              
     if st.button("Save"):                   
@@ -286,11 +290,9 @@ def edit_and_add():
             st.markdown(_comment_or_info)
             #st.write('\n')
     
-        if _id_instrument==1 and _id_calc_method==2: #Downhole Sensor & Vogel         
+        #if _id_instrument==1 and _id_calc_method==2: #Downhole Sensor & Vogel         
+        if _id_calc_method==2: # Vogel         
             #Hitung2an Calculation sblm IPR Curve
-            _qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
-            # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
-            _Pwf_at_Qdes = (5 * (3.24 - 3.2 * (_qdes/_qmax))**0.5 - 1) / 8 * _sbhp
             # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
             # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
             # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) ) ^1.2048)
@@ -303,15 +305,32 @@ def edit_and_add():
             # Sg=(1-WC)*Qdes*Rs/1000
             # Free Gas (FG) = Tg - Sg; 
             
+            if _p_casing == 0:
+                _p_casing_hitung = 0
+            else:
+                if _measurement=='m': # m (meter)
+                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
+                elif _measurement=='ft': # ft (feet)
+                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
+
             # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
             _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
             # SGFluid = WC * SGw + (1 - WC) * Sgo
             #         = 88% * 1.02 + (1- 88%) * 0.887147335
             _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
             
+            # to convert SFL & SMG (already in ft) into SBHP & FBHP
+            if _id_instrument==2: # Sonolog                
+                _sbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - _sfl)
+                _fbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - (_sfl+_smgFreeGasAtQtest))
+
+            _qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
+            # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
+            _Pwf_at_Qdes = (5 * (3.24 - 3.2 * (_qdes/_qmax))**0.5 - 1) / 8 * _sbhp
+
             # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
             _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
-            
+
             # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
             #_Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
             _Rs=_sgg*(( (_pip/18) * (10**(0.0125*st.session_state.api - 0.00091*_bht)) )**1.2048)
@@ -353,14 +372,6 @@ def edit_and_add():
 
             # WHP = THP(WHP)*2.31/SGFluid
             _whp_hitung=_whp*2.31/_sgfluid
-            
-            if _p_casing == 0:
-                _p_casing_hitung = 0
-            else:
-                if _id_measurement==1: # m (meter)
-                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-                elif _id_measurement==2: # ft (feet)
-                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
 
             # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
             #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
@@ -601,10 +612,11 @@ def edit_and_add():
     
             new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                             _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                            _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
+                            _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
                             _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
                             st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
-                            st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]                               
+                            st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
+                            _bottom_liner_at_tvd, _bottom_liner_at_md]]                               
             with open('tmycalc.csv', mode='a', newline='') as f_object:
             #writer_object = csv.writer(file)            
                 writer_object = writer(f_object)            
@@ -612,8 +624,11 @@ def edit_and_add():
                 writer_object.writerows(new_records)                    
                 f_object.close() 
                 
-            if st.button("Confirm"):      
-                st.write('')            
+            if st.button("Next"):      
+                #st.session_state._well_name_search = ''
+                wellnamesearch=''
+                return(wellnamesearch)
+                #st.write('')            
                 #st.session_state["api"] = 0.00; st.session_state.sgo = 0.00    
                 #st.session_state["_id_tubing_coeff"] = 0; st.session_state._tubing_coeff_type = ''    
                 #st.session_state._coefficient = 0
@@ -623,12 +638,9 @@ def edit_and_add():
                     
                 #st.session_state   
     
-        elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
-            #Hitung2an Calculation sblm IPR Curve
-            _pi = _qtest / (_sbhp - _fbhp)
-            # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
-            _Pwf_at_Qdes = _sbhp - _qdes / _pi
-        
+        #elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
+        elif _id_calc_method==1: # Straight Line
+            #Hitung2an Calculation sblm IPR Curve        
             # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
             # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
             # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) ) ^1.2048)
@@ -641,15 +653,37 @@ def edit_and_add():
             # Sg=(1-WC)*Qdes*Rs/1000
             # Free Gas (FG) = Tg - Sg; 
         
+            if _p_casing == 0:
+                _p_casing_hitung = 0
+            else:
+                if _measurement=='m': # m (meter)
+                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
+                elif _measurement=='ft': # ft (feet)
+                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
+
             # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
             _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
             # SGFluid = WC * SGw + (1 - WC) * Sgo
             #         = 88% * 1.02 + (1- 88%) * 0.887147335
             _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
             
+            # to convert SFL & SMG (already in ft) into SBHP & FBHP
+            if _id_instrument==2: # Sonolog
+                _sbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - _sfl)
+                _fbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - (_sfl+_smgFreeGasAtQtest))
+
+            # in straight line no need _qmax but _pi
+            _pi = _qtest / (_sbhp - _fbhp)
+            #_qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
+
+            # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
+            #_Pwf_at_Qdes = (5 * (3.24 - 3.2 * (_qdes/_qmax))**0.5 - 1) / 8 * _sbhp
+            # in straight line:
+            _Pwf_at_Qdes = _sbhp - _qdes / _pi
+
             # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
             _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
-            
+
             # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
             #_Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
             _Rs=_sgg*(( (_pip/18) * (10**(0.0125*st.session_state.api - 0.00091*_bht)) )**1.2048)
@@ -692,14 +726,6 @@ def edit_and_add():
             # WHP = THP(WHP)*2.31/SGFluid
             _whp_hitung=_whp*2.31/_sgfluid
         
-            if _p_casing == 0:
-                _p_casing_hitung = 0
-            else:
-                if _id_measurement==1: # m (meter)
-                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-                elif _id_measurement==2: # ft (feet)
-                    _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
-
             # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
             #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
             _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
@@ -910,10 +936,11 @@ def edit_and_add():
             #st.dataframe(df_ipr_data, hide_index=True)                  
             new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                             _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                            _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
+                            _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
                             _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
                             st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
-                            st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]                               
+                            st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
+                            _bottom_liner_at_tvd, _bottom_liner_at_md]]
             with open('tmycalc.csv', mode='a', newline='') as f_object:
                 #writer_object = csv.writer(file)            
                 writer_object = writer(f_object)            
@@ -921,6 +948,7 @@ def edit_and_add():
                 writer_object.writerows(new_records)                    
                 f_object.close() 
                 
-            if st.button("Confirm"):      
+            if st.button("Next"):
+                st.session_state._well_name_search = ''
                 st.write('')
             # ---------------------------- end of edit_and_add function --------------------------------------------
