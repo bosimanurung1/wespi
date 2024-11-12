@@ -297,6 +297,10 @@ if st.button("Save"):
 
         # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
         _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
+        # 12Nov24
+        if _id_measurement==1: # m (meter)
+            _MidPerf *= 3.28084
+
         # SGFluid = WC * SGw + (1 - WC) * Sgo
         #         = 88% * 1.02 + (1- 88%) * 0.887147335
         _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
@@ -698,6 +702,11 @@ if st.button("Save"):
 
         # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
         _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
+
+        # 12Nov24
+        if _id_measurement==1: # m (meter)
+            _MidPerf *= 3.28084
+
         # SGFluid = WC * SGw + (1 - WC) * Sgo
         #         = 88% * 1.02 + (1- 88%) * 0.887147335
         _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
