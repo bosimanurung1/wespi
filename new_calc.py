@@ -125,7 +125,11 @@ with row3_1:
     _sgg = st.number_input('SGg', 0.00, None, 'min', 1.00, format="%0.2f")
     _qdes = st.number_input('Qdes (BPD)', 0.00, None, 'min', 1.00, format="%0.2f")
     _psd = st.number_input(f'PSD ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
+    if _measurement=='m': # m (meter)
+        _psd *= 3.28084
     _psd_md = st.number_input(f'PSD ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")    
+    if _measurement=='m': # m (meter)
+        _psd_md *= 3.28084
     _whp = st.number_input('WHP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
 
 with row3_2:
