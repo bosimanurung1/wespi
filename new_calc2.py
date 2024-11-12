@@ -162,12 +162,12 @@ def edit_and_add(wellnamesearch):
         
         st.header("API/Sgo", divider="gray")
         def api_to_sgo():
-            st.session_state.sgo = 141.5/(131.5 + st.session_state.api) #disimpan apa adanya aja digit di belakang koma
+            st.session_state._sgo = 141.5/(131.5 + st.session_state._api) #disimpan apa adanya aja digit di belakang koma
             #st.session_state.sgo = round(st.session_state.sgo, 4)
             #_sgo = 141.5/(131.5 + _api)
     
         def sgo_to_api():
-            st.session_state.api = 141.5/st.session_state.sgo - 131.5 #disimpan apa adanya aja digit di belakang koma
+            st.session_state._api = 141.5/st.session_state._sgo - 131.5 #disimpan apa adanya aja digit di belakang koma
             #st.session_state.api = round(st.session_state.api, 4) 
             #_api = 141.5/_sgo - 131.5    
             
@@ -318,7 +318,7 @@ def edit_and_add(wellnamesearch):
             _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
             # SGFluid = WC * SGw + (1 - WC) * Sgo
             #         = 88% * 1.02 + (1- 88%) * 0.887147335
-            _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
+            _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * st.session_state._sgo
             
             # to convert SFL & SMG (already in ft) into SBHP & FBHP
             if _id_instrument==2: # Sonolog                
@@ -339,7 +339,7 @@ def edit_and_add(wellnamesearch):
             # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
             # _Bo = 0.972+0.000147*((_Rs*math.sqrt(_sgg/_sgo)+1.25*_bht)**1.175) --> math masalah diDeploy
             #_Bo = 0.972+0.000147*((_Rs * (_sgg/_sgo)**0.5 + 1.25 * _bht) ** 1.175)
-            _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state.sgo)**0.5 + 1.25 * _bht) ** 1.175)
+            _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state._sgo)**0.5 + 1.25 * _bht) ** 1.175)
             # Vo=(1-WC)*Qdes*Bo;
             _Vo = (1-(_wc/100))*_qdes*_Bo;
             
@@ -361,7 +361,7 @@ def edit_and_add(wellnamesearch):
             _Vt = _Vo + _Vg + _Vw
             
             # _composite_sg = ( ( (1-WC)*Qdes*Sgo + WC*Qdes*Sgw) * 62.4*5.6146 + Producing GOR*(1-WC)*Qdes*Sgg*0.0752) / (Vt*5.6146*62.4)
-            _composite_sg = ( ( (1-(_wc/100))*_qdes*_sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
+            _composite_sg = ( ( (1-(_wc/100))*_qdes*st.session_state._sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
             
             # WFL =PSD-(PIP*2.31/SGFluid)
             if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
@@ -615,7 +615,7 @@ def edit_and_add(wellnamesearch):
                             _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                             _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
                             _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
-                            st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
+                            st.session_state._api, st.session_state._sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
                             st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
                             _bottom_liner_at_tvd, _bottom_liner_at_md]]                               
             with open('tmycalc.csv', mode='a', newline='') as f_object:
@@ -666,7 +666,7 @@ def edit_and_add(wellnamesearch):
             _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
             # SGFluid = WC * SGw + (1 - WC) * Sgo
             #         = 88% * 1.02 + (1- 88%) * 0.887147335
-            _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
+            _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * st.session_state._sgo
             
             # to convert SFL & SMG (already in ft) into SBHP & FBHP
             if _id_instrument==2: # Sonolog
@@ -692,7 +692,7 @@ def edit_and_add(wellnamesearch):
             # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
             # _Bo = 0.972+0.000147*((_Rs*math.sqrt(_sgg/_sgo)+1.25*_bht)**1.175) --> math masalah diDeploy
             #_Bo = 0.972+0.000147*((_Rs * (_sgg/_sgo)**0.5 + 1.25 * _bht) ** 1.175)
-            _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state.sgo)**0.5 + 1.25 * _bht) ** 1.175)
+            _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state._sgo)**0.5 + 1.25 * _bht) ** 1.175)
             # Vo=(1-WC)*Qdes*Bo;
             _Vo = (1-(_wc/100))*_qdes*_Bo;
         
@@ -714,7 +714,7 @@ def edit_and_add(wellnamesearch):
             _Vt = _Vo + _Vg + _Vw
         
             # _composite_sg = ( ( (1-WC)*Qdes*Sgo + WC*Qdes*Sgw) * 62.4*5.6146 + Producing GOR*(1-WC)*Qdes*Sgg*0.0752) / (Vt*5.6146*62.4)
-            _composite_sg = ( ( (1-(_wc/100))*_qdes*_sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
+            _composite_sg = ( ( (1-(_wc/100))*_qdes*st.session_state._sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
         
             # WFL =PSD-(PIP*2.31/SGFluid)
             if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
@@ -939,7 +939,7 @@ def edit_and_add(wellnamesearch):
                             _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                             _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
                             _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
-                            st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
+                            st.session_state._api, st.session_state._sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
                             st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
                             _bottom_liner_at_tvd, _bottom_liner_at_md]]
             with open('tmycalc.csv', mode='a', newline='') as f_object:
