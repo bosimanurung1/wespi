@@ -297,9 +297,11 @@ if st.button("Save"):
 
         # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
         _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
+        st.write('here1', _MidPerf)
         # 12Nov24
         if _id_measurement==1: # m (meter)
             _MidPerf *= 3.28084
+            st.write('here2', _MidPerf)
 
         # SGFluid = WC * SGw + (1 - WC) * Sgo
         #         = 88% * 1.02 + (1- 88%) * 0.887147335
@@ -316,6 +318,7 @@ if st.button("Save"):
 
         # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
         _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
+        st.write(_pip)
         
         # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
         #_Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
