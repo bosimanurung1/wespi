@@ -125,11 +125,11 @@ with row3_1:
     _sgg = st.number_input('SGg', 0.00, None, 'min', 1.00, format="%0.2f")
     _qdes = st.number_input('Qdes (BPD)', 0.00, None, 'min', 1.00, format="%0.2f")
     _psd = st.number_input(f'PSD ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
-    if _measurement=='m': # m (meter)
-        _psd *= 3.28084
+    #if _measurement=='m': # m (meter)
+    #    _psd *= 3.28084
     _psd_md = st.number_input(f'PSD ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")    
-    if _measurement=='m': # m (meter)
-        _psd_md *= 3.28084
+    #if _measurement=='m': # m (meter)
+    #    _psd_md *= 3.28084
     _whp = st.number_input('WHP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
 
 with row3_2:
@@ -320,9 +320,15 @@ if st.button("Save"):
         # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
         _Pwf_at_Qdes = (5 * (3.24 - 3.2 * (_qdes/_qmax))**0.5 - 1) / 8 * _sbhp
 
-        # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
-        _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
-        st.write(_pip)
+        #12Nov24 sblm hitung pip hrs confver psd tvd dan psd md yg meter ke ft
+        if _measurement=='m': # m (meter)
+            #_psd *= 3.28084
+            # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
+            _pip = _Pwf_at_Qdes - ((_MidPerf - (_psd * 3.28084) * (_sgfluid/2.31)) 
+            #st.write(_pip)
+
+        elif _measurement=='m': # m (meter)
+              _pip = _Pwf_at_Qdes - ((_MidPerf - _psd * (_sgfluid/2.31)) 
         
         # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
         #_Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
