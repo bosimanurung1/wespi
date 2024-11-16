@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from csv import writer
-import requests
-import json
 
 # Your DataFrame with data to be inserted
 #df = pd.DataFrame(results, columns=['query', 'batch_index', 'index_of_audio_output_tensor', 'audio_file_name', 'similarity_score_by_model', 'user_relevance_score'])
@@ -33,10 +31,10 @@ if "new_id_calc" not in st.session_state:
     st.session_state["new_id_calc"] = last_id_calc
 
 if "_api" not in st.session_state:
-    st.session_state["_api"] = 0.00
+    st.session_state._api = 0.01
     
 if "_sgo" not in st.session_state:
-    st.session_state._sgo = 0.00
+    st.session_state._sgo = 0.01
     
 if "_id_tubing_coeff" not in st.session_state:
     st.session_state["_id_tubing_coeff"] = 0
@@ -97,6 +95,7 @@ with row3_1:
     
     st.header("Basic Data (Required)", divider="gray")
     _top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", 0.00, None, 'min', 1.00, format="%0.2f")
+   
     if _id_welltype == 1: # 1-Vertical, 2-Directional
         _top_perfo_md = _top_perfo_tvd
         st.write(f'Top Perfo ({_measurement} MD) : {_top_perfo_md:.2f}')
@@ -125,16 +124,15 @@ with row3_1:
     _sgg = st.number_input('SGg', 0.00, None, 'min', 1.00, format="%0.2f")
     _qdes = st.number_input('Qdes (BPD)', 0.00, None, 'min', 1.00, format="%0.2f")
     _psd = st.number_input(f'PSD ({_measurement} TVD)', 0.00, None, 'min', 1.00, format="%0.2f")
-    #if _measurement=='m': # m (meter)
-    #    _psd *= 3.28084
-    _psd_md = st.number_input(f'PSD ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")    
-    #if _measurement=='m': # m (meter)
-    #    _psd_md *= 3.28084
+    if _id_welltype == 1: # Vertical
+        _psd_md = _psd
+        st.write(f'PSD ({_measurement} MD) : {_psd:.2f}')
+    else:
+        _psd_md = st.number_input(f'PSD ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")    
     _whp = st.number_input('WHP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
 
 with row3_2:
     _p_casing = _pb = 0.00
-    _api = _sgo = _api1 = _sgo1 = 0.00
 
     st.header("Basic Data (Optional)", divider="gray")
     _p_casing = st.number_input('P. Casing (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
@@ -142,26 +140,21 @@ with row3_2:
     #_cp = st.number_input('CP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
     # cp itu sama dgn p.casing, jadi utk hitung cp gunakan p.casing
     
+    api = sgo = api1 = sgo1 = _api1 = _sgo1 = 0.01
     st.header("API/Sgo", divider="gray")
-    def api_to_sgo():
-        st.session_state._sgo = 141.5/(131.5 + st.session_state._api) #disimpan apa adanya aja digit di belakang koma
-        #st.session_state.sgo = round(st.session_state.sgo, 4)
-        #_sgo = 141.5/(131.5 + _api)
+    #api = float(api); sgo = float(sgo); api1 = float(api1); sgo1 = float(sgo1)
+    def lbs_to_kg(): # api to sgo
+        st.session_state.kg = 141.5/(131.5 + st.session_state.lbs)
 
-    def sgo_to_api():
-        st.session_state._api = 141.5/st.session_state._sgo - 131.5 #disimpan apa adanya aja digit di belakang koma
-        #st.session_state.api = round(st.session_state.api, 4) 
-        #_api = 141.5/_sgo - 131.5    
+    def kg_to_lbs(): # sgo to api
+        st.session_state.lbs = 141.5/st.session_state.kg - 131.5
         
     # ------------- now how callback work ---------------
     col1, buff, col2 = st.columns([2,1,2])
     with col1:
-        _api = st.number_input('API', _api, None, 'min', 1.00, format="%0.2f", 
-                               key="api", on_change=api_to_sgo)
-        
+        pounds = st.number_input("API", key="lbs", on_change=lbs_to_kg)  # api to sgo
     with col2:
-        _sgo = st.number_input('Sgo', _sgo, None, 'min', 1.00, format="%0.2f", 
-                               key="sgo", on_change=sgo_to_api)    
+        kilogram = st.number_input("Sgo: ", key="kg", on_change=kg_to_lbs)  # sgo to api                    
     
     _id_casing_size = _id_casing_id = _id_tubing_size = _id_tubing_id = 0
     _casing_size = ''; _casing_id = _tubing_size = _tubing_id = 0.00
@@ -276,7 +269,6 @@ if st.button("Save"):
         st.markdown(_comment_or_info)
         #st.write('\n')
 
-    #if _id_instrument==1 and _id_calc_method==2: #Downhole Sensor & Vogel         
     if _id_calc_method==2: # Vogel         
         #Hitung2an Calculation sblm IPR Curve
         # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
@@ -294,22 +286,20 @@ if st.button("Save"):
         if _p_casing == 0:
             _p_casing_hitung = 0
         else:
-            if _measurement=='m': # m (meter)
+            if _measurement=='m': # mtr (bila pilihan di awal nya adalah satuan meter, harus diconvert ke meter)
                 _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-            elif _measurement=='ft': # ft (feet)
+            elif _measurement=='ft': # ft, biarkan saja, gak usah diconver (dibagi 3.28084 atu dikali 0.3048)
                 _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) # -> utk jadi feet
 
         # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
         _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
-        st.write('here1', _MidPerf)
         # 12Nov24
-        if _id_measurement==1: # m (meter)
-            _MidPerf *= 3.28084
-            st.write('here2', _MidPerf)
+        if _id_measurement==1: # m (meter), bila inputnya mtr, karena _MidPerf hrs dlm ft, jadi diconvert dulu ke ft
+            _MidPerf *= 3.28081 
 
         # SGFluid = WC * SGw + (1 - WC) * Sgo
         #         = 88% * 1.02 + (1- 88%) * 0.887147335
-        _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
+        _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * st.session_state.kg
         
         # to convert SFL & SMG (already in ft) into SBHP & FBHP
         if _id_instrument==2: # Sonolog                
@@ -320,24 +310,21 @@ if st.button("Save"):
         # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
         _Pwf_at_Qdes = (5 * (3.24 - 3.2 * (_qdes/_qmax))**0.5 - 1) / 8 * _sbhp
 
-        #12Nov24 sblm hitung pip hrs confver psd tvd dan psd md yg meter ke ft
+        #12Nov24 sblm hitung pip hrs convert psd tvd dan psd md yg meter ke ft
         if _measurement=='m': # m (meter)
-            #_psd *= 3.28084
             # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
-            _pip = _Pwf_at_Qdes - ((_MidPerf - (_psd * 3.28084) * (_sgfluid/2.31)) 
-            #st.write(_pip)
-
-        elif _measurement=='m': # m (meter)
-              _pip = _Pwf_at_Qdes - ((_MidPerf - _psd * (_sgfluid/2.31)) 
+            _pip = _Pwf_at_Qdes - ((_MidPerf - (_psd * 3.28084)) * (_sgfluid/2.31)) 
+        elif _measurement=='ft': # feet
+              _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
         
         # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
         #_Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
-        _Rs=_sgg*(( (_pip/18) * (10**(0.0125*st.session_state._api - 0.00091*_bht)) )**1.2048)
+        _Rs=_sgg*(( (_pip/18) * (10**(0.0125*st.session_state.lbs - 0.00091*_bht)) )**1.2048)
         
         # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
         # _Bo = 0.972+0.000147*((_Rs*math.sqrt(_sgg/_sgo)+1.25*_bht)**1.175) --> math masalah diDeploy
         #_Bo = 0.972+0.000147*((_Rs * (_sgg/_sgo)**0.5 + 1.25 * _bht) ** 1.175)
-        _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state._sgo)**0.5 + 1.25 * _bht) ** 1.175)
+        _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state.kg)**0.5 + 1.25 * _bht) ** 1.175)
         # Vo=(1-WC)*Qdes*Bo;
         _Vo = (1-(_wc/100))*_qdes*_Bo;
         
@@ -359,22 +346,31 @@ if st.button("Save"):
         _Vt = _Vo + _Vg + _Vw
         
         # _composite_sg = ( ( (1-WC)*Qdes*Sgo + WC*Qdes*Sgw) * 62.4*5.6146 + Producing GOR*(1-WC)*Qdes*Sgg*0.0752) / (Vt*5.6146*62.4)
-        _composite_sg = ( ( (1-(_wc/100))*_qdes*_sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
+        _composite_sg = ( ( (1-(_wc/100))*_qdes*st.session_state.kg + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
         
         # WFL =PSD-(PIP*2.31/SGFluid)
         if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
             _wfl = (_psd*3.28084)-(_pip*2.31/_sgfluid)
-            # lalu dirubah lgi ke mtr:
+            # lalu dirubah lgi ke mtr sesuai apa yg diinput di awal (yg diinginkan dlm mtr)
             _wfl = _wfl * 0.3048 # 0.3048 adalah 1/3.28084
         elif _id_measurement==2: # ft (feet) PSD nya gak perlu dikali 3.28084 dulu
             _wfl = _psd-(_pip*2.31/_sgfluid)
 
-        # WHP = THP(WHP)*2.31/SGFluid
-        _whp_hitung=_whp*2.31/_sgfluid
-        
+        # WHP = THP(WHP)*2.31/SGFluid (whp sdh diinput dlm pressure)
+        if _id_measurement==1: # m (meter)        
+            _whp_hitung=_whp*2.31/_sgfluid
+            _whp_hitung *= 0.3048 # diconvert ke m (meter), krn saat ini hasil hitungannya dlm ft
+        elif _id_measurement==2: # ft (bila input awal pilihannya ft, biarkan saja, gak usah diconvert)        
+            _whp_hitung=_whp*2.31/_sgfluid
+
         # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
         #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
-        _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
+        if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)        
+            _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*(_psd*3.28084)/1000
+            # lalu dirubah lgi ke mtr sesuai apa yg diinput di awal (yg diinginkan dlm mtr)
+            _friction_loss *= 0.3048        
+        elif _id_measurement==2: # ft (tdk perlu diconvert)
+            _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
         
         # % Free Gas = Vg / Vt
         _persen_free_gas = (_Vg / _Vt) * 100
@@ -608,13 +604,14 @@ if st.button("Save"):
         #with row5_2:
         #    st.dataframe(df_ipr_data, hide_index=True)     
         #    st.write('')
-
+                            # st.session_state.lbs = st.session_state._api and st.session_state.kg = st.session_state._sgo
         new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                           _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                           _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
                           _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
-                          st.session_state._api, st.session_state._sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
-                          st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]   
+                          st.session_state.lbs, st.session_state.kg, _id_casing_size, _id_tubing_size, _id_tubing_id, \
+                          st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
+                          _bottom_liner_at_tvd, _bottom_liner_at_md]]   
 
         with open('tmycalc.csv', mode='a', newline='') as f_object:
            #writer_object = csv.writer(file)            
@@ -690,8 +687,9 @@ if st.button("Save"):
                 
             #st.session_state   
 
-    #elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
     elif _id_calc_method==1: # Straight Line
+        #straight_line() # new_calc_b.pys
+        
         #Hitung2an Calculation sblm IPR Curve
         # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
         # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
@@ -704,7 +702,12 @@ if st.button("Save"):
         # Tg=(1-WC)*Qdes*ProducingGOR/1000;
         # Sg=(1-WC)*Qdes*Rs/1000
         # Free Gas (FG) = Tg - Sg; 
-    
+
+        # sgfluid di atas _p_casing, krn p_casing_hitung perlu dia utk perhitungan rumus
+        # SGFluid = WC * SGw + (1 - WC) * Sgo
+        #         = 88% * 1.02 + (1- 88%) * 0.887147335
+        _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * st.session_state.kg
+        
         if _p_casing == 0:
             _p_casing_hitung = 0
         else:
@@ -715,14 +718,9 @@ if st.button("Save"):
 
         # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
         _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
-
         # 12Nov24
         if _id_measurement==1: # m (meter)
             _MidPerf *= 3.28084
-
-        # SGFluid = WC * SGw + (1 - WC) * Sgo
-        #         = 88% * 1.02 + (1- 88%) * 0.887147335
-        _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
         
         # to convert SFL & SMG (already in ft) into SBHP & FBHP
         if _id_instrument==2: # Sonolog
@@ -738,17 +736,21 @@ if st.button("Save"):
         # in straight line:
         _Pwf_at_Qdes = _sbhp - _qdes / _pi
 
-        # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
-        _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
-    
+        #12Nov24 sblm hitung pip hrs convert psd tvd dan psd md yg meter ke ft
+        if _measurement=='m': # m (meter)
+            # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
+            _pip = _Pwf_at_Qdes - ((_MidPerf - (_psd * 3.28084)) * (_sgfluid/2.31)) 
+        elif _measurement=='ft': # feet
+            _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
+
         # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
         #_Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
-        _Rs=_sgg*(( (_pip/18) * (10**(0.0125*st.session_state._api - 0.00091*_bht)) )**1.2048)
+        _Rs=_sgg*(( (_pip/18) * (10**(0.0125*st.session_state.lbs - 0.00091*_bht)) )**1.2048)
     
         # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
         # _Bo = 0.972+0.000147*((_Rs*math.sqrt(_sgg/_sgo)+1.25*_bht)**1.175) --> math masalah diDeploy
         #_Bo = 0.972+0.000147*((_Rs * (_sgg/_sgo)**0.5 + 1.25 * _bht) ** 1.175)
-        _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state._sgo)**0.5 + 1.25 * _bht) ** 1.175)
+        _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state.kg)**0.5 + 1.25 * _bht) ** 1.175)
         # Vo=(1-WC)*Qdes*Bo;
         _Vo = (1-(_wc/100))*_qdes*_Bo;
     
@@ -770,8 +772,8 @@ if st.button("Save"):
         _Vt = _Vo + _Vg + _Vw
     
         # _composite_sg = ( ( (1-WC)*Qdes*Sgo + WC*Qdes*Sgw) * 62.4*5.6146 + Producing GOR*(1-WC)*Qdes*Sgg*0.0752) / (Vt*5.6146*62.4)
-        _composite_sg = ( ( (1-(_wc/100))*_qdes*_sgo + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
-    
+        _composite_sg = ( ( (1-(_wc/100))*_qdes*st.session_state.kg + (_wc/100)*_qdes*_sgw) * 62.4*5.6146 + _producing_gor*(1-(_wc/100))*_qdes*_sgg*0.0752) / (_Vt*5.6146*62.4)
+                                                                                                                   
         # WFL =PSD-(PIP*2.31/SGFluid)
         if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)
             _wfl = (_psd*3.28084)-(_pip*2.31/_sgfluid)
@@ -780,12 +782,21 @@ if st.button("Save"):
         elif _id_measurement==2: # ft (feet) PSD nya gak perlu dikali 3.28084 dulu
             _wfl = _psd-(_pip*2.31/_sgfluid)
 
-        # WHP = THP(WHP)*2.31/SGFluid
-        _whp_hitung=_whp*2.31/_sgfluid
+        # WHP = THP(WHP)*2.31/SGFluid (whp sdh diinput dlm pressure)
+        if _id_measurement==1: # m (meter)        
+            _whp_hitung=_whp*2.31/_sgfluid
+            _whp_hitung *= 0.3048 # diconvert ke m (meter), krn saat ini hasil hitungannya dlm ft
+        elif _id_measurement==2: # ft (bila input awal pilihannya ft, biarkan saja, gak usah diconvert)        
+            _whp_hitung=_whp*2.31/_sgfluid
     
         # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
         #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
-        _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
+        if _id_measurement==1: # m (meter), PSD nya dikali 3.28084 dulu (dikonversi ke ft krn PSD hrs dlm ft)        
+            _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*(_psd*3.28084)/1000
+            # lalu dirubah lgi ke mtr sesuai apa yg diinput di awal (yg diinginkan dlm mtr)
+            _friction_loss *= 0.3048        
+        elif _id_measurement==2: # ft (tdk perlu diconvert)
+            _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
     
         # % Free Gas = Vg / Vt
         _persen_free_gas = (_Vg / _Vt) * 100
@@ -989,8 +1000,9 @@ if st.button("Save"):
                          _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                          _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
                          _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
-                         st.session_state._api, st.session_state._sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
-                         st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]                               
+                         st.session_state.lbs, st.session_state.kg, _id_casing_size, _id_tubing_size, _id_tubing_id, \
+                         st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
+                         _bottom_liner_at_tvd, _bottom_liner_at_md]]                               
         with open('tmycalc.csv', mode='a', newline='') as f_object:
             #writer_object = csv.writer(file)            
             writer_object = writer(f_object)            
