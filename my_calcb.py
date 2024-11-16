@@ -28,7 +28,7 @@ def my_calc_straight():
     else:
         if st.session_state._measurement=='m': # mtr (bila pilihan di awal nya adalah satuan meter, harus diconvert ke meter)
             _p_casing_hitung = (st.session_state._p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
-        elif _measurement=='ft': # ft, biarkan saja, gak usah diconver (dibagi 3.28084 atu dikali 0.3048)
+        elif st.session_state._measurement=='ft': # ft, biarkan saja, gak usah diconver (dibagi 3.28084 atu dikali 0.3048)
             _p_casing_hitung = (st.session_state._p_casing * 2.31 / _sgfluid) # -> utk jadi feet
 
     # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
@@ -56,7 +56,7 @@ def my_calc_straight():
     if st.session_state._measurement=='m': # m (meter)
         # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
         _pip = _Pwf_at_Qdes - ((_MidPerf - (st.session_state._psd * 3.28084)) * (_sgfluid/2.31)) 
-    elif _measurement=='ft': # feet
+    elif st.session_state._measurement=='ft': # feet
         _pip = _Pwf_at_Qdes - ((_MidPerf - st.session_state._psd) * (_sgfluid/2.31)) 
             
     # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
@@ -93,7 +93,7 @@ def my_calc_straight():
         _wfl = (st.session_state._psd*3.28084)-(_pip*2.31/_sgfluid)
         # lalu dirubah lgi ke mtr:
         _wfl = _wfl * 0.3048 # 0.3048 adalah 1/3.28084
-    elif _measurement=='ft': # PSD nya gak perlu dikali 3.28084 dulu
+    elif st.session_state._measurement=='ft': # PSD nya gak perlu dikali 3.28084 dulu
         _wfl = st.session_state._psd-(_pip*2.31/_sgfluid)
             
     # WHP = THP(WHP)*2.31/SGFluid (whp sdh diinput dlm pressure)
