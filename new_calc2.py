@@ -17,7 +17,7 @@ mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
 df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
 
-def edit_and_add(wellnamesearch):
+def edit_and_add():
     _id_user_id = st.session_state.mycalc3c['user_id'].values[0]; _user_id = st.session_state.mycalc3c['user_id'].values[0]
     _well_name = st.session_state.mycalc3c['well_name'].values[0]; st.session_state["_well_name"] = _well_name
     _field_name = st.session_state.mycalc3c['field_name'].values[0]; st.session_state["_field_name"] = _field_name
