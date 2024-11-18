@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import pandasql as ps
 import matplotlib.pyplot as plt
-from new_calc2saveas import edit_and_add
+from new_calc2 import edit_and_add
 from sessions import sessionstates
 from my_calcb import my_calc_straight
 
