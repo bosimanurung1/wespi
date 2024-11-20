@@ -3,9 +3,7 @@ pandas
 openpyxl
 pandasql
 matplotlib
-csv
 datetime
 github
 base64
-io
 pygithub
