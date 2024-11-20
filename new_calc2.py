@@ -641,34 +641,35 @@ def edit_and_add():
             plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
         
             st.pyplot(fig)
-            def update_csv_record(filename, key_column, key_value, update_data):
+            
+            #def update_csv_record(filename, key_column, key_value, update_data):
                 # Read existing data
-                rows = []
-                with open(filename, 'r', newline='') as f:
-                    reader = csv.DictReader(f)
-                    for row in reader:
+            #    rows = []
+            #    with open(filename, 'r', newline='') as f:
+            #        reader = csv.DictReader(f)
+            #        for row in reader:
                         # If this is the row to update, modify it
-                        if row[key_column] == str(key_value):
-                            row.update(update_data)
-                        rows.append(row)
+            #            if row[key_column] == str(key_value):
+            #                row.update(update_data)
+            #            rows.append(row)
                 
                 # Write updated data back to file
-                with open(filename, mode='w', newline='') as f:
-                    if rows:
-                        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
-                        writer.writeheader()
-                        writer.writerows(rows)
+             #   with open(filename, mode='w', newline='') as f:
+             #       if rows:
+             #           writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+             #           writer.writeheader()
+             #           writer.writerows(rows)
 
-            update_csv_record('tmycalc.csv', 'id_calc', st.session_state['id_calc_02'], {'well_name': _well_name, 'field_name': _field_name, \
-                'company': _company, 'engineer': _engineer, 'date_calc': _date_calc, 'id_instrument': _id_instrument, 'id_calc_method': _id_calc_method, \
-                'id_welltype': _id_welltype, 'id_measurement': _id_measurement, 'comment_or_info': _comment_or_info, \
-                'top_perfo_tvd': _top_perfo_tvd, 'top_perfo_md': _top_perfo_md, 'bottom_perfo_tvd': _bottom_perfo_tvd, \
-                'bottom_perfo_md': _bottom_perfo_md, 'qtest': _qtest, 'sfl': _sfl, 'smg': _smgFreeGasAtQtest, 'sbhp': _sbhp, \
-                'fbhp': _fbhp, 'producing_gor': _producing_gor, 'wc': _wc, 'bht': _bht, 'sgw': _sgw, 'sgg': _sgg, 'qdes': _qdes, \
-                'psd': _psd, 'whp': _whp, 'psd_md': _psd_md, 'p_casing': _p_casing, 'pb': _pb, 'api': st.session_state._api, 'sgo': st.session_state._sgo, \
-                'id_casing_size': _id_casing_size, 'id_tubing_size': _id_tubing_size, 'id_tubing_id': _id_tubing_id, \
-                'id_tubing_coeff': _id_tubing_coeff, 'liner_id': _liner_id, 'top_liner_at_tvd': _top_liner_at_tvd, 'top_liner_at_md': _top_liner_at_md, \
-                'bottom_liner_at_tvd': _bottom_liner_at_tvd, 'bottom_liner_at_md': _bottom_liner_at_md})                    
+            #update_csv_record('tmycalc.csv', 'id_calc', st.session_state['id_calc_02'], {'well_name': _well_name, 'field_name': _field_name, \
+            #    'company': _company, 'engineer': _engineer, 'date_calc': _date_calc, 'id_instrument': _id_instrument, 'id_calc_method': _id_calc_method, \
+            #    'id_welltype': _id_welltype, 'id_measurement': _id_measurement, 'comment_or_info': _comment_or_info, \
+            #    'top_perfo_tvd': _top_perfo_tvd, 'top_perfo_md': _top_perfo_md, 'bottom_perfo_tvd': _bottom_perfo_tvd, \
+            #    'bottom_perfo_md': _bottom_perfo_md, 'qtest': _qtest, 'sfl': _sfl, 'smg': _smgFreeGasAtQtest, 'sbhp': _sbhp, \
+            #    'fbhp': _fbhp, 'producing_gor': _producing_gor, 'wc': _wc, 'bht': _bht, 'sgw': _sgw, 'sgg': _sgg, 'qdes': _qdes, \
+            #    'psd': _psd, 'whp': _whp, 'psd_md': _psd_md, 'p_casing': _p_casing, 'pb': _pb, 'api': st.session_state._api, 'sgo': st.session_state._sgo, \
+            #    'id_casing_size': _id_casing_size, 'id_tubing_size': _id_tubing_size, 'id_tubing_id': _id_tubing_id, \
+            #    'id_tubing_coeff': _id_tubing_coeff, 'liner_id': _liner_id, 'top_liner_at_tvd': _top_liner_at_tvd, 'top_liner_at_md': _top_liner_at_md, \
+            #    'bottom_liner_at_tvd': _bottom_liner_at_tvd, 'bottom_liner_at_md': _bottom_liner_at_md})                    
 
             # personal access token: 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
             def update_github_csv(github_token, repo_name, file_path, key_column, key_value, update_data):
