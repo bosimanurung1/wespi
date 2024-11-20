@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from csv import writer
+import csv
 from datetime import datetime
 
 #open datas
@@ -640,33 +641,61 @@ def edit_and_add():
             #with row5_2:
             #    st.dataframe(df_ipr_data, hide_index=True)     
             #    st.write('')
+
+            # Step 2: Update the specific record
+            # Example: Change 'Age' to 40 for the record where 'Name' is 'John'
+            #df.loc[df['Name'] == 'John', 'Age'] = 40
+
+            # Step 3: Save the updated DataFrame back to the CSV file
+            #df.to_csv('data.csv', index=False)
     
-            #new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
-            new_records = [_well_name, _field_name, _company, _engineer, _date_calc, \
-                            _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                            _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
-                            _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
-                            st.session_state._api, st.session_state._sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
-                            st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
-                            _bottom_liner_at_tvd, _bottom_liner_at_md]  
+            #new_records = [_well_name, _field_name, _company, _engineer, _date_calc, \
+            #                _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
+            #                _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
+            #                _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
+            #                st.session_state._api, st.session_state._sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
+            #                st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
+            #                _bottom_liner_at_tvd, _bottom_liner_at_md]  
 
-            st.session_state.mycalc3c.loc[st.session_state.mycalc3c['id_calc']==st.session_state['id_calc_02'], ['well_name', 'field_name', 'company', 'engineer', 'date_calc', \
-                                        'id_instrument', 'id_calc_method', 'id_welltype', 'id_measurement', 'comment_or_info', \
-                                        'top_perfo_tvd', 'top_perfo_md', 'bottom_perfo_tvd', 'bottom_perfo_md', 'qtest', 'sfl', 'smgFreeGasAtQtest', 'sbhp', \
-                                        'fbhp', 'producing_gor', 'wc', 'bht', 'sgw', 'sgg', 'qdes', 'psd', 'whp', 'psd_md', \
-                                        'p_casing', 'pb', 'api', 'sgo', 'id_casing_size', 'id_tubing_size', 'id_tubing_id', 'id_tubing_coeff', \
-                                        'liner_id', 'top_liner_at_tvd', 'top_liner_at_md', 'bottom_liner_at_tvd', \
-                                        'bottom_liner_at_md']] = new_records
+            #st.session_state.mycalc3c.loc[st.session_state.mycalc3c['id_calc']==st.session_state['id_calc_02'], ['well_name', 'field_name', 'company', 'engineer', 'date_calc', \
+            #                            'id_instrument', 'id_calc_method', 'id_welltype', 'id_measurement', 'comment_or_info', \
+            #                            'top_perfo_tvd', 'top_perfo_md', 'bottom_perfo_tvd', 'bottom_perfo_md', 'qtest', 'sfl', 'smgFreeGasAtQtest', 'sbhp', \
+            #                            'fbhp', 'producing_gor', 'wc', 'bht', 'sgw', 'sgg', 'qdes', 'psd', 'whp', 'psd_md', \
+            #                            'p_casing', 'pb', 'api', 'sgo', 'id_casing_size', 'id_tubing_size', 'id_tubing_id', 'id_tubing_coeff', \
+            #                            'liner_id', 'top_liner_at_tvd', 'top_liner_at_md', 'bottom_liner_at_tvd', \
+            #                            'bottom_liner_at_md']] = new_records
 
-            # Step 4: Write the updated DataFrame back to the CSV file
-            st.session_state.mycalc3c.to_csv('tmycalc.csv', index=False)
+            #st.session_state.mycalc3c.to_csv('tmycalc.csv', index=False)
 
-            #with open('tmycalc.csv', mode='a', newline='') as f_object:
-            #    writer_object = writer(f_object)            
-            #    # Add new rows to the CSV
-            #    writer_object.writerows(new_records)                    
-            #    f_object.close() 
+            def update_csv_record(filename, key_column, key_value, update_data):
+                # Read existing data
+                rows = []
+                with open(filename, 'r', newline='') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        # If this is the row to update, modify it
+                        if row[key_column] == str(key_value):
+                            row.update(update_data)
+                        rows.append(row)
                 
+                # Write updated data back to file
+                with open(filename, mode='w', newline='') as f:
+                    if rows:
+                        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+                        writer.writeheader()
+                        writer.writerows(rows)
+
+            update_csv_record('tmycalc.csv', 'id_calc', st.session_state['id_calc_02'], {'well_name': _well_name, 'field_name': _field_name, \
+                'company': _company, 'engineer': _engineer, 'date_calc': _date_calc, 'id_instrument': _id_instrument, 'id_calc_method': _id_calc_method, \
+                'id_welltype': _id_welltype, 'id_measurement': _id_measurement, 'comment_or_info': _comment_or_info, \
+                'top_perfo_tvd': _top_perfo_tvd, 'top_perfo_md': _top_perfo_md, 'bottom_perfo_tvd': _bottom_perfo_tvd, \
+                'bottom_perfo_md': _bottom_perfo_md, 'qtest': _qtest, 'sfl': _sfl, 'smg': _smgFreeGasAtQtest, 'sbhp': _sbhp, \
+                'fbhp': _fbhp, 'producing_gor': _producing_gor, 'wc': _wc, 'bht': _bht, 'sgw': _sgw, 'sgg': _sgg, 'qdes': _qdes, \
+                'psd': _psd, 'whp': _whp, 'psd_md': _psd_md, 'p_casing': _p_casing, 'pb': _pb, 'api': st.session_state._api, 'sgo': st.session_state._sgo, \
+                'id_casing_size': _id_casing_size, 'id_tubing_size': _id_tubing_size, 'id_tubing_id': _id_tubing_id, \
+                'id_tubing_coeff': _id_tubing_coeff, 'liner_id': _liner_id, 'top_liner_at_tvd': _top_liner_at_tvd, 'top_liner_at_md': _top_liner_at_md, \
+                'bottom_liner_at_tvd': _bottom_liner_at_tvd, 'bottom_liner_at_md': _bottom_liner_at_md})
+                            
             if st.button("Next"):      
                 #st.session_state._well_name_search = ''
                 wellnamesearch=''
@@ -994,25 +1023,39 @@ def edit_and_add():
             plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
     
             st.pyplot(fig)
-            #with row5_2:            
-            #st.dataframe(df_ipr_data, hide_index=True)                  
-            new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
-                            _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                            _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
-                            _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
-                            st.session_state._api, st.session_state._sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
-                            st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
-                            _bottom_liner_at_tvd, _bottom_liner_at_md]]
-            with open('tmycalc.csv', mode='a', newline='') as f_object:
-                #writer_object = csv.writer(file)            
-                writer_object = writer(f_object)            
-                # Add new rows to the CSV
-                writer_object.writerows(new_records)                    
-                f_object.close() 
+
+            def update_csv_record(filename, key_column, key_value, update_data):
+                # Read existing data
+                rows = []
+                with open(filename, 'r', newline='') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        # If this is the row to update, modify it
+                        if row[key_column] == str(key_value):
+                            row.update(update_data)
+                        rows.append(row)
+                
+                # Write updated data back to file
+                with open(filename, mode='w', newline='') as f:
+                    if rows:
+                        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+                        writer.writeheader()
+                        writer.writerows(rows)
+
+            update_csv_record('tmycalc.csv', 'id_calc', st.session_state['id_calc_02'], {'well_name': _well_name, 'field_name': _field_name, \
+                'company': _company, 'engineer': _engineer, 'date_calc': _date_calc, 'id_instrument': _id_instrument, 'id_calc_method': _id_calc_method, \
+                'id_welltype': _id_welltype, 'id_measurement': _id_measurement, 'comment_or_info': _comment_or_info, \
+                'top_perfo_tvd': _top_perfo_tvd, 'top_perfo_md': _top_perfo_md, 'bottom_perfo_tvd': _bottom_perfo_tvd, \
+                'bottom_perfo_md': _bottom_perfo_md, 'qtest': _qtest, 'sfl': _sfl, 'smg': _smgFreeGasAtQtest, 'sbhp': _sbhp, \
+                'fbhp': _fbhp, 'producing_gor': _producing_gor, 'wc': _wc, 'bht': _bht, 'sgw': _sgw, 'sgg': _sgg, 'qdes': _qdes, \
+                'psd': _psd, 'whp': _whp, 'psd_md': _psd_md, 'p_casing': _p_casing, 'pb': _pb, 'api': st.session_state._api, 'sgo': st.session_state._sgo, \
+                'id_casing_size': _id_casing_size, 'id_tubing_size': _id_tubing_size, 'id_tubing_id': _id_tubing_id, \
+                'id_tubing_coeff': _id_tubing_coeff, 'liner_id': _liner_id, 'top_liner_at_tvd': _top_liner_at_tvd, 'top_liner_at_md': _top_liner_at_md, \
+                'bottom_liner_at_tvd': _bottom_liner_at_tvd, 'bottom_liner_at_md': _bottom_liner_at_md})
                 
             if st.button("Next"):
-                st.session_state._well_name_search = ''
-                st.write('')
+                wellnamesearch=''
+                return(wellnamesearch)
             # ---------------------------- end of edit_and_add function --------------------------------------------
 
     elif st.button("Save As New"):                   
@@ -1420,18 +1463,8 @@ def edit_and_add():
                 f_object.close() 
                 
             if st.button("Next"):      
-                #st.session_state._well_name_search = ''
                 wellnamesearch=''
                 return(wellnamesearch)
-                #st.write('')            
-                #st.session_state["api"] = 0.00; st.session_state.sgo = 0.00    
-                #st.session_state["_id_tubing_coeff"] = 0; st.session_state._tubing_coeff_type = ''    
-                #st.session_state._coefficient = 0
-                
-                #for the_keyyys in st.session_state.keys():
-                #    del st.session_state[the_keyyys]
-                    
-                #st.session_state   
     
         #elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
         elif _id_calc_method==1: # Straight Line
@@ -1744,8 +1777,7 @@ def edit_and_add():
             plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
     
             st.pyplot(fig)
-            #with row5_2:            
-            #st.dataframe(df_ipr_data, hide_index=True)                  
+
             new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                             _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                             _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
@@ -1759,8 +1791,8 @@ def edit_and_add():
                 # Add new rows to the CSV
                 writer_object.writerows(new_records)                    
                 f_object.close() 
-                
+
             if st.button("Next"):
-                st.session_state._well_name_search = ''
-                st.write('')
-            # ---------------------------- end of edit_and_add function --------------------------------------------
+                wellnamesearch=''
+                return(wellnamesearch)
+# ---------------------------- end of edit_and_add function --------------------------------------------
