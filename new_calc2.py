@@ -674,13 +674,11 @@ def edit_and_add():
             def update_github_csv(github_token, repo_name, file_path, key_column, key_value, update_data):
                 # Initialize GitHub connection
                 g = Github(github_token)
-                repo = g.get_repo(repo_name)
-                
+                repo = g.get_repo(repo_name)                
                 try:
                     # Get existing file content
                     file_content = repo.get_contents(file_path)
-                    content = base64.b64decode(file_content.content).decode('utf-8')
-                    
+                    content = base64.b64decode(file_content.content).decode('utf-8')                    
                     # Read existing CSV data
                     rows = []
                     csv_reader = csv.DictReader(StringIO(content))
@@ -688,22 +686,19 @@ def edit_and_add():
                         # If this is the row to update, modify it
                         if row[key_column] == str(key_value):
                             row.update(update_data)
-                        rows.append(row)
-                    
+                        rows.append(row)                    
                     # Convert updated data back to CSV string
                     output = StringIO()
                     if rows:
                         writer = csv.DictWriter(output, fieldnames=rows[0].keys())
                         writer.writeheader()
-                        writer.writerows(rows)
-                    
+                        writer.writerows(rows)                    
                     # Commit changes to GitHub
                     repo.update_file(
                         file_path,
                         f"Update record where {key_column}={key_value}",
                         output.getvalue(),
-                        file_content.sha
-                    )
+                        file_content.sha)
                     return True
                     
                 except Exception as e:
@@ -732,24 +727,12 @@ def edit_and_add():
                 file_path,
                 'id_calc',  # key column to identify the record
                 st.session_state['id_calc_02'],     # value to match in key column
-                update_data
-            )
+                update_data)
 
             if st.button("Next"):      
-                #st.session_state._well_name_search = ''
                 wellnamesearch=''
                 return(wellnamesearch)
-                #st.write('')            
-                #st.session_state["api"] = 0.00; st.session_state.sgo = 0.00    
-                #st.session_state["_id_tubing_coeff"] = 0; st.session_state._tubing_coeff_type = ''    
-                #st.session_state._coefficient = 0
-                
-                #for the_keyyys in st.session_state.keys():
-                #    del st.session_state[the_keyyys]
-                    
-                #st.session_state   
-    
-        #elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
+
         elif _id_calc_method==1: # Straight Line
             #Hitung2an Calculation sblm IPR Curve        
             # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
