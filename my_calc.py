@@ -137,7 +137,8 @@ if st.session_state["id_calc_01"]:
     _username = mycalc4['username'].values[0]; _well_name = mycalc4['well_name'].values[0]
     _field_name=mycalc4['field_name'].values[0]; _company=mycalc4['company'].values[0]; _engineer=mycalc4['engineer'].values[0]
     _date_calc=mycalc4['date_calc'].values[0]
-    _instrument=mycalc4['instrument'].values[0]; _id_instrument=mycalc4['id_instrument'].values[0]
+    _instrument=mycalc4['instrument'].values[0]
+    _id_instrument=mycalc4['id_instrument'].values[0]; st.session_state._id_instrument=mycalc4['id_instrument'].values[0]
     _calc_method=mycalc4['calc_method'].values[0]; _welltype=mycalc4['welltype'].values[0]
     _id_calc_method=mycalc4['id_calc_method'].values[0]; _id_welltype=mycalc4['id_welltype'].values[0]
     _measurement=mycalc4['measurement'].values[0]; st.session_state._measurement = _measurement
@@ -201,7 +202,8 @@ if st.session_state["id_calc_01"]:
     _sbhp=mycalc4['sbhp'].values[0]; st.session_state._sbhp = _sbhp
     _fbhp=mycalc4['fbhp'].values[0]; st.session_state._fbhp = _fbhp
     _sfl=mycalc4['sfl'].values[0]; _smgFreeGasAtQtest=mycalc4['smg'].values[0]
-
+    st.session_state._sfl = _sfl; st.session_state._smgFreeGasAtQtest = _smgFreeGasAtQtest
+    
     _qtest=mycalc4['qtest'].values[0]; st.session_state._qtest = _qtest
     _producing_gor=mycalc4['producing_gor'].values[0]; st.session_state._producing_gor = _producing_gor
     _wc=mycalc4['wc'].values[0]; st.session_state._wc = _wc
@@ -327,9 +329,9 @@ if st.session_state["id_calc_01"]:
         
         # di bawah ini gak jadi, krn ini hanya explore, ambil saja SBHP & FBHP yg tersimpan
         # to convert SFL & SMG (already in ft) into SBHP & FBHP
-        #if _id_instrument==2: # Sonolog
-        #    _sbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - _sfl)
-        #    _fbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - (_sfl+_smgFreeGasAtQtest))
+        if _id_instrument==2: # Sonolog
+            _sbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - _sfl)
+            _fbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - (_sfl+_smgFreeGasAtQtest))
 
         _qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
         # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
