@@ -3,7 +3,3 @@ pandas
 openpyxl
 pandasql
 matplotlib
-datetime
-github
-aiohttp==3.9.0b0
-numpy
