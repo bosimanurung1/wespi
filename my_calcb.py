@@ -39,9 +39,9 @@ def my_calc_straight():
     
     # di bawah ini gak jadi, krn ini hanya explore, ambil saja SBHP & FBHP yg tersimpan
     # to convert SFL & SMG (already in ft) into SBHP & FBHP
-    #if _id_instrument==2: # Sonolog
-    #    _sbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - _sfl)
-    #    _fbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - (_sfl+_smgFreeGasAtQtest))
+    if st.session_state._id_instrument==2: # Sonolog
+        st.session_state._sbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - st.session_state._sfl)
+        st.session_state._fbhp = _p_casing_hitung + _sgfluid / 2.31 * (_MidPerf - (st.session_state._sfl+st.session_state._smgFreeGasAtQtest))
 
     # in straight line no need _qmax but _pi
     _pi = st.session_state._qtest / (st.session_state._sbhp - st.session_state._fbhp)
