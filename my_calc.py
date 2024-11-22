@@ -19,10 +19,7 @@ mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
 df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
 
-# global variables
 mycalc3 = mycalc3a = mycalc3b = mycalc3c = mycalc4 = pd.DataFrame()
-#_well_name_search=''
-#_id_calc = id_calc_01 = id_calc_02 = _id_instrument = 0
 _id_calc = id_calc_02 = _id_instrument = 0
 _pi = 0
 
@@ -198,7 +195,6 @@ if st.session_state["id_calc_01"]:
     else:
         _bottom_perfo_md=mycalc4['bottom_perfo_md'].values[0]; st.session_state._bottom_perfo_md = _bottom_perfo_tvd
 
-    # Krn ini hanya explore, ambil saja SBHP & FBHP yg tersimpan
     _sbhp=mycalc4['sbhp'].values[0]; st.session_state._sbhp = _sbhp
     _fbhp=mycalc4['fbhp'].values[0]; st.session_state._fbhp = _fbhp
     _sfl=mycalc4['sfl'].values[0]; _smgFreeGasAtQtest=mycalc4['smg'].values[0]
@@ -257,11 +253,6 @@ if st.session_state["id_calc_01"]:
         elif _id_instrument==2: # Sonolog
             st.write('SFL         : ', _sfl, _measurement)
             st.write('SMG Free Gas @ Qtest: ', _smgFreeGasAtQtest, _measurement)
-            # di bawah ini gak jadi, krn ini hanya explore, ambil saja SBHP & FBHP yg tersimpan
-            #if _measurement=='m': # kalau mtr, dikonversi dulu ke ft yaitu dikali 1/3.281 or 0.304785
-            #    _sfl *= 0.304785
-            #    _smgFreeGasAtQtest *= 0.304785
-            #then convert them to psig (as SBHP & FBHP) after found P.Casing & SGFluid
         st.write('Producing GOR: ', _producing_gor, 'scf/stb')
         st.write('WC           : ', _wc, '%')
         st.write('BHT          : ', _bht, '℉')
