@@ -5,12 +5,6 @@ from csv import writer
 from sessions import sessionstates
 from new_calcb import new_calc_straight
 
-# Your DataFrame with data to be inserted
-#df = pd.DataFrame(results, columns=['query', 'batch_index', 'index_of_audio_output_tensor', 'audio_file_name', 'similarity_score_by_model', 'user_relevance_score'])
-
-# Call the function to insert data into the Google Sheet
-#insert_data_into_sheet(df)
-
 #open datas
 mnomor1 = pd.read_csv('MNomor1.csv')
 tmycalc = pd.read_csv('tmycalc.csv')
@@ -33,21 +27,6 @@ if "new_id_calc" not in st.session_state:
     st.session_state["new_id_calc"] = last_id_calc
 
 sessionstates() # di sessions.py
-
-#if "_api" not in st.session_state:
-#    st.session_state._api = 0.01
-    
-#if "_sgo" not in st.session_state:
-#    st.session_state._sgo = 0.01
-    
-#if "_id_tubing_coeff" not in st.session_state:
-#    st.session_state["_id_tubing_coeff"] = 0
-    
-#if "_tubing_coeff_type" not in st.session_state:
-#    st.session_state._tubing_coeff_type = ''
-    
-#if "_coefficient" not in st.session_state:
-#    st.session_state._coefficient = 0
    
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
 with col1:
@@ -153,9 +132,7 @@ with row3_2:
     #_cp = st.number_input('CP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
     # cp itu sama dgn p.casing, jadi utk hitung cp gunakan p.casing
     
-    #api = sgo = api1 = sgo1 = _api1 = _sgo1 = 0.01
     st.header("API/Sgo", divider="gray")
-    #api = float(api); sgo = float(sgo); api1 = float(api1); sgo1 = float(sgo1)
     def lbs_to_kg(): # api to sgo
         st.session_state.kg = 141.5/(131.5 + st.session_state.lbs)
 
@@ -638,62 +615,6 @@ if st.button("Save"):
             # Add new rows to the CSV
             writer_object.writerows(new_records)                    
             f_object.close() 
-
-        # ------------- to update table in google sheets but still error in credential ---------------------------
-        # to connect key & variables values in dictionary
-        #https://discuss.python.org/t/is-there-a-way-to-convert-a-variable-name-this-to-this/35303/2
-        #In [1]: a, b, c, e = 10, 20, 30, 50
-
-        #In [2]: keys = ("a", "b", "c", "e")
-
-        #In [3]: d = { k: globals().get(k) for k in keys }
-
-        #In [4]: d
-        #Out[4]: {'a': 10, 'b': 20, 'c': 30, 'e': 50}
-
-        # ---------- error here in credential -----------------------------------
-        # Create a connection object.
-        #conn = st.connection("gsheets", type=GSheetsConnection)
-        #df = conn.read()
-
-        # Create a connection object.
-        #credentials = service_account.Credentials.from_service_account_info(
-        #    st.secrets["gcp_service_account"],
-        #    scopes=[
-        #        "https://www.googleapis.com/auth/spreadsheets",
-        #        wespi-711@fifth-bonbon-440712-g9.iam.gserviceaccount.com
-        #    ],
-        #)
-        # --------------- until here is the error problem -------------------------------
-
-        # -------------- remark them all first, we'll continue it later --------------------------------
-        #gc = gspread.authorize(credentials)
-
-        # Get the Google Sheet by URL.
-        #sheet_url = st.secrets["private_gsheets_url"]
-        #sheet = gc.open_by_url(sheet_url)
-
-        # Function to find the last filled row in the worksheet.
-        #def find_last_filled_row(worksheet):
-        #    return len(worksheet.get_all_values()) + 1
-
-        # Function to insert data into the Google Sheet after the last filled row.
-        #def insert_data_into_sheet(dataframe):
-        #    worksheet = sheet.get_worksheet(0)  # Replace 0 with the index of your desired worksheet
-        #    values = dataframe.values.tolist()
-
-            # Find the last filled row
-        #    last_filled_row = find_last_filled_row(worksheet)
-
-            # Insert the data after the last filled row
-        #    worksheet.insert_rows(values, last_filled_row)
-
-                                           #new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc     
-        # Your DataFrame with data to be inserted
-        #df = pd.DataFrame(results, columns=['id_calc', '_user_id', '_well_name', 'field_name', '_company', '_engineer', 'date_calc'])
-
-        # Call the function to insert data into the Google Sheet
-        #insert_data_into_sheet(df)
                
         if st.button("Next"):      
             st.write('')            
