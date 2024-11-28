@@ -4,19 +4,33 @@ import matplotlib.pyplot as plt
 from csv import writer
 import csv
 from datetime import datetime
+from streamlit_gsheets import GSheetsConnection
 
 #open datas
-mnomor1 = pd.read_csv('MNomor1.csv')
-tmycalc = pd.read_csv('tmycalc.csv')
-muserlogin = pd.read_csv('MUserLogin.csv')
-minstrument = pd.read_csv('MInstrument.csv')
-mcalcmethod = pd.read_csv('MCalcMethod.csv')
-mwelltype = pd.read_csv('MWellType.csv')
-mmeasurement = pd.read_csv('MMeasurement.csv')
-mcasingsize = pd.read_csv('MCasingSize.csv')
-mtubingsize = pd.read_csv('MTubingSize.csv')
-mtubingid = pd.read_csv('MTubingID.csv')
-mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
+mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
+tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
+muserloginurl = "https://docs.google.com/spreadsheets/d/19d_mDHySV7j3kYM_dTZb6nBagMY0TEFlQ833vIfRa1E"
+minstrumenturl = "https://docs.google.com/spreadsheets/d/1nJu0PvZ4fyLshLcj-R748mgzlMM9IHjV28FbaSnHMKk"
+mcalcmethodurl = "https://docs.google.com/spreadsheets/d/1afY5AZuqx8re0vlgMfLDBqwHJcG41Sxg9x-d-HiERfY"
+mwelltypeurl = "https://docs.google.com/spreadsheets/d/1kV0fO8LIPJEGTlQAxlprH1AWDWYZf-LWaZKWztMDyKI"
+mmeasurementurl = "https://docs.google.com/spreadsheets/d/1gsQLh87psgj3x2UcLIAzxfSqNnr_dmYt48u2F8HGsnw"
+mcasingsizeurl = "https://docs.google.com/spreadsheets/d/1tcel-Do505_YxZOonwFr4ylpSHlmziB1xN9wWxjgUCo"
+mtubingsizeurl = "https://docs.google.com/spreadsheets/d/19fg8MDz83hKSc-YaX2qYQ-e2OGQRg_XBK0tD46FQGFo"
+mtubingidurl = "https://docs.google.com/spreadsheets/d/1AVWvxiGxZi3hW3WsxTzWI_Xq42612M5RB49VQ_pMWPU"
+mtubingcoeffurl = "https://docs.google.com/spreadsheets/d/12YD09rDt0Xb4xBUaECdQLQB-QXi9H4VDuEC7sO9Mzlo"
+
+bsconnect = st.connection("gsheets", type=GSheetsConnection)
+mnomor1 = bsconnect.read(spreadsheet=mnomor1url)
+tmycalc = bsconnect.read(spreadsheet=tmycalcurl)
+muserlogin = bsconnect.read(spreadsheet=muserloginurl)
+minstrument = bsconnect.read(spreadsheet=minstrumenturl)
+mcalcmethod = bsconnect.read(spreadsheet=mcalcmethodurl)
+mwelltype = bsconnect.read(spreadsheet=mwelltypeurl)
+mmeasurement = bsconnect.read(spreadsheet=mmeasurementurl)
+mcasingsize = bsconnect.read(spreadsheet=mcasingsizeurl)
+mtubingsize = bsconnect.read(spreadsheet=mtubingsizeurl)
+mtubingid = bsconnect.read(spreadsheet=mtubingidurl)
+mtubingcoeff = bsconnect.read(spreadsheet=mtubingcoeffurl)
 df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
 
 def edit_and_add():
@@ -668,6 +682,8 @@ def edit_and_add():
                 'id_tubing_coeff': _id_tubing_coeff, 'liner_id': _liner_id, 'top_liner_at_tvd': _top_liner_at_tvd, 'top_liner_at_md': _top_liner_at_md, \
                 'bottom_liner_at_tvd': _bottom_liner_at_tvd, 'bottom_liner_at_md': _bottom_liner_at_md})                    
 
+            bsconnect.update(spreadsheet=tmycalc-url)
+            
             if st.button("Next"):      
                 wellnamesearch=''
                 return(wellnamesearch)
@@ -1013,7 +1029,9 @@ def edit_and_add():
                 'id_casing_size': _id_casing_size, 'id_tubing_size': _id_tubing_size, 'id_tubing_id': _id_tubing_id, \
                 'id_tubing_coeff': _id_tubing_coeff, 'liner_id': _liner_id, 'top_liner_at_tvd': _top_liner_at_tvd, 'top_liner_at_md': _top_liner_at_md, \
                 'bottom_liner_at_tvd': _bottom_liner_at_tvd, 'bottom_liner_at_md': _bottom_liner_at_md})
-                
+
+            bsconnect.update(spreadsheet=tmycalc-url)
+            
             if st.button("Next"):
                 wellnamesearch=''
                 return(wellnamesearch)
@@ -1071,7 +1089,6 @@ def edit_and_add():
             st.markdown(_comment_or_info)
             #st.write('\n')
     
-        #if _id_instrument==1 and _id_calc_method==2: #Downhole Sensor & Vogel         
         if _id_calc_method==2: # Vogel         
             #Hitung2an Calculation sblm IPR Curve
             # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
@@ -1422,12 +1439,13 @@ def edit_and_add():
                 # Add new rows to the CSV
                 writer_object.writerows(new_records)                    
                 f_object.close() 
-                
+
+            bsconnect.update(spreadsheet=tmycalc-url)
+            
             if st.button("Next"):      
                 wellnamesearch=''
                 return(wellnamesearch)
     
-        #elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
         elif _id_calc_method==1: # Straight Line
             #Hitung2an Calculation sblm IPR Curve        
             # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
@@ -1753,6 +1771,8 @@ def edit_and_add():
                 writer_object.writerows(new_records)                    
                 f_object.close() 
 
+            bsconnect.update(spreadsheet=tmycalc-url)
+            
             if st.button("Next"):
                 wellnamesearch=''
                 return(wellnamesearch)
