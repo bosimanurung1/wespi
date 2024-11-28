@@ -615,6 +615,8 @@ if st.button("Save"):
             # Add new rows to the CSV
             writer_object.writerows(new_records)                    
             f_object.close() 
+
+        bsconnect.update(spreadsheet=tmycalc-url)
                
         if st.button("Next"):      
             st.write('')            
