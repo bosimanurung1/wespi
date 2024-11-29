@@ -660,7 +660,7 @@ def edit_and_add():
                         writer.writeheader()
                         writer.writerows(rows)
 
-            #update_csv_record('tmycalc.csv', 'id_calc', st.session_state['id_calc_02'], {'well_name': _well_name, 'field_name': _field_name, \
+            update_csv_record('tmycalc.csv', 'id_calc', st.session_state['id_calc_02'], {'well_name': _well_name, 'field_name': _field_name, \
                 'company': _company, 'engineer': _engineer, 'date_calc': _date_calc, 'id_instrument': _id_instrument, 'id_calc_method': _id_calc_method, \
                 'id_welltype': _id_welltype, 'id_measurement': _id_measurement, 'comment_or_info': _comment_or_info, \
                 'top_perfo_tvd': _top_perfo_tvd, 'top_perfo_md': _top_perfo_md, 'bottom_perfo_tvd': _bottom_perfo_tvd, \
