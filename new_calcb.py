@@ -2,11 +2,14 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from csv import writer
-from streamlit_gsheets import GSheetsConnection
 
-tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
-bsconnect = st.connection("gsheets", type=GSheetsConnection)
-tmycalc = bsconnect.read(spreadsheet=tmycalcurl)
+# Your DataFrame with data to be inserted
+#df = pd.DataFrame(results, columns=['query', 'batch_index', 'index_of_audio_output_tensor', 'audio_file_name', 'similarity_score_by_model', 'user_relevance_score'])
+
+# Call the function to insert data into the Google Sheet
+#insert_data_into_sheet(df)
+
+tmycalc = pd.read_csv('tmycalc.csv')
 
 def new_calc_straight(): # from new_calc.py (in there, is counting Vogel)
     #Hitung2an Calculation sblm IPR Curve
