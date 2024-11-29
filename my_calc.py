@@ -5,34 +5,19 @@ import matplotlib.pyplot as plt
 from new_calc2 import edit_and_add
 from sessions import sessionstates
 from my_calcb import my_calc_straight
-from streamlit_gsheets import GSheetsConnection
 
-#open datas
-mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
-tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
-muserloginurl = "https://docs.google.com/spreadsheets/d/19d_mDHySV7j3kYM_dTZb6nBagMY0TEFlQ833vIfRa1E"
-minstrumenturl = "https://docs.google.com/spreadsheets/d/1nJu0PvZ4fyLshLcj-R748mgzlMM9IHjV28FbaSnHMKk"
-mcalcmethodurl = "https://docs.google.com/spreadsheets/d/1afY5AZuqx8re0vlgMfLDBqwHJcG41Sxg9x-d-HiERfY"
-mwelltypeurl = "https://docs.google.com/spreadsheets/d/1kV0fO8LIPJEGTlQAxlprH1AWDWYZf-LWaZKWztMDyKI"
-mmeasurementurl = "https://docs.google.com/spreadsheets/d/1gsQLh87psgj3x2UcLIAzxfSqNnr_dmYt48u2F8HGsnw"
-mcasingsizeurl = "https://docs.google.com/spreadsheets/d/1tcel-Do505_YxZOonwFr4ylpSHlmziB1xN9wWxjgUCo"
-mtubingsizeurl = "https://docs.google.com/spreadsheets/d/19fg8MDz83hKSc-YaX2qYQ-e2OGQRg_XBK0tD46FQGFo"
-mtubingidurl = "https://docs.google.com/spreadsheets/d/1AVWvxiGxZi3hW3WsxTzWI_Xq42612M5RB49VQ_pMWPU"
-mtubingcoeffurl = "https://docs.google.com/spreadsheets/d/12YD09rDt0Xb4xBUaECdQLQB-QXi9H4VDuEC7sO9Mzlo"
+mnomor1 = pd.read_csv('MNomor1.csv')
+tmycalc = pd.read_csv('tmycalc.csv')
+muserlogin = pd.read_csv('MUserLogin.csv')
+minstrument = pd.read_csv('MInstrument.csv')
+mcalcmethod = pd.read_csv('MCalcMethod.csv')
+mwelltype = pd.read_csv('MWellType.csv')
+mmeasurement = pd.read_csv('MMeasurement.csv')
+mcasingsize = pd.read_csv('MCasingSize.csv')
+mtubingsize = pd.read_csv('MTubingSize.csv')
+mtubingid = pd.read_csv('MTubingID.csv')
+mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
 df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
-
-bsconnect = st.connection("gsheets", type=GSheetsConnection)
-mnomor1 = bsconnect.read(spreadsheet=mnomor1url)
-tmycalc = bsconnect.read(spreadsheet=tmycalcurl)
-muserlogin = bsconnect.read(spreadsheet=muserloginurl)
-minstrument = bsconnect.read(spreadsheet=minstrumenturl)
-mcalcmethod = bsconnect.read(spreadsheet=mcalcmethodurl)
-mwelltype = bsconnect.read(spreadsheet=mwelltypeurl)
-mmeasurement = bsconnect.read(spreadsheet=mmeasurementurl)
-mcasingsize = bsconnect.read(spreadsheet=mcasingsizeurl)
-mtubingsize = bsconnect.read(spreadsheet=mtubingsizeurl)
-mtubingid = bsconnect.read(spreadsheet=mtubingidurl)
-mtubingcoeff = bsconnect.read(spreadsheet=mtubingcoeffurl)
 
 mycalc3 = mycalc3a = mycalc3b = mycalc3c = mycalc4 = pd.DataFrame()
 _id_calc = id_calc_02 = _id_instrument = 0
