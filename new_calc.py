@@ -182,7 +182,7 @@ with row3_2:
     _tubing_id = st.selectbox("Tubing ID (inch)", _tubing_id_list); st.session_state._tubing_id = _tubing_id
     mycalc_temp = mtubingid.loc[mtubingid['tubing_id']==_tubing_id].reset_index(drop=True)
     _id_tubing_id = mycalc_temp['id_tubing_id'].values[0]
-    st.session_state._id_tubig_id = _id_tubing_id
+    st.session_state._id_tubing_id = _id_tubing_id
 
     _tubing_coeff_list = mtubingcoeff['type'].unique().tolist()     
     _tubing_coeff_type = st.selectbox("Tubing Coeffisien Type", _tubing_coeff_list) #dont have 2 be like casing size
