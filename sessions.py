@@ -88,16 +88,24 @@ def sessionstates():
     if "_bottom_liner_at" not in st.session_state:
         st.session_state["_bottom_liner_at"] = 0.00       
 
+    if "_id_casing_size" not in st.session_state:
+        st.session_state["_id_casing_size"] = 0
     if "_casing_size" not in st.session_state:
         st.session_state["_casing_size"] = ''      
     if "_casing_id" not in st.session_state:
         st.session_state["_casing_id"] = 0.00
 
+    if "_id_tubing_size" not in st.session_state:
+        st.session_state["_id_tubing_size"] = 0
+    if "_id_tubing_id" not in st.session_state:
+        st.session_state["_id_tubing_id"] = 0
     if "_tubing_size" not in st.session_state:
         st.session_state["_tubing_size"] = 0.00
     if "_tubing_id" not in st.session_state:
         st.session_state["_tubing_id"] = 0.00
-
+    
+    if "_id_tubing_coeff" not in st.session_state:
+        st.session_state["_id_tubing_coeff"] = 0
     if "_tubing_coeff_type" not in st.session_state:
         st.session_state["_tubing_coeff_type"] = ''  
     if "_coefficient" not in st.session_state:
