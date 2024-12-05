@@ -11,7 +11,7 @@ def edit_and_add():
     from streamlit_gsheets import GSheetsConnection
 
     #open datas
-   mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
+    mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
     tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
     muserloginurl = "https://docs.google.com/spreadsheets/d/19d_mDHySV7j3kYM_dTZb6nBagMY0TEFlQ833vIfRa1E"
     minstrumenturl = "https://docs.google.com/spreadsheets/d/1nJu0PvZ4fyLshLcj-R748mgzlMM9IHjV28FbaSnHMKk"
