@@ -11,17 +11,17 @@ def edit_and_add():
     from streamlit_gsheets import GSheetsConnection
 
     #open datas
-    mnomor1url = "https://docs.google.com/spreadsheets/d/1fcPkcCiKgKSPPoNWl3UQqQb1QvR0GQPXSq35eS6PLk0"
-    tmycalcurl = "https://docs.google.com/spreadsheets/d/1V7y4hTLq3bLc7hW6a3OVT9mf92v-cyDVvJSK5UN6ppI"
-    muserloginurl = "https://docs.google.com/spreadsheets/d/1cPMVYXdJ04xwCFWZVCsnJniV9syONw7ww2rl4MvKXtM"
-    minstrumenturl = "https://docs.google.com/spreadsheets/d/1TJF8xBpDfRxacSTve03rw1vTCzIuOJHR9F6t_BmEnPg"
-    mcalcmethodurl = "https://docs.google.com/spreadsheets/d/1GGgQyLjrzJiRTDMtq5pIXzbQ0VEHycwrsQ7wBxEl4eo"
-    mwelltypeurl = "https://docs.google.com/spreadsheets/d/1Cu0q5Iznpx5qKUMpZ9XIYDFHtNcpfWOOcrgN8ld4YQA"
-    mmeasurementurl = "https://docs.google.com/spreadsheets/d/1PJIrdZfIaCjyRMGSSXlcxTOfvHpNDOkGBrlocyDEBKw"
-    mcasingsizeurl = "https://docs.google.com/spreadsheets/d/1pNFdNLO10HrmsiudQPaIqvdCwaZPN0XhtzksJxGU_rk"
-    mtubingsizeurl = "https://docs.google.com/spreadsheets/d/1KDuVmesbA3P0EQNzUx8fF95lIBqTGfFhe0pGMAlnOPI"
-    mtubingidurl = "https://docs.google.com/spreadsheets/d/1Sgm-WDqsi85J0KgqTJBJ3AAKyjKkE9MtXNqaucDyAck"
-    mtubingcoeffurl = "https://docs.google.com/spreadsheets/d/1CJZkyCDGsrEi94ekIZrHFQNOaWILILfZDclDoyYw1Yk"
+   mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
+    tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
+    muserloginurl = "https://docs.google.com/spreadsheets/d/19d_mDHySV7j3kYM_dTZb6nBagMY0TEFlQ833vIfRa1E"
+    minstrumenturl = "https://docs.google.com/spreadsheets/d/1nJu0PvZ4fyLshLcj-R748mgzlMM9IHjV28FbaSnHMKk"
+    mcalcmethodurl = "https://docs.google.com/spreadsheets/d/1afY5AZuqx8re0vlgMfLDBqwHJcG41Sxg9x-d-HiERfY"
+    mwelltypeurl = "https://docs.google.com/spreadsheets/d/1kV0fO8LIPJEGTlQAxlprH1AWDWYZf-LWaZKWztMDyKI"
+    mmeasurementurl = "https://docs.google.com/spreadsheets/d/1gsQLh87psgj3x2UcLIAzxfSqNnr_dmYt48u2F8HGsnw"
+    mcasingsizeurl = "https://docs.google.com/spreadsheets/d/1tcel-Do505_YxZOonwFr4ylpSHlmziB1xN9wWxjgUCo"
+    mtubingsizeurl = "https://docs.google.com/spreadsheets/d/19fg8MDz83hKSc-YaX2qYQ-e2OGQRg_XBK0tD46FQGFo"
+    mtubingidurl = "https://docs.google.com/spreadsheets/d/1AVWvxiGxZi3hW3WsxTzWI_Xq42612M5RB49VQ_pMWPU"
+    mtubingcoeffurl = "https://docs.google.com/spreadsheets/d/12YD09rDt0Xb4xBUaECdQLQB-QXi9H4VDuEC7sO9Mzlo"
 
     bsconnect = st.connection("gsheets", type=GSheetsConnection)
     mnomor1 = bsconnect.read(spreadsheet=mnomor1url)
@@ -103,7 +103,7 @@ def edit_and_add():
         #st.write(_date_calc) di atas sana ternyata _date_calc adalah string, jadi di bawah hrs diconvert ke date type
         # Check if a _date_calc variable is a string
         if isinstance(_date_calc, str):
-            _date_calc = datetime.strptime(_date_calc, "%Y/%m/%d")         
+            _date_calc = datetime.strptime(_date_calc, "%Y-%m-%d")         
         _date_calc = st.date_input("Date Input: ", _date_calc) 
         _well_name = st.text_input("Well Name:", st.session_state["_well_name"])
         _field_name = st.text_input('Field Name:', st.session_state["_field_name"])
@@ -693,7 +693,9 @@ def edit_and_add():
             #    'bottom_liner_at_tvd': _bottom_liner_at_tvd, 'bottom_liner_at_md': _bottom_liner_at_md})                    
 
             # Removing old entry on gsheets tmycalc
-            tmycalc.drop(tmycalc[tmycalc["id_calc"] == st.session_state["id_calc_02"]].index,inplace=True)
+            #tmycalc.drop(tmycalc[tmycalc["id_calc"] == st.session_state["id_calc_02"]].index,inplace=True)
+            st.session_state.tmycalc.drop(st.session_state.tmycalc[st.session_state.tmycalc["id_calc"] == st.session_state["id_calc_02"]].index,inplace=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=st.session_state.tmycalc)
 
             # update record with the same old id_calc not the new id
             new_rec = pd.DataFrame(
@@ -709,8 +711,8 @@ def edit_and_add():
                 "id_tubing_id": _id_tubing_id, "id_tubing_coeff": st.session_state._id_tubing_coeff, "liner_id": _liner_id, "top_liner_at_tvd": _top_liner_at_tvd, \
                 "top_liner_at_md": _top_liner_at_md, "bottom_liner_at_tvd": _bottom_liner_at_tvd, "bottom_liner_at_md": _bottom_liner_at_md,}]
             )  
-            update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
-            bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)
+            update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)
 
             st.session_state["tmycalc"] = update_tmycalc
 
@@ -1067,7 +1069,8 @@ def edit_and_add():
             #    'bottom_liner_at_tvd': _bottom_liner_at_tvd, 'bottom_liner_at_md': _bottom_liner_at_md})
 
             # Removing old entry on gsheets
-            tmycalc.drop(tmycalc[tmycalc["id_calc"] == st.session_state["id_calc_02"]].index,inplace=True)
+            st.session_state.tmycalc.drop(st.session_state.tmycalc[st.session_state.tmycalc["id_calc"] == st.session_state["id_calc_02"]].index,inplace=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=st.session_state.tmycalc)
 
             # update record with old id_calc not the new one
             new_rec = pd.DataFrame(
@@ -1083,8 +1086,8 @@ def edit_and_add():
                 "id_tubing_id": _id_tubing_id, "id_tubing_coeff": st.session_state._id_tubing_coeff, "liner_id": _liner_id, "top_liner_at_tvd": _top_liner_at_tvd, \
                 "top_liner_at_md": _top_liner_at_md, "bottom_liner_at_tvd": _bottom_liner_at_tvd, "bottom_liner_at_md": _bottom_liner_at_md,}]
             )  
-            update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
-            bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)
+            update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)
 
             st.session_state["tmycalc"] = update_tmycalc
 
@@ -1513,8 +1516,8 @@ def edit_and_add():
                 "top_liner_at_md": _top_liner_at_md, "bottom_liner_at_tvd": _bottom_liner_at_tvd, "bottom_liner_at_md": _bottom_liner_at_md,}]
             )  
 
-            update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
-            bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)            
+            update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)            
             st.session_state.tmycalc = update_tmycalc
 
             if st.button("Next"):      
@@ -1862,8 +1865,8 @@ def edit_and_add():
                 "top_liner_at_md": _top_liner_at_md, "bottom_liner_at_tvd": _bottom_liner_at_tvd, "bottom_liner_at_md": _bottom_liner_at_md,}]
             )  
 
-            update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
-            bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)
+            update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)
             st.session_state.tmycalc = update_tmycalc
 
             if st.button("Next"):
