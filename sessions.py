@@ -30,6 +30,9 @@ def sessionstates():
         st.session_state["_id_measurement"] = ''
     if "_well_name" not in st.session_state:
         st.session_state["_well_name"] = ''
+    if "_date_calc" not in st.session_state:
+        #st.session_state["_date_calc"] = pd.to_datetime('today').date()    
+        st.session_state["_date_calc"] = dt.datetime.today().strftime("%Y-%m-%d")        
     if "_field_name" not in st.session_state:
         st.session_state["_field_name"] = ''
     if "_company" not in st.session_state:
