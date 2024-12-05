@@ -2,21 +2,46 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from csv import writer
+import requests
+import json
+import gspread
+from streamlit_gsheets import GSheetsConnection
 from sessions import sessionstates
 from new_calcb import new_calc_straight
 
 #open datas
-mnomor1 = pd.read_csv('MNomor1.csv')
-tmycalc = pd.read_csv('tmycalc.csv')
-muserlogin = pd.read_csv('MUserLogin.csv')
-minstrument = pd.read_csv('MInstrument.csv')
-mcalcmethod = pd.read_csv('MCalcMethod.csv')
-mwelltype = pd.read_csv('MWellType.csv')
-mmeasurement = pd.read_csv('MMeasurement.csv')
-mcasingsize = pd.read_csv('MCasingSize.csv')
-mtubingsize = pd.read_csv('MTubingSize.csv')
-mtubingid = pd.read_csv('MTubingID.csv')
-mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
+mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
+tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
+if "mnomor1url" not in st.session_state:
+    st.session_state["mnomor1url"] = mnomor1url
+if "tmycalcurl" not in st.session_state:
+    st.session_state["tmycalcurl"] = tmycalcurl
+muserloginurl = "https://docs.google.com/spreadsheets/d/19d_mDHySV7j3kYM_dTZb6nBagMY0TEFlQ833vIfRa1E"
+minstrumenturl = "https://docs.google.com/spreadsheets/d/1nJu0PvZ4fyLshLcj-R748mgzlMM9IHjV28FbaSnHMKk"
+mcalcmethodurl = "https://docs.google.com/spreadsheets/d/1afY5AZuqx8re0vlgMfLDBqwHJcG41Sxg9x-d-HiERfY"
+mwelltypeurl = "https://docs.google.com/spreadsheets/d/1kV0fO8LIPJEGTlQAxlprH1AWDWYZf-LWaZKWztMDyKI"
+mmeasurementurl = "https://docs.google.com/spreadsheets/d/1gsQLh87psgj3x2UcLIAzxfSqNnr_dmYt48u2F8HGsnw"
+mcasingsizeurl = "https://docs.google.com/spreadsheets/d/1tcel-Do505_YxZOonwFr4ylpSHlmziB1xN9wWxjgUCo"
+mtubingsizeurl = "https://docs.google.com/spreadsheets/d/19fg8MDz83hKSc-YaX2qYQ-e2OGQRg_XBK0tD46FQGFo"
+mtubingidurl = "https://docs.google.com/spreadsheets/d/1AVWvxiGxZi3hW3WsxTzWI_Xq42612M5RB49VQ_pMWPU"
+mtubingcoeffurl = "https://docs.google.com/spreadsheets/d/12YD09rDt0Xb4xBUaECdQLQB-QXi9H4VDuEC7sO9Mzlo"
+
+bsconnect = st.connection("gsheets", type=GSheetsConnection)
+mnomor1 = bsconnect.read(spreadsheet=mnomor1url)
+tmycalc = bsconnect.read(spreadsheet=tmycalcurl)
+if "mnomor1" not in st.session_state:
+    st.session_state["mnomor1"] = mnomor1
+if "tmycalc" not in st.session_state:
+    st.session_state["tmycalc"] = tmycalc
+muserlogin = bsconnect.read(spreadsheet=muserloginurl)
+minstrument = bsconnect.read(spreadsheet=minstrumenturl)
+mcalcmethod = bsconnect.read(spreadsheet=mcalcmethodurl)
+mwelltype = bsconnect.read(spreadsheet=mwelltypeurl)
+mmeasurement = bsconnect.read(spreadsheet=mmeasurementurl)
+mcasingsize = bsconnect.read(spreadsheet=mcasingsizeurl)
+mtubingsize = bsconnect.read(spreadsheet=mtubingsizeurl)
+mtubingid = bsconnect.read(spreadsheet=mtubingidurl)
+mtubingcoeff = bsconnect.read(spreadsheet=mtubingcoeffurl)
 df_temp = pd.DataFrame()
 
 st.title("Add New Calculation")
@@ -132,7 +157,9 @@ with row3_2:
     #_cp = st.number_input('CP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
     # cp itu sama dgn p.casing, jadi utk hitung cp gunakan p.casing
     
+    #api = sgo = api1 = sgo1 = _api1 = _sgo1 = 0.01
     st.header("API/Sgo", divider="gray")
+    #api = float(api); sgo = float(sgo); api1 = float(api1); sgo1 = float(sgo1)
     def lbs_to_kg(): # api to sgo
         st.session_state.kg = 141.5/(131.5 + st.session_state.lbs)
 
@@ -213,23 +240,22 @@ with row3_2:
         _bottom_liner_at_md = st.number_input(f'Bottom Liner at ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
         st.session_state._bottom_liner_at_md = _bottom_liner_at_md
 
-if st.button("Save"):                   
-    #last_num = mnomor1.iloc[-1:]    
-    #last_id_calc = mnomor1['tmycalc'].values[0]
-    #new_id_calc = last_id_calc + 1    
+if st.button("Save"):                              
+    # Removing old entry on gsheets
+    st.session_state.mnomor1.drop(st.session_state.mnomor1[st.session_state.mnomor1["tmycalc"] == st.session_state["new_id_calc"]].index,inplace=True)
+
+    # add 1 to the last number of mnomor1 
     st.session_state["new_id_calc"] += 1
+
+    new_rec_num = pd.DataFrame([{"tmycalc": st.session_state["new_id_calc"]}])
     
-    # change value of a single cell directly
-    mnomor1.at[0, 'tmycalc'] = st.session_state["new_id_calc"]
-    
-    # write out the CSV file 
-    mnomor1.to_csv("mnomor1.csv", index=False)
- 
+    bsconnect.update(spreadsheet=mnomor1url, worksheet="Sheet1", data=new_rec_num)
+
     st.title("General Information")
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
     with col1:
         st.subheader('ID Calculation:')
-        st.markdown(st.session_state["new_id_calc"])
+        st.markdown(int(st.session_state["new_id_calc"]))
         st.subheader('Well Name:')
         st.markdown(_well_name)
         st.subheader('Field Name:')
@@ -476,6 +502,7 @@ if st.button("Save"):
            st.write("Pwf@Qdes: ", round(_Pwf_at_Qdes,3), 'psi')
            st.write('Qdes         : ', _qdes, 'BPD')
            st.write('Composite SG : ', round(_composite_sg,2)) #, '(selisih/beda 0.0003 lbh kecil)')
+           #st.write('Composite SG : ', _composite_sg) 
            #st.write('Di file xls: 0.490859')
            #st.write('\n')
         
@@ -529,6 +556,7 @@ if st.button("Save"):
            st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
            st.write('Friction Loss: ', round(_friction_loss,3), _measurement, 'TVD')
            st.write('% Free Gas     : ', round(_persen_free_gas,3), '%')
+           #st.write('% Free Gas     : ', _persen_free_gas, '%')
            #st.write('Di file xls: 51.80 %')
            #st.write('Hitung2an % Free Gas:')
            #st.write('Free Gas = (Vg / Vt) * 100')
@@ -601,21 +629,53 @@ if st.button("Save"):
         #    st.dataframe(df_ipr_data, hide_index=True)     
         #    st.write('')
                             # st.session_state.lbs = st.session_state._api and st.session_state.kg = st.session_state._sgo
-        new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
-                          _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                          _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
-                          _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
-                          st.session_state.lbs, st.session_state.kg, _id_casing_size, _id_tubing_size, _id_tubing_id, \
-                          st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
-                          _bottom_liner_at_tvd, _bottom_liner_at_md]]   
+        #new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
+        #                  _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
+        #                  _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
+        #                  _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
+        #                  st.session_state.lbs, st.session_state.kg, _id_casing_size, _id_tubing_size, _id_tubing_id, \
+        #                  st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
+        #                  _bottom_liner_at_tvd, _bottom_liner_at_md]]   
 
-        with open('tmycalc.csv', mode='a', newline='') as f_object:
+        #with open('tmycalc.csv', mode='a', newline='') as f_object:
            #writer_object = csv.writer(file)            
-            writer_object = writer(f_object)            
+        #    writer_object = writer(f_object)            
             # Add new rows to the CSV
-            writer_object.writerows(new_records)                    
-            f_object.close() 
+        #    writer_object.writerows(new_records)                    
+        #    f_object.close() 
+
+        new_rec = pd.DataFrame(
+            [{"id_calc": st.session_state["new_id_calc"], "user_id": _user_id, "well_name": _well_name, "field_name": _field_name, \
+            "company": _company, "engineer": _engineer, "date_calc": _date_calc, "id_instrument": _id_instrument, \
+            "id_calc_method": _id_calc_method, "id_welltype": _id_welltype, "id_measurement": _id_measurement, "comment_or_info": _comment_or_info, \
+            "top_perfo_tvd": _top_perfo_tvd, "top_perfo_md": _top_perfo_md, "bottom_perfo_tvd": _bottom_perfo_tvd, "bottom_perfo_md": _bottom_perfo_md, \
+            "qtest": _qtest, "sfl": _sfl, "smg": _smgFreeGasAtQtest, "sbhp": _sbhp, "fbhp": _fbhp, "producing_gor": _producing_gor, \
+            "top_perfo_tvd": _top_perfo_tvd, "top_perfo_md": _top_perfo_md, "bottom_perfo_tvd": _bottom_perfo_tvd, "bottom_perfo_md": _bottom_perfo_md, \
+            "qtest": _qtest, "sfl": _sfl, "smg": _smgFreeGasAtQtest, "sbhp": _sbhp, "fbhp": _fbhp, "producing_gor": _producing_gor, \
+            "wc": _wc, "bht": _bht, "sgw": _sgw, "sgg": _sgg, "qdes": _qdes, "psd": _psd, "whp": _whp, "psd_md": _psd_md, "p_casing": _p_casing, \
+            "pb": _pb, "api": st.session_state.lbs, "sgo": st.session_state.kg, "id_casing_size": _id_casing_size, "id_tubing_size": _id_tubing_size, \
+            "id_tubing_id": _id_tubing_id, "id_tubing_coeff": st.session_state._id_tubing_coeff, "liner_id": _liner_id, "top_liner_at_tvd": _top_liner_at_tvd, \
+            "top_liner_at_md": _top_liner_at_md, "bottom_liner_at_tvd": _bottom_liner_at_tvd, "bottom_liner_at_md": _bottom_liner_at_md,}]
+        )   
+
+        newRecord = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
+                  _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
+                  _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
+                  _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, \
+                  st.session_state.lbs, st.session_state.kg, _id_casing_size, _id_tubing_size, _id_tubing_id, \
+                  st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
+                  _bottom_liner_at_tvd, _bottom_liner_at_md]]   
                
+        update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
+        bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)
+
+        #mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
+        #tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
+        #bsconnect = st.connection("gsheets", type=GSheetsConnection)
+        #mnomor1 = bsconnect.read(spreadsheet=mnomor1url)
+        #tmycalc = bsconnect.read(spreadsheet=tmycalcurl)
+        st.session_state.tmycalc = update_tmycalc
+
         if st.button("Next"):      
             st.write('')            
             #st.session_state["api"] = 0.00; st.session_state.sgo = 0.00    
