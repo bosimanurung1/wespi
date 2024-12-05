@@ -2,24 +2,54 @@ import streamlit as st
 import pandas as pd
 import pandasql as ps
 import matplotlib.pyplot as plt
-from new_calc2 import edit_and_add
+import datetime as dt
+from csv import writer
+from streamlit_gsheets import GSheetsConnection
 from sessions import sessionstates
 from my_calcb import my_calc_straight
+from new_calc2 import edit_and_add
 
-mnomor1 = pd.read_csv('MNomor1.csv')
-tmycalc = pd.read_csv('tmycalc.csv')
-muserlogin = pd.read_csv('MUserLogin.csv')
-minstrument = pd.read_csv('MInstrument.csv')
-mcalcmethod = pd.read_csv('MCalcMethod.csv')
-mwelltype = pd.read_csv('MWellType.csv')
-mmeasurement = pd.read_csv('MMeasurement.csv')
-mcasingsize = pd.read_csv('MCasingSize.csv')
-mtubingsize = pd.read_csv('MTubingSize.csv')
-mtubingid = pd.read_csv('MTubingID.csv')
-mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
+#open datas
+mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
+tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
+if "mnomor1url" not in st.session_state:
+    st.session_state["mnomor1url"] = mnomor1url
+if "tmycalcurl" not in st.session_state:
+    st.session_state["tmycalcurl"] = tmycalcurl
+
+muserloginurl = "https://docs.google.com/spreadsheets/d/19d_mDHySV7j3kYM_dTZb6nBagMY0TEFlQ833vIfRa1E"
+minstrumenturl = "https://docs.google.com/spreadsheets/d/1nJu0PvZ4fyLshLcj-R748mgzlMM9IHjV28FbaSnHMKk"
+mcalcmethodurl = "https://docs.google.com/spreadsheets/d/1afY5AZuqx8re0vlgMfLDBqwHJcG41Sxg9x-d-HiERfY"
+mwelltypeurl = "https://docs.google.com/spreadsheets/d/1kV0fO8LIPJEGTlQAxlprH1AWDWYZf-LWaZKWztMDyKI"
+mmeasurementurl = "https://docs.google.com/spreadsheets/d/1gsQLh87psgj3x2UcLIAzxfSqNnr_dmYt48u2F8HGsnw"
+mcasingsizeurl = "https://docs.google.com/spreadsheets/d/1tcel-Do505_YxZOonwFr4ylpSHlmziB1xN9wWxjgUCo"
+mtubingsizeurl = "https://docs.google.com/spreadsheets/d/19fg8MDz83hKSc-YaX2qYQ-e2OGQRg_XBK0tD46FQGFo"
+mtubingidurl = "https://docs.google.com/spreadsheets/d/1AVWvxiGxZi3hW3WsxTzWI_Xq42612M5RB49VQ_pMWPU"
+mtubingcoeffurl = "https://docs.google.com/spreadsheets/d/12YD09rDt0Xb4xBUaECdQLQB-QXi9H4VDuEC7sO9Mzlo"
 df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
 
+bsconnect = st.connection("gsheets", type=GSheetsConnection)
+mnomor1 = bsconnect.read(spreadsheet=mnomor1url)
+tmycalc = bsconnect.read(spreadsheet=tmycalcurl)
+if "mnomor1" not in st.session_state:
+    st.session_state["mnomor1"] = mnomor1
+if "tmycalc" not in st.session_state:
+    st.session_state["tmycalc"] = tmycalc
+
+muserlogin = bsconnect.read(spreadsheet=muserloginurl)
+minstrument = bsconnect.read(spreadsheet=minstrumenturl)
+mcalcmethod = bsconnect.read(spreadsheet=mcalcmethodurl)
+mwelltype = bsconnect.read(spreadsheet=mwelltypeurl)
+mmeasurement = bsconnect.read(spreadsheet=mmeasurementurl)
+mcasingsize = bsconnect.read(spreadsheet=mcasingsizeurl)
+mtubingsize = bsconnect.read(spreadsheet=mtubingsizeurl)
+mtubingid = bsconnect.read(spreadsheet=mtubingidurl)
+mtubingcoeff = bsconnect.read(spreadsheet=mtubingcoeffurl)
+
+# global variables
 mycalc3 = mycalc3a = mycalc3b = mycalc3c = mycalc4 = pd.DataFrame()
+#_well_name_search=''
+#_id_calc = id_calc_01 = id_calc_02 = _id_instrument = 0
 _id_calc = id_calc_02 = _id_instrument = 0
 _pi = 0
 
@@ -27,36 +57,58 @@ sessionstates() # di sessions.py
 
 st.title("My Calculations")
 
-mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
-        m.date_calc, m.id_instrument, i.instrument, m.id_calc_method, c.calc_method, m.id_welltype, \
-        w.welltype, m.id_measurement, meas.measurement, m.comment_or_info, m.top_perfo_tvd, m.top_perfo_md, \
-        m.bottom_perfo_tvd, m.bottom_perfo_md, m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, \
-        m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, m.p_casing, m.pb, m.api, m.sgo, m.sfl, m.smg, \
-        m.id_casing_size, s.casing_size, s.casing_drift_id, m.id_tubing_size, tubsize.tubing_size, m.id_tubing_id, tubid.tubing_id, \
-        m.id_tubing_coeff, tubcoef.type, tubcoef.coefficient, m.liner_id, m.top_liner_at_tvd, m.top_liner_at_md, \
-        m.bottom_liner_at_tvd, m.bottom_liner_at_md \
-        from tmycalc m \
-            left join muserlogin u on m.user_id = u.user_id \
-            left join minstrument i on m.id_instrument = i.id_instrument \
-            left join mcalcmethod c on m.id_calc_method = c.id_calc_method \
-            left join mmeasurement meas on m.id_measurement = meas.id_measurement \
-            left join mwelltype w on m.id_welltype = w.id_welltype \
-            left join mcasingsize s on m.id_casing_size = s.id_casing_size \
-            left join mtubingsize tubsize on m.id_tubing_size = tubsize.id_tubing_size \
-            left join mtubingid tubid on m.id_tubing_id = tubid.id_tubing_id \
-            left join mtubingcoeff tubcoef on m.id_tubing_coeff = tubcoef.id_tubing_coeff") 
-st.session_state["mycalc3"] = mycalc3
+#mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \#
+#        m.date_calc, m.id_instrument, i.instrument, m.id_calc_method, c.calc_method, m.id_welltype, \
+#        w.welltype, m.id_measurement, meas.measurement, m.comment_or_info, m.top_perfo_tvd, m.top_perfo_md, \
+#        m.bottom_perfo_tvd, m.bottom_perfo_md, m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, \
+#        m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, m.p_casing, m.pb, m.api, m.sgo, m.sfl, m.smg, \
+#        m.id_casing_size, s.casing_size, s.casing_drift_id, m.id_tubing_size, tubsize.tubing_size, m.id_tubing_id, tubid.tubing_id, \
+#        m.id_tubing_coeff, tubcoef.type, tubcoef.coefficient, m.liner_id, m.top_liner_at_tvd, m.top_liner_at_md, \
+#        m.bottom_liner_at_tvd, m.bottom_liner_at_md \
+#        from tmycalc m \
+#            left join muserlogin u on m.user_id = u.user_id \
+#            left join minstrument i on m.id_instrument = i.id_instrument \
+#            left join mcalcmethod c on m.id_calc_method = c.id_calc_method \
+#            left join mmeasurement meas on m.id_measurement = meas.id_measurement \
+#            left join mwelltype w on m.id_welltype = w.id_welltype \
+#            left join mcasingsize s on m.id_casing_size = s.id_casing_size \
+#            left join mtubingsize tubsize on m.id_tubing_size = tubsize.id_tubing_size \
+#            left join mtubingid tubid on m.id_tubing_id = tubid.id_tubing_id \
+#            left join mtubingcoeff tubcoef on m.id_tubing_coeff = tubcoef.id_tubing_coeff") 
+#mycalc3 = tmycalc 
+mycalc3 = st.session_state["tmycalc"]
+mycalc3 = pd.merge(mycalc3[['id_calc', 'well_name', 'field_name', 'company', 'engineer', 'date_calc', 'id_instrument', \
+                            'id_calc_method', 'id_measurement', 'id_welltype', 'comment_or_info', 'top_perfo_tvd', 'top_perfo_md', \
+                            'bottom_perfo_tvd', 'bottom_perfo_md', 'qtest', 'sbhp', 'fbhp', 'producing_gor', 'wc', 'bht', \
+                            'sgw', 'sgg', 'qdes', 'psd', 'whp', 'psd_md', 'p_casing', 'pb', 'api', 'sgo', 'sfl', 'smg', \
+                            'id_casing_size', 'id_tubing_size', 'id_tubing_id', 'id_tubing_coeff', 'liner_id', 'top_liner_at_tvd', \
+                            'top_liner_at_md', 'bottom_liner_at_tvd', 'bottom_liner_at_md', 'user_id']], muserlogin[['user_id', 'username']], \
+                            on='user_id', how='left')
+mycalc3 = pd.merge(mycalc3, minstrument[['id_instrument', 'instrument']], on='id_instrument', how='left')
+mycalc3 = pd.merge(mycalc3, mcalcmethod[['id_calc_method', 'calc_method']], on='id_calc_method', how='left')
+mycalc3 = pd.merge(mycalc3, mmeasurement[['id_measurement', 'measurement']], on='id_measurement', how='left')
+mycalc3 = pd.merge(mycalc3, mwelltype[['id_welltype', 'welltype']], on='id_welltype', how='left')
+mycalc3 = pd.merge(mycalc3, mcasingsize[['id_casing_size', 'casing_size', 'casing_drift_id']], on='id_casing_size', how='left')
+mycalc3 = pd.merge(mycalc3, mtubingsize[['id_tubing_size', 'tubing_size']], on='id_tubing_size', how='left')
+mycalc3 = pd.merge(mycalc3, mtubingid[['id_tubing_id', 'tubing_id']], on='id_tubing_id', how='left')
+mycalc3 = pd.merge(mycalc3[['id_calc', 'well_name', 'field_name', 'company', 'engineer', 'date_calc', 'comment_or_info', 'id_instrument', 'instrument', \
+                            'id_calc_method', 'calc_method', 'id_measurement', 'measurement', 'id_welltype', 'welltype', 'top_perfo_tvd', 'top_perfo_md', 'bottom_perfo_tvd', 'bottom_perfo_md', 'qtest', 'sbhp', 'fbhp', \
+                            'producing_gor', 'wc', 'bht', 'sgw', 'sgg', 'qdes', 'psd', 'whp', 'psd_md', 'p_casing', 'pb', \
+                            'api', 'sgo', 'sfl', 'smg', 'id_casing_size', 'casing_size', 'casing_drift_id', 'id_tubing_size', 'tubing_size', 'id_tubing_id', 'tubing_id', \
+                            'liner_id', 'top_liner_at_tvd', 'top_liner_at_md', 'bottom_liner_at_tvd', 'bottom_liner_at_md', \
+                            'user_id', 'username', 'id_tubing_coeff']], mtubingcoeff[['id_tubing_coeff', 'type', 'coefficient']], on='id_tubing_coeff', how='left')
 
-# mycalc3a is about to show simple fields
-mycalc3a = ps.sqldf("select m.id_calc as 'ID Calculation', m.well_name as 'Well Name', m.field_name 'Field Name', w.welltype 'Well Type', \
-        m.date_calc as 'Date Calculation', i.instrument as Instrument, c.calc_method as Method, meas.measurement as Meeasurement, \
-        m.comment_or_info as Comment \
-        from tmycalc m \
-            left join muserlogin u on m.user_id = u.user_id \
-            left join minstrument i on m.id_instrument = i.id_instrument \
-            left join mcalcmethod c on m.id_calc_method = c.id_calc_method \
-            left join mmeasurement meas on m.id_measurement = meas.id_measurement \
-            left join mwelltype w on m.id_welltype = w.id_welltype")
+#mycalc3a = tmycalc
+mycalc3a = st.session_state["tmycalc"]
+mycalc3a = pd.merge(mycalc3a[['id_calc', 'well_name', 'field_name', 'company', 'engineer', 'date_calc', 'id_instrument', \
+                            'id_calc_method', 'id_measurement', 'id_welltype', 'user_id']], muserlogin[['user_id', 'username']], \
+                             on='user_id', how='left')
+mycalc3a = pd.merge(mycalc3a, minstrument[['id_instrument', 'instrument']], on='id_instrument', how='left')
+mycalc3a = pd.merge(mycalc3a, mcalcmethod[['id_calc_method', 'calc_method']], on='id_calc_method', how='left')
+mycalc3a = pd.merge(mycalc3a, mmeasurement[['id_measurement', 'measurement']], on='id_measurement', how='left')
+mycalc3a = pd.merge(mycalc3a[['id_calc', 'well_name', 'field_name', 'company', 'engineer', 'date_calc', 'user_id', 'username', \
+                            'instrument', 'calc_method', 'measurement', 'id_welltype']], mwelltype[['id_welltype', 'welltype']], \
+                            on='id_welltype', how='left')
 # ---------- To Show ----------------------
 st.dataframe(mycalc3a, hide_index=True)      
 
@@ -71,13 +123,16 @@ with col1:
     #_well_name_search = st.text_input('Well Name To Search: ', _well_name_search, None, key="_well_name_search", 
     _well_name_search = st.text_input('Well Name To Search: ', None, key="_well_name_search", 
                         on_change=search_to_explore)
+    
 with col2:
     #id_calc_01 = st.number_input("ID Calculation To Explore:", id_calc_01, None, "min", 1, 
     id_calc_01 = st.number_input("ID Calculation To Explore:", 0, None, "min", 1, key="id_calc_01", 
                         on_change=explore_to_search)  
-        
+
+
 st.write('')
-if _well_name_search:
+#if _well_name_search:
+if _well_name_search or st.session_state._well_name_search:
     #mycalc3b = mycalc3a[mycalc3a['well_name'].str.contains(_well_name_search)] # for minimalis, using mycalc3a
     mycalc3b = pd.DataFrame()
     mycalc3b = mycalc3[mycalc3['well_name'].str.contains(_well_name_search)]            
@@ -85,25 +140,38 @@ if _well_name_search:
     if not mycalc3b.empty:
         st.subheader(f"Well Name Contains Word '{_well_name_search}'")
         mycalc3b = mycalc3[mycalc3['well_name'].str.contains(_well_name_search)]            
-        mycalc3b = ps.sqldf("select m.id_calc as 'ID Calculation', m.well_name as 'Well Name', \
-        m.field_name as 'Field Name', w.welltype 'Well Type', m.date_calc as 'Date Calculation', \
-        i.instrument as Instrument, c.calc_method as Method, meas.measurement as Meeasurement, \
-        m.comment_or_info as Comment, m.top_perfo_tvd, m.top_perfo_md, m.bottom_perfo_tvd, m.bottom_perfo_md, \
-        m.qtest, m.sfl, m.smg, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, \
-        m.p_casing, m.pb, m.api, m.sgo, m.id_casing_size, s.casing_size, s.casing_drift_id, m.id_tubing_size, \
-        tubsize.tubing_size, m.id_tubing_id, tubid.tubing_id, m.id_tubing_coeff, tubcoef.type, tubcoef.coefficient, \
-        m.liner_id, m.top_liner_at_tvd, m.top_liner_at_md, m.bottom_liner_at_tvd, m.bottom_liner_at_md \
-        from mycalc3b m \
-            left join muserlogin u on m.user_id = u.user_id \
-            left join minstrument i on m.id_instrument = i.id_instrument \
-            left join mcalcmethod c on m.id_calc_method = c.id_calc_method \
-            left join mmeasurement meas on m.id_measurement = meas.id_measurement \
-            left join mwelltype w on m.id_welltype = w.id_welltype \
-            left join mcasingsize s on m.id_casing_size = s.id_casing_size \
-            left join mtubingsize tubsize on m.id_tubing_size = tubsize.id_tubing_size \
-            left join mtubingid tubid on m.id_tubing_id = tubid.id_tubing_id \
-            left join mtubingcoeff tubcoef on m.id_tubing_coeff = tubcoef.id_tubing_coeff") 
-        st.dataframe(mycalc3b, hide_index=True)
+        mycalc3b = pd.merge(mycalc3b[['id_calc', 'well_name', 'field_name', 'company', 'engineer', 'date_calc', 'id_instrument', \
+                                    'id_calc_method', 'id_measurement', 'id_welltype', 'comment_or_info', 'top_perfo_tvd', 'top_perfo_md', \
+                                    'bottom_perfo_tvd', 'bottom_perfo_md', 'qtest', 'sbhp', 'fbhp', 'producing_gor', 'wc', 'bht', \
+                                    'sgw', 'sgg', 'qdes', 'psd', 'whp', 'psd_md', 'p_casing', 'pb', 'api', 'sgo', 'sfl', 'smg', \
+                                    'id_casing_size', 'id_tubing_size', 'id_tubing_id', 'id_tubing_coeff', 'liner_id', 'top_liner_at_tvd', \
+                                    'top_liner_at_md', 'bottom_liner_at_tvd', 'bottom_liner_at_md', 'user_id']], muserlogin[['user_id', 'username']], \
+                                    on='user_id', how='left')
+        mycalc3b = pd.merge(mycalc3b, minstrument[['id_instrument', 'instrument']], on='id_instrument', how='left')
+        mycalc3b = pd.merge(mycalc3b, mcalcmethod[['id_calc_method', 'calc_method']], on='id_calc_method', how='left')
+        mycalc3b = pd.merge(mycalc3b, mmeasurement[['id_measurement', 'measurement']], on='id_measurement', how='left')
+        mycalc3b = pd.merge(mycalc3b, mwelltype[['id_welltype', 'welltype']], on='id_welltype', how='left')
+        mycalc3b = pd.merge(mycalc3b, mcasingsize[['id_casing_size', 'casing_size', 'casing_drift_id']], on='id_casing_size', how='left')
+        mycalc3b = pd.merge(mycalc3b, mtubingsize[['id_tubing_size', 'tubing_size']], on='id_tubing_size', how='left')
+        mycalc3b = pd.merge(mycalc3b, mtubingid[['id_tubing_id', 'tubing_id']], on='id_tubing_id', how='left')        
+        mycalc3b1 = mycalc3b
+
+        mycalc3b = pd.merge(mycalc3b[['id_calc', 'well_name', 'field_name', 'company', 'engineer', 'date_calc', 'comment_or_info', 'id_instrument', 'instrument', \
+                            'id_calc_method', 'calc_method', 'id_measurement', 'measurement', 'id_welltype', 'welltype', 'top_perfo_tvd', 'top_perfo_md', 'bottom_perfo_tvd', 'bottom_perfo_md', 'qtest', 'sbhp', 'fbhp', \
+                            'producing_gor', 'wc', 'bht', 'sgw', 'sgg', 'qdes', 'psd', 'whp', 'psd_md', 'p_casing', 'pb', \
+                            'api', 'sgo', 'sfl', 'smg', 'id_casing_size', 'casing_size', 'casing_drift_id', 'id_tubing_size', 'tubing_size', 'id_tubing_id', 'tubing_id', \
+                            'liner_id', 'top_liner_at_tvd', 'top_liner_at_md', 'bottom_liner_at_tvd', 'bottom_liner_at_md', \
+                            'user_id', 'username', 'id_tubing_coeff']], mtubingcoeff[['id_tubing_coeff', 'type', 'coefficient']], on='id_tubing_coeff', how='left')
+        # ---- just to show --------
+        mycalc3b1 = pd.merge(mycalc3b1[['id_calc', 'well_name', 'field_name', 'company', 'engineer', 'date_calc', 'comment_or_info', 'instrument', \
+                            'calc_method', 'measurement', 'welltype', 'top_perfo_tvd', 'top_perfo_md', 'bottom_perfo_tvd', 'bottom_perfo_md', 'qtest', 'sbhp', 'fbhp', \
+                            'producing_gor', 'wc', 'bht', 'sgw', 'sgg', 'qdes', 'psd', 'whp', 'psd_md', 'p_casing', 'pb', \
+                            'api', 'sgo', 'sfl', 'smg', 'casing_size', 'casing_drift_id', 'tubing_size', 'tubing_id', \
+                            'liner_id', 'top_liner_at_tvd', 'top_liner_at_md', 'bottom_liner_at_tvd', 'bottom_liner_at_md', \
+                            'user_id', 'username', 'id_tubing_coeff']], mtubingcoeff[['id_tubing_coeff', 'type', 'coefficient']], on='id_tubing_coeff', how='left')
+        # ---------- To Show!! ---------------------
+        st.dataframe(mycalc3b1, hide_index=True)
+
         col1b, col2b = st.columns(2, gap="medium", vertical_alignment="top")
         with col1b:
             st.markdown("<p style='text-align: justify;'>Masukkan Nomor ID Calculation Untuk Diedit Detailnya \
@@ -123,15 +191,15 @@ if st.session_state["id_calc_02"]:
         st.session_state["mycalc3c"] = mycalc3c
         edit_and_add() # di new_calc2.py, msh blm berhasil membersihkan hasil edit inputan
     else:
-        if _well_name_search != '':
+        if st.session_state._well_name_search != '':
             st.write('')
             st.write('Data Tidak Ada')
 
 # --- just explore ----    
 if st.session_state["id_calc_01"]:
     mycalc4 = mycalc3.loc[mycalc3['id_calc']==st.session_state["id_calc_01"]].reset_index(drop=True)    
-
-    _username = mycalc4['username'].values[0]; _well_name = mycalc4['well_name'].values[0]
+    _username = mycalc4['username'].values[0];
+    _well_name = mycalc4['well_name'].values[0]
     _field_name=mycalc4['field_name'].values[0]; _company=mycalc4['company'].values[0]; _engineer=mycalc4['engineer'].values[0]
     _date_calc=mycalc4['date_calc'].values[0]
     _instrument=mycalc4['instrument'].values[0]
@@ -142,7 +210,6 @@ if st.session_state["id_calc_01"]:
     _id_measurement=mycalc4['id_measurement'].values[0]; st.session_state._id_measurement = _id_measurement
     _comment_or_info=mycalc4['comment_or_info'].values[0]
     
-    #st.write('id instrument=', _id_instrument, 'id calc methon=', _id_calc_method)
     st.title("General Information")
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
     with col1:
@@ -195,6 +262,7 @@ if st.session_state["id_calc_01"]:
     else:
         _bottom_perfo_md=mycalc4['bottom_perfo_md'].values[0]; st.session_state._bottom_perfo_md = _bottom_perfo_tvd
 
+    # Krn ini hanya explore, ambil saja SBHP & FBHP yg tersimpan
     _sbhp=mycalc4['sbhp'].values[0]; st.session_state._sbhp = _sbhp
     _fbhp=mycalc4['fbhp'].values[0]; st.session_state._fbhp = _fbhp
     _sfl=mycalc4['sfl'].values[0]; _smgFreeGasAtQtest=mycalc4['smg'].values[0]
@@ -253,6 +321,11 @@ if st.session_state["id_calc_01"]:
         elif _id_instrument==2: # Sonolog
             st.write('SFL         : ', _sfl, _measurement)
             st.write('SMG Free Gas @ Qtest: ', _smgFreeGasAtQtest, _measurement)
+            # di bawah ini gak jadi, krn ini hanya explore, ambil saja SBHP & FBHP yg tersimpan
+            #if _measurement=='m': # kalau mtr, dikonversi dulu ke ft yaitu dikali 1/3.281 or 0.304785
+            #    _sfl *= 0.304785
+            #    _smgFreeGasAtQtest *= 0.304785
+            #then convert them to psig (as SBHP & FBHP) after found P.Casing & SGFluid
         st.write('Producing GOR: ', _producing_gor, 'scf/stb')
         st.write('WC           : ', _wc, '%')
         st.write('BHT          : ', _bht, '℉')
