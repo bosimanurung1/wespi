@@ -2,9 +2,8 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from csv import writer
-
-tmycalc = pd.read_csv('tmycalc.csv')
-
+from streamlit_gsheets import GSheetsConnection
+ 
 def new_calc_straight(): # from new_calc.py (in there, is counting Vogel)
     #Hitung2an Calculation sblm IPR Curve
     # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
@@ -324,13 +323,36 @@ def new_calc_straight(): # from new_calc.py (in there, is counting Vogel)
                         st.session_state._id_tubing_size, st.session_state._id_tubing_id, st.session_state._id_tubing_coeff, \
                         st.session_state._liner_id, st.session_state._top_liner_at_tvd, st.session_state._top_liner_at_md, \
                         st.session_state._bottom_liner_at_tvd, st.session_state._bottom_liner_at_md]]                               
-    with open('tmycalc.csv', mode='a', newline='') as f_object:
+    #with open('tmycalc.csv', mode='a', newline='') as f_object:
         #writer_object = csv.writer(file)            
-        writer_object = writer(f_object)            
+    #    writer_object = writer(f_object)            
         # Add new rows to the CSV
-        writer_object.writerows(new_records)                    
-        f_object.close() 
-            
+    #    writer_object.writerows(new_records)                    
+    #    f_object.close() 
+
+    new_rec = pd.DataFrame(
+        [{"id_calc": st.session_state["new_id_calc"], "user_id": st.session_state._user_id, "well_name": st.session_state._well_name, \
+        "field_name": st.session_state._field_name, "company": st.session_state._company, "engineer": st.session_state._engineer, \
+        "date_calc": st.session_state._date_calc, "id_instrument": st.session_state._id_instrument, "id_calc_method": st.session_state._id_calc_method, \
+        "id_welltype": st.session_state._id_welltype, "id_measurement": st.session_state._id_measurement, "comment_or_info": st.session_state._comment_or_info, \
+        "top_perfo_tvd": st.session_state._top_perfo_tvd, "top_perfo_md": st.session_state._top_perfo_md, "bottom_perfo_tvd": st.session_state._bottom_perfo_tvd, \
+        "bottom_perfo_md": st.session_state._bottom_perfo_md, "qtest": st.session_state._qtest, "sfl": st.session_state._sfl, "smg": st.session_state._smgFreeGasAtQtest, \
+        "sbhp": st.session_state._sbhp, "fbhp": st.session_state._fbhp, "producing_gor": st.session_state._producing_gor, "top_perfo_tvd": st.session_state._top_perfo_tvd, \
+        "top_perfo_md": st.session_state._top_perfo_md, "bottom_perfo_tvd": st.session_state._bottom_perfo_tvd, "bottom_perfo_md": st.session_state._bottom_perfo_md, \
+        "qtest": st.session_state._qtest, "sfl": st.session_state._sfl, "smg": st.session_state._smgFreeGasAtQtest, "sbhp": st.session_state._sbhp, \
+        "fbhp": st.session_state._fbhp, "producing_gor": st.session_state._producing_gor, "wc": st.session_state._wc, "bht": st.session_state._bht, \
+        "sgw": st.session_state._sgw, "sgg": st.session_state._sgg, "qdes": st.session_state._qdes, "psd": st.session_state._psd, \
+        "whp": st.session_state._whp, "psd_md": st.session_state._psd_md, "p_casing": st.session_state._p_casing, "pb": st.session_state._pb, \
+        "api": st.session_state.lbs, "sgo": st.session_state.kg, "id_casing_size": st.session_state._id_casing_size, "id_tubing_size": st.session_state._id_tubing_size, \
+        "id_tubing_id": st.session_state._id_tubing_id, "id_tubing_coeff": st.session_state._id_tubing_coeff, "liner_id": st.session_state._liner_id, \
+        "top_liner_at_tvd": st.session_state._top_liner_at_tvd, "top_liner_at_md": st.session_state._top_liner_at_md, "bottom_liner_at_tvd": st.session_state._bottom_liner_at_tvd, \
+        "bottom_liner_at_md": st.session_state._bottom_liner_at_md,}]
+    )  
+        
+    update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+    bsconnect = st.connection("gsheets", type=GSheetsConnection)
+    bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)
+    st.session_state.tmycalc = update_tmycalc
+
     if st.button("Next"):      
-        st.write('')
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+        st.write('')                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
