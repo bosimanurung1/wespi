@@ -5,7 +5,7 @@ def edit_and_add():
     from csv import writer
     import csv
     from datetime import datetime
-    from github import Github
+    #from github import Github
     import base64
     from io import StringIO
     from streamlit_gsheets import GSheetsConnection
