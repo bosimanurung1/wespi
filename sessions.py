@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
 import datetime as dt
-
-mnomor1 = pd.read_csv('MNomor1.csv')
-last_id_calc = mnomor1['tmycalc'].values[0]
+from streamlit_gsheets import GSheetsConnection
 
 def sessionstates():
     if "mycalc3" not in st.session_state:
@@ -17,9 +15,19 @@ def sessionstates():
         st.session_state["id_calc_01"] = 0
     if "id_calc_02" not in st.session_state:
         st.session_state["id_calc_02"] = 0
-    if "new_id_calc" not in st.session_state:
-        st.session_state["new_id_calc"] = last_id_calc
+    #if "new_id_calc" not in st.session_state:
+    #    st.session_state["new_id_calc"] = last_id_calc
 
+    if "user_id" not in st.session_state:
+        st.session_state["_user_id"] = ''    
+    if "_username" not in st.session_state:
+        st.session_state["_username"] = ''    
+    if "_id_calc_method" not in st.session_state:
+        st.session_state["_id_calc_method"] = ''            
+    if "_id_welltype" not in st.session_state:
+        st.session_state["_id_welltype"] = ''
+    if "_id_measurement" not in st.session_state:
+        st.session_state["_id_measurement"] = ''
     if "_well_name" not in st.session_state:
         st.session_state["_well_name"] = ''
     if "_date_calc" not in st.session_state:
@@ -46,6 +54,10 @@ def sessionstates():
     if "_bottom_perfo_md" not in st.session_state:
         st.session_state["_bottom_perfo_md"] = 0.00       
 
+    if "_sfl" not in st.session_state:
+        st.session_state["_sfl"] = 0.00       
+    if "_smgFreeGasAtQtest" not in st.session_state:
+        st.session_state["_smgFreeGasAtQtest"] = 0.00       
     if "_qtest" not in st.session_state:
         st.session_state["_qtest"] = 0.00       
     if "_sbhp" not in st.session_state:
@@ -80,16 +92,26 @@ def sessionstates():
         st.session_state["_api"] = 0.00          
     if "_sgo" not in st.session_state:
         st.session_state["_sgo"] = 0.00       
+    if "lbs" not in st.session_state:
+        st.session_state["lbs"] = 0.00          
+    if "kg" not in st.session_state:
+        st.session_state["kg"] = 0.00       
 
     if "_liner_id" not in st.session_state:
         st.session_state["_liner_id"] = 0.00       
-    if "_top_liner_at" not in st.session_state:
-        st.session_state["_top_liner_at"] = 0.00       
-    if "_bottom_liner_at" not in st.session_state:
-        st.session_state["_bottom_liner_at"] = 0.00       
+    if "_top_liner_at_tvd" not in st.session_state:
+        st.session_state["_top_liner_at_tvd"] = 0.00       
+    if "_top_liner_at_md" not in st.session_state:
+        st.session_state["_top_liner_at_md"] = 0.00       
+    if "_bottom_liner_at_tvd" not in st.session_state:
+        st.session_state["_bottom_liner_at_tvd"] = 0.00       
+    if "_bottom_liner_at_md" not in st.session_state:
+        st.session_state["_bottom_liner_at_md"] = 0.00       
 
     if "_id_casing_size" not in st.session_state:
-        st.session_state["_id_casing_size"] = 0
+        st.session_state["_id_casing_size"] = 0     
+    if "_id_casing_id" not in st.session_state:
+        st.session_state["_id_casing_id"] = 0.00
     if "_casing_size" not in st.session_state:
         st.session_state["_casing_size"] = ''      
     if "_casing_id" not in st.session_state:
@@ -103,7 +125,7 @@ def sessionstates():
         st.session_state["_tubing_size"] = 0.00
     if "_tubing_id" not in st.session_state:
         st.session_state["_tubing_id"] = 0.00
-    
+
     if "_id_tubing_coeff" not in st.session_state:
         st.session_state["_id_tubing_coeff"] = 0
     if "_tubing_coeff_type" not in st.session_state:
