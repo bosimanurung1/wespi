@@ -666,8 +666,8 @@ if st.button("Save"):
                   st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
                   _bottom_liner_at_tvd, _bottom_liner_at_md]]   
                
-        update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
-        bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)
+        update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+        bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)
 
         #mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
         #tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
