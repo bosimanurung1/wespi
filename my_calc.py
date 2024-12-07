@@ -32,7 +32,8 @@ bsconnect = st.connection("gsheets", type=GSheetsConnection)
 mnomor1 = bsconnect.read(spreadsheet=mnomor1url)
 tmycalc = bsconnect.read(spreadsheet=tmycalcurl)
 # Convert the string column to a datetime column
-tmycalc["date_calc"] = pd.to_datetime(tmycalc["date_calc"]).dt.strftime('%Y-%m-%d')
+if isinstance(tmycalc["date_calc"], str):
+    tmycalc["date_calc"] = pd.to_datetime(tmycalc["date_calc"]).dt.strftime('%Y-%m-%d')
 if "mnomor1" not in st.session_state:
     st.session_state["mnomor1"] = mnomor1
 if "tmycalc" not in st.session_state:
