@@ -16,7 +16,8 @@ def edit_and_add():
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     
     # Load the external CSS
-    css_path = pathlib.Path("assets/style.css")
+    #css_path = pathlib.Path("assets/style.css")
+    css_path = pathlib.Path("style.css")
     load_css(css_path)
 
     #open datas
