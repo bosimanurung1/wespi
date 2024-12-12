@@ -12,7 +12,8 @@ def new_calc_straight(): # from new_calc.py (in there, is counting Vogel)
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     
     # Load the external CSS
-    css_path = pathlib.Path("assets/style.css")
+    #css_path = pathlib.Path("assets/style.css")
+    css_path = pathlib.Path("style.css")
     load_css(css_path)
 
     #Hitung2an Calculation sblm IPR Curve
