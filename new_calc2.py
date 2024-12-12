@@ -5,10 +5,19 @@ def edit_and_add():
     from csv import writer
     import csv
     from datetime import datetime
-    #from github import Github
     import base64
     from io import StringIO
     from streamlit_gsheets import GSheetsConnection
+    import pathlib
+
+    # Function to load CSS from the 'assets' folder
+    def load_css(file_path):
+        with open(file_path) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    
+    # Load the external CSS
+    css_path = pathlib.Path("assets/style.css")
+    load_css(css_path)
 
     #open datas
     mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
@@ -662,7 +671,17 @@ def edit_and_add():
             plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
         
             st.pyplot(fig)
-            
+
+            # Legends:
+            st.write(f"""<div id="box_legends">
+                         <div id="red-circle"></div>
+                         <div class="text">IPR Vogel</div>
+                         <div id="blue-circle"></div>
+                         <div class="text">@ PSD</div>
+                         <div id="brown-circle"></div>
+                         <div class="text">@ Qdes</div>
+                 </div>""",unsafe_allow_html=True
+                 )
             #def update_csv_record(filename, key_column, key_value, update_data):
                 # Read existing data
             #    rows = []
@@ -1003,6 +1022,16 @@ def edit_and_add():
         
             st.write('\n')
             st.title("Inflow Performance Relationships")    
+            # Legends:
+            st.write(f"""<div id="box_legends2">
+                        <div id="red-circle2"></div>
+                        <div class="text">IPR Straight</div>
+                        <div id="blue-circle"></div>
+                        <div class="text">@ PSD</div>                        
+                        <div id="brown-circle"></div>
+                        <div class="text">@ Qdes</div>
+                </div>""",unsafe_allow_html=True
+                )
             #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
             #with row5_1:
             # perbesar figsize
@@ -1449,7 +1478,17 @@ def edit_and_add():
                 #st.write('Di file xls: 0.43463 (selisih/beda 0.0004 lbh kecil)')
                 #st.write('\n')
                 
-            st.title("Inflow Performance Relationships")    
+            st.title("Inflow Performance Relationships")  
+            # Legends:
+            st.write(f"""<div id="box_legends">
+                         <div id="red-circle"></div>
+                         <div class="text">IPR Vogel</div>
+                         <div id="blue-circle"></div>
+                         <div class="text">@ PSD</div>
+                         <div id="brown-circle"></div>
+                         <div class="text">@ Qdes</div>
+                 </div>""",unsafe_allow_html=True
+                 )
             #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
             #with row5_1:
             # perbesar figsize
@@ -1838,6 +1877,16 @@ def edit_and_add():
     
             st.pyplot(fig)
 
+            # Legends:
+            st.write(f"""<div id="box_legends2">
+                        <div id="red-circle2"></div>
+                        <div class="text">IPR Straight</div>
+                        <div id="blue-circle"></div>
+                        <div class="text">@ PSD</div>                        
+                        <div id="brown-circle"></div>
+                        <div class="text">@ Qdes</div>
+                </div>""",unsafe_allow_html=True
+                )
             #new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
             #                _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
             #                _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
