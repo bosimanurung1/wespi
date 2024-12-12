@@ -8,6 +8,17 @@ from streamlit_gsheets import GSheetsConnection
 from sessions import sessionstates
 from my_calcb import my_calc_straight
 from new_calc2 import edit_and_add
+import pathlib
+
+# Function to load CSS from the 'assets' folder
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+
+# Load the external CSS
+css_path = pathlib.Path("assets/style.css")
+load_css(css_path)
 
 #open datas
 mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
@@ -658,6 +669,16 @@ if st.session_state["id_calc_01"]:
     
         st.write('\n')
         st.title("Inflow Performance Relationships")    
+        # Legends:
+        st.write(f"""<div id="box_legends">
+                         <div id="red-circle"></div>
+                         <div class="text">IPR Vogel</div>
+                         <div id="blue-circle"></div>
+                         <div class="text">@ PSD</div>
+                         <div id="brown-circle"></div>
+                         <div class="text">@ Qdes</div>
+                 </div>""",unsafe_allow_html=True
+                 )
         #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
         #with row5_1:
         # perbesar figsize
@@ -697,7 +718,7 @@ if st.session_state["id_calc_01"]:
         #plt.legend()
         #ax.legend()
         #legend = ax.legend(loc="upper right", bbox_to_anchor=(1.02, 0, 0.07, 1))
-        plt.gca().legend()
+        #plt.gca().legend()
 
         st.pyplot(fig)
         #st.pyplot(plt.gcf())
@@ -705,7 +726,7 @@ if st.session_state["id_calc_01"]:
         #with row5_2:
         #    st.dataframe(df_ipr_data, hide_index=True)
         #    st.write('')
-    
+        
     elif _id_calc_method==1: # Straight Line
         my_calc_straight()
         st.write('')
