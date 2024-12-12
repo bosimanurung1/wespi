@@ -4,3 +4,4 @@ openpyxl
 pandasql
 matplotlib
 st-gsheets-connection
+pathlib
