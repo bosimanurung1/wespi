@@ -3,8 +3,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 #import my_calc --> diremark karena kalau disini import file itu, lalu itu import file ini, error! 
 #Jadi variabel2 yg ada di file itu dipanggilnya pakai st.session_state aja
+import pathlib
 
 def my_calc_straight():
+    # Function to load CSS from the 'assets' folder
+    def load_css(file_path):
+        with open(file_path) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        
+    # Load the external CSS
+    css_path = pathlib.Path("assets/style.css")
+    load_css(css_path)
+
     #Hitung2an Calculation sblm IPR Curve
     # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
     # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
@@ -277,6 +287,16 @@ def my_calc_straight():
 
     st.write('\n')
     st.title("Inflow Performance Relationships")    
+    # Legends:
+    st.write(f"""<div id="box_legends2">
+                        <div id="red-circle2"></div>
+                        <div class="text">IPR Straight</div>
+                        <div id="blue-circle"></div>
+                        <div class="text">@ PSD</div>                        
+                        <div id="brown-circle"></div>
+                        <div class="text">@ Qdes</div>
+                </div>""",unsafe_allow_html=True
+                )
     #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
     #with row5_1:
     # perbesar figsize
@@ -311,7 +331,7 @@ def my_calc_straight():
     # set grid
     plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
 
-    plt.legend()
+    #plt.legend()
 
     st.pyplot(fig)
     #with row5_2:
