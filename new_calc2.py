@@ -637,6 +637,16 @@ def edit_and_add():
                 #st.write('\n')
                 
             st.title("Inflow Performance Relationships")    
+            # Legends:
+            st.write(f"""<div id="box_legends">
+                             <div id="red-circle"></div>
+                             <div class="text">IPR Vogel</div>
+                             <div id="blue-circle"></div>
+                             <div class="text">@ PSD</div>
+                             <div id="brown-circle"></div>
+                             <div class="text">@ Qdes</div>
+                     </div>""",unsafe_allow_html=True
+                     )            
             #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
             #with row5_1:
             # perbesar figsize
@@ -673,16 +683,6 @@ def edit_and_add():
         
             st.pyplot(fig)
 
-            # Legends:
-            st.write(f"""<div id="box_legends">
-                         <div id="red-circle"></div>
-                         <div class="text">IPR Vogel</div>
-                         <div id="blue-circle"></div>
-                         <div class="text">@ PSD</div>
-                         <div id="brown-circle"></div>
-                         <div class="text">@ Qdes</div>
-                 </div>""",unsafe_allow_html=True
-                 )
             #def update_csv_record(filename, key_column, key_value, update_data):
                 # Read existing data
             #    rows = []
@@ -745,7 +745,6 @@ def edit_and_add():
                 #wellnamesearch=''
                 return(st.sessoin_state._well_name_search)
     
-        #elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
         elif _id_calc_method==1: # Straight Line
             #Hitung2an Calculation sblm IPR Curve        
             # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
