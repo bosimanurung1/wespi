@@ -670,7 +670,7 @@ if st.session_state["id_calc_01"]:
         st.write('\n')
         st.title("Inflow Performance Relationships")    
         # Legends:
-        st.write(f"""<div id="box_legends">
+        st.write(f"""<div id="box_legends">Legend:
                          <div id="red-circle"></div>
                          <div class="text">IPR Vogel</div>
                          <div id="blue-circle"></div>
