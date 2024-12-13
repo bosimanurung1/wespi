@@ -670,13 +670,13 @@ if st.session_state["id_calc_01"]:
         st.write('\n')
         st.title("Inflow Performance Relationships")    
         # Legends:
-        st.write(f"""<div id="box_legends">Legend:
+        st.write(f"""<div id="box_legends"><p>Legend:
                          <div id="red-circle"></div>
                          <div class="text">IPR Vogel</div>
                          <div id="blue-circle"></div>
                          <div class="text">@ PSD</div>
                          <div id="brown-circle"></div>
-                         <div class="text">@ Qdes</div>
+                         <div class="text">@ Qdes</div></p>
                  </div>""",unsafe_allow_html=True
                  )
         #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
