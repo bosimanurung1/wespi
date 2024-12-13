@@ -1841,6 +1841,17 @@ def edit_and_add():
         
             st.write('\n')
             st.title("Inflow Performance Relationships")    
+            # Legends:
+            st.write(f"""<div id="box_legends2">
+                        <div id="red-circle2"></div>
+                        <div class="text">IPR Straight</div>
+                        <div id="blue-circle"></div>
+                        <div class="text">@ PSD</div>                        
+                        <div id="brown-circle"></div>
+                        <div class="text">@ Qdes</div>
+                </div>""",unsafe_allow_html=True
+                )
+
             #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
             #with row5_1:
             # perbesar figsize
@@ -1877,16 +1888,6 @@ def edit_and_add():
     
             st.pyplot(fig)
 
-            # Legends:
-            st.write(f"""<div id="box_legends2">
-                        <div id="red-circle2"></div>
-                        <div class="text">IPR Straight</div>
-                        <div id="blue-circle"></div>
-                        <div class="text">@ PSD</div>                        
-                        <div id="brown-circle"></div>
-                        <div class="text">@ Qdes</div>
-                </div>""",unsafe_allow_html=True
-                )
             #new_records = [[st.session_state["new_id_calc"], _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
             #                _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
             #                _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sfl, _smgFreeGasAtQtest, _sbhp, _fbhp, \
